@@ -47,6 +47,8 @@ mongoose
     console.log(err);
   });
 
+app.use('/api/user', require('./routes/api/user'));
+
 app.listen(port, () => {
   console.log(`Server started on ${PORT} port`);
 });
