@@ -6,6 +6,7 @@ import { useRecoilState } from 'recoil';
 import Confirm from './confirm';
 import { bgFixed } from '@/utils/utils';
 import LoginModal from './loginModal';
+import Link from 'next/link';
 
 export default function Navigation() {
   const [modalOpen, setModalOpen] = useState<boolean>(false);
@@ -13,7 +14,9 @@ export default function Navigation() {
 
   return (
     <div className="w-full px-20 py-10 flex justify-between items-center">
-      <div className="font-extrabold text-2xl">REVIEWERS</div>
+      <div className="font-extrabold text-2xl">
+        <Link href="/">REVIEWERS</Link>
+      </div>
 
       <div className="flex gap-12 items-center">
         <button>CATALOGUE</button>

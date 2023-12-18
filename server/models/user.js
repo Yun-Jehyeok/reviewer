@@ -45,11 +45,13 @@ const UserSchema = new mongoose.Schema({
     {
       type: String,
       required: true,
+      default: 'Python',
     },
   ],
   profile_img: {
     type: String,
     required: true,
+    default: 'https://dummyimage.com/100',
   },
   register_date: {
     type: Date,

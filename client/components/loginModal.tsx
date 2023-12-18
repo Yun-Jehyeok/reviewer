@@ -8,6 +8,7 @@ import { useCallback } from 'react';
 import { useMutation } from 'react-query';
 import { useRecoilState } from 'recoil';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 interface ILoginModal {
   setModalOpen: (flag: boolean) => void;
@@ -97,7 +98,14 @@ export default function LoginModal({ setModalOpen }: ILoginModal) {
             </button>
           </form>
 
-          <div className="text-center mt-8 text-sm text-gray-400 hover:underline cursor-pointer">
+          <div className="text-center mt-8 text-sm text-gray-400">
+            Not a Member?{' '}
+            <Link href="/register">
+              <span className="text-blue-500">Sign Up</span>
+            </Link>
+          </div>
+
+          <div className="text-center mt-2 text-sm text-gray-400 hover:underline cursor-pointer">
             Forgot your password?
           </div>
         </div>
