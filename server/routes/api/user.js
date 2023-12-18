@@ -55,7 +55,7 @@ router.post('/login', (req, res) => {
 });
 
 router.post('/register', (req, res) => {
-  const { name, email, password, phone } = req.body;
+  const { name, email, password, phone, nickname } = req.body;
 
   if (!name)
     return res
@@ -69,6 +69,14 @@ router.post('/register', (req, res) => {
     return res
       .status(400)
       .json({ success: false, msg: '비밀번호를 입력해주세요.' });
+  else if (!phone)
+    return res
+      .status(400)
+      .json({ success: false, msg: '휴대폰 번호를 입력해주세요.' });
+  else if (!nickname)
+    return res
+      .status(400)
+      .json({ success: false, msg: '닉네임을 입력해주세요.' });
 
   User.findOne({ email }).then((user) => {
     if (user)
@@ -81,6 +89,7 @@ router.post('/register', (req, res) => {
       email,
       password,
       phone,
+      nickname,
     });
 
     bcrypt.genSalt(10, (err, salt) => {

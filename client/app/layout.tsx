@@ -3,6 +3,8 @@ import { Inter } from 'next/font/google';
 import './globals.css';
 import RecoilRootWrapper from '@/components/RecoilRootWrapper';
 import QueryProviderWrapper from '@/components/QueryProviderWrapper';
+import Navigation from '@/components/nav';
+import Footer from '@/components/footer';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -20,7 +22,19 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <RecoilRootWrapper>
-          <QueryProviderWrapper>{children}</QueryProviderWrapper>
+          <QueryProviderWrapper>
+            <div className="w-full">
+              <div className="w-full flex justify-center">
+                <div className="w-full min-w-[1340px] max-w-[1730px]">
+                  <Navigation />
+
+                  {children}
+                </div>
+              </div>
+
+              <Footer />
+            </div>
+          </QueryProviderWrapper>
         </RecoilRootWrapper>
       </body>
     </html>
