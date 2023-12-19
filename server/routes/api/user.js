@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { User } = require('../../models/user');
 const config = require('../../config/index');
+const { auth } = require('../../middleware/auth');
 
 const { JWT_SECRET } = config;
 
@@ -120,6 +121,26 @@ router.post('/register', (req, res) => {
       });
     });
   });
+});
+
+router.post('/auth', auth, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select('-password');
+
+    if (!user) {
+      return res.status(400).json({ msg: '유저가 존재하지 않습니다.' });
+    }
+
+    const userRes = {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+    };
+
+    res.json({ success: true, user: userRes });
+  } catch (e) {
+    res.status(400).json({ success: false, msg: e.message });
+  }
 });
 
 module.exports = router;

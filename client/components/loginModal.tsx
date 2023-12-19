@@ -33,6 +33,8 @@ export default function LoginModal({ setModalOpen }: ILoginModal) {
       console.log('signinSuccess', data, variables, context);
       if (data.success) {
         setUser({ ...data.user, token: data.token });
+        localStorage.setItem('token', data.token);
+
         router.push('/');
       }
     },
@@ -46,6 +48,7 @@ export default function LoginModal({ setModalOpen }: ILoginModal) {
       e: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement>,
     ) => {
       e.preventDefault();
+      console.log('here');
 
       let emailVal = email.v.value;
       let pwVal = password.v.value;

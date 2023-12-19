@@ -31,6 +31,7 @@ export default function Register() {
       console.log('signinSuccess', data, variables, context);
       if (data.success) {
         setUser({ ...data.user, token: data.token });
+        localStorage.setItem('token', data.token);
         router.push('/');
       }
     },

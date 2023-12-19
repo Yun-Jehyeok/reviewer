@@ -17,3 +17,7 @@ export interface signupIFC {
   phone: string;
   nickname: string;
 }
+
+export interface authIFC {
+  id: string;
+}
