@@ -1,4 +1,4 @@
-import CCard from '@/components/CCard';
+import CCard from '@/components/common/CCard';
 
 const datas = [
   {

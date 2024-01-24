@@ -5,11 +5,11 @@ import { confirmState } from '@/states/clientStates';
 import { useEffect } from 'react';
 import { bgFixed, cancelBgFixed } from '@/utils/utils';
 
-interface IConfirm {
+interface ICConfirm {
   title: String;
 }
 
-export default function Confirm({ title }: IConfirm) {
+export default function CConfirm({ title }: ICConfirm) {
   const [confirm, setConfirm] = useRecoilState(confirmState);
 
   useEffect(() => {

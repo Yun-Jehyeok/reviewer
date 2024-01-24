@@ -2,14 +2,14 @@
 
 import { signupApi } from '@/apis/userApi';
 import { useInput } from '@/hooks/useInput';
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { useRecoilState } from 'recoil';
 import { userState } from '@/states/userStates';
 import { signupIFC } from '@/interfaces/userIFC';
-import CInput from '@/components/CInput';
-import CButton from '@/components/CButton';
+import CInput from '@/components/common/CInput';
+import CButton from '@/components/common/CButton';
 
 export default function Register() {
   const router = useRouter();
@@ -22,6 +22,8 @@ export default function Register() {
   const name = useInput('');
   const nickname = useInput('');
   const phone = useInput('');
+
+  const [errMsg, setErrMsg] = useState<string>('');
 
   const signupMutation = useMutation({
     mutationFn: signupApi,
@@ -52,12 +54,17 @@ export default function Register() {
 
       let emailVal = email.value;
       let pwVal = password.value;
+      let pwCheckVal = pwCheck.value;
       let nameVal = name.value;
       let nicknameVal = nickname.value;
       let phoneVal = phone.value;
 
       if (emailVal === '') return;
       if (pwVal === '') return;
+      if (pwCheckVal === '') return;
+      if (nameVal === '') return;
+      if (nicknameVal === '') return;
+      if (phoneVal === '') return;
 
       let payload: signupIFC = {
         email: emailVal,
