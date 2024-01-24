@@ -3,10 +3,13 @@
 import { signupApi } from '@/apis/userApi';
 import { useInput } from '@/hooks/useInput';
 import { useCallback } from 'react';
-import { useMutation } from 'react-query';
+import { useMutation } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { useRecoilState } from 'recoil';
 import { userState } from '@/states/userStates';
+import { signupIFC } from '@/interfaces/userIFC';
+import CInput from '@/components/CInput';
+import CButton from '@/components/CButton';
 
 export default function Register() {
   const router = useRouter();
@@ -20,15 +23,16 @@ export default function Register() {
   const nickname = useInput('');
   const phone = useInput('');
 
-  const signupMutation = useMutation(signupApi, {
+  const signupMutation = useMutation({
+    mutationFn: signupApi,
     onMutate: (variable) => {
       console.log('onMutate', variable);
     },
     onError: (error, variable, context) => {
-      console.error('signinErr:::', error);
+      console.error('signupErr:::', error);
     },
     onSuccess: (data, variables, context) => {
-      console.log('signinSuccess', data, variables, context);
+      console.log('signupSuccess', data, variables, context);
       if (data.success) {
         setUser({ ...data.user, token: data.token });
         localStorage.setItem('token', data.token);
@@ -36,7 +40,7 @@ export default function Register() {
       }
     },
     onSettled: () => {
-      console.log('signinEnd');
+      console.log('signupEnd');
     },
   });
 
@@ -46,18 +50,16 @@ export default function Register() {
     ) => {
       e.preventDefault();
 
-      let emailVal = email.v.value;
-      let pwVal = password.v.value;
-      let nameVal = name.v.value;
-      let nicknameVal = nickname.v.value;
-      let phoneVal = phone.v.value;
+      let emailVal = email.value;
+      let pwVal = password.value;
+      let nameVal = name.value;
+      let nicknameVal = nickname.value;
+      let phoneVal = phone.value;
 
       if (emailVal === '') return;
       if (pwVal === '') return;
 
-      console.log('here');
-
-      let payload = {
+      let payload: signupIFC = {
         email: emailVal,
         password: pwVal,
         name: nameVal,
@@ -67,86 +69,156 @@ export default function Register() {
 
       signupMutation.mutate(payload);
     },
-    [],
+    [email, password, name, nickname, phone, signupMutation],
   );
 
   return (
-    <div className="w-full px-20">
-      <div className="w-full h-fit bg-[#F4F6F5] rounded-3xl flex p-20 py-12">
-        <div className="w-1/2 flex flex-col justify-center text-5xl font-black gap-3">
-          <div className="w-3/4 bg-white py-2 px-3">LET'S</div>
-          <div className="w-3/4 py-2 px-3">SIGN UP</div>
-          <div className="w-3/4 bg-[#EBD96B] py-2 px-3">AND</div>
-          <div className="w-3/4 py-2 px-3">REVIEW!</div>
-        </div>
-        <div className="w-1/2">
-          <form onSubmit={handleSubmit}>
-            <div className="mb-2 font-medium text-sm">E-Mail</div>
-            <div className="w-full h-12 border border-gray-400 bg-white rounded-md mb-4 flex gap-2 px-4">
-              <input
-                className="flex-1 h-full border-none rounded-md focus:outline-none text-sm"
+    <div className="w-full flex justify-center mt-[120px]">
+      <div className="w-[640px] h-fit bg-white shadow-2xl rounded-3xl flex p-20">
+        <div className="w-full">
+          <div className="text-center text-4xl font-bold mb-12">Sign Up</div>
+          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+            <div>
+              <div className="mb-2 font-medium text-sm">E-Mail</div>
+              <CInput
+                {...email}
                 type="email"
-                {...email.v}
-              />
-              <div className="w-[10%] h-full bg-center bg-no-repeat bg-email"></div>
+                placeholder="이메일을 입력해주세요."
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="w-6 h-6"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M10.5 1.5H8.25A2.25 2.25 0 0 0 6 3.75v16.5a2.25 2.25 0 0 0 2.25 2.25h7.5A2.25 2.25 0 0 0 18 20.25V3.75a2.25 2.25 0 0 0-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3"
+                  />
+                </svg>
+              </CInput>
             </div>
 
-            <div className="mb-2 font-medium text-sm">Password</div>
-            <div className="w-full h-12 border border-gray-400 bg-white rounded-md mb-6 flex gap-2 px-4">
-              <input
-                className="flex-1 h-full border-none rounded-md focus:outline-none text-sm"
+            <div>
+              <div className="mb-2 font-medium text-sm">Password</div>
+              <CInput
+                {...password}
                 type="password"
-                {...password.v}
-              />
-              <div className="w-[10%] h-full bg-center bg-no-repeat bg-pw"></div>
+                placeholder="비밀번호를 입력해주세요."
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="w-6 h-6"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z"
+                  />
+                </svg>
+              </CInput>
             </div>
 
-            <div className="mb-2 font-medium text-sm">Password Check</div>
-            <div className="w-full h-12 border border-gray-400 bg-white rounded-md mb-6 flex gap-2 px-4">
-              <input
-                className="flex-1 h-full border-none rounded-md focus:outline-none text-sm"
+            <div>
+              <div className="mb-2 font-medium text-sm">Password Check</div>
+              <CInput
+                {...pwCheck}
                 type="password"
-                {...pwCheck.v}
-              />
-              <div className="w-[10%] h-full bg-center bg-no-repeat bg-check"></div>
+                placeholder="비밀번호 확인을 입력해주세요."
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="w-6 h-6"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M13.5 10.5V6.75a4.5 4.5 0 1 1 9 0v3.75M3.75 21.75h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H3.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z"
+                  />
+                </svg>
+              </CInput>
             </div>
 
-            <div className="mb-2 font-medium text-sm">Name</div>
-            <div className="w-full h-12 border border-gray-400 bg-white rounded-md mb-6 flex gap-2 px-4">
-              <input
-                className="flex-1 h-full border-none rounded-md focus:outline-none text-sm"
+            <div>
+              <div className="mb-2 font-medium text-sm">Name</div>
+              <CInput {...name} type="text" placeholder="이름을 입력해주세요.">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="w-6 h-6"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"
+                  />
+                </svg>
+              </CInput>
+            </div>
+
+            <div>
+              <div className="mb-2 font-medium text-sm">Nickname</div>
+              <CInput
+                {...nickname}
                 type="text"
-                {...name.v}
-              />
-              <div className="w-[10%] h-full bg-center bg-no-repeat bg-name"></div>
+                placeholder="닉네임을 입력해주세요."
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="w-6 h-6"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.766Z"
+                  />
+                </svg>
+              </CInput>
             </div>
 
-            <div className="mb-2 font-medium text-sm">Nickname</div>
-            <div className="w-full h-12 border border-gray-400 bg-white rounded-md mb-6 flex gap-2 px-4">
-              <input
-                className="flex-1 h-full border-none rounded-md focus:outline-none text-sm"
+            <div>
+              <div className="mb-2 font-medium text-sm">Phone</div>
+              <CInput
+                {...phone}
                 type="text"
-                {...nickname.v}
-              />
-              <div className="w-[10%] h-full bg-center bg-no-repeat bg-nickname"></div>
+                placeholder="휴대폰 번호를 입력해주세요."
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="w-6 h-6"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M10.5 1.5H8.25A2.25 2.25 0 0 0 6 3.75v16.5a2.25 2.25 0 0 0 2.25 2.25h7.5A2.25 2.25 0 0 0 18 20.25V3.75a2.25 2.25 0 0 0-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3"
+                  />
+                </svg>
+              </CInput>
             </div>
 
-            <div className="mb-2 font-medium text-sm">Phone</div>
-            <div className="w-full h-12 border border-gray-400 bg-white rounded-md mb-6 flex gap-2 px-4">
-              <input
-                className="flex-1 h-full border-none rounded-md focus:outline-none text-sm"
-                type="text"
-                {...phone.v}
-              />
-              <div className="w-[10%] h-full bg-center bg-no-repeat bg-phone"></div>
-            </div>
-
-            <button
-              className="w-full h-12 text-white bg-black hover:bg-gray-800 rounded-md"
-              onClick={handleSubmit}
-            >
-              SIGN UP
-            </button>
+            <CButton title="SIGN UP" onClick={handleSubmit} />
           </form>
         </div>
       </div>

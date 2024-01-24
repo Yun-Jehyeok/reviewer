@@ -2,7 +2,7 @@ export default function Footer() {
   return (
     <div className="w-full mt-32">
       <div className="w-full bg-black h-96 flex flex-col justify-center text-white">
-        <div className="w-full px-20 flex justify-between">
+        <div className="w-full px-20 flex justify-between m-auto max-w-[1730px]">
           <div>
             <div className="text-3xl font-bold mb-6">REVIEWERS</div>
             <div className="text-sm text-gray-500">

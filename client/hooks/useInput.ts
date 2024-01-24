@@ -13,9 +13,6 @@ export const useInput = (initialValue: any) => {
 
     setValue(value);
   };
-  const resetValue = () => {
-    setValue('');
-  };
 
-  return { v: { value, onChange }, resetValue };
+  return { value, onChange };
 };

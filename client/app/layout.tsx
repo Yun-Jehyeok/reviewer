@@ -6,6 +6,7 @@ import QueryProviderWrapper from '@/components/QueryProviderWrapper';
 import Navigation from '@/components/nav';
 import Footer from '@/components/footer';
 import AuthenticationWrapper from '@/components/AuthenticationWrapper';
+import RQProvider from '@/components/RQProvider';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -24,10 +25,10 @@ export default function RootLayout({
       <body className={inter.className}>
         <RecoilRootWrapper>
           <QueryProviderWrapper>
-            <AuthenticationWrapper>
+            <RQProvider>
               <div className="w-full">
                 <div className="w-full flex justify-center">
-                  <div className="w-full min-w-[1340px] max-w-[1730px]">
+                  <div className="w-full min-w-[1340px] max-w-[1730px] px-20">
                     <Navigation />
 
                     {children}
@@ -36,7 +37,7 @@ export default function RootLayout({
 
                 <Footer />
               </div>
-            </AuthenticationWrapper>
+            </RQProvider>
           </QueryProviderWrapper>
         </RecoilRootWrapper>
       </body>

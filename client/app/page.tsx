@@ -3,14 +3,14 @@ import Footer from '@/components/footer';
 export default function Home() {
   return (
     <div>
-      <div className="w-full px-20">
+      <div className="w-full">
         <div className="w-full h-[540px] bg-[#F4F6F5] rounded-3xl"></div>
       </div>
 
-      <div className=" w-full text-3xl font-extrabold py-16 px-20">
+      <div className=" w-full text-3xl font-extrabold py-16">
         BEST REVIEWERS
       </div>
-      <div className="w-full px-20 flex justify-between gap-12">
+      <div className="w-full flex justify-between gap-12">
         <div className="w-1/3 cursor-pointer">
           <div className="w-full h-[540px] bg-[#9C9C9C] rounded-xl"></div>
           <div className="w-full flex justify-between mt-4">
@@ -88,10 +88,10 @@ export default function Home() {
         </div>
       </div>
 
-      <div className=" w-full text-3xl font-extrabold py-16 px-20 mt-8">
+      <div className=" w-full text-3xl font-extrabold py-16 mt-8">
         NEW REVIEWERS
       </div>
-      <div className="w-full px-20 flex justify-between gap-12">
+      <div className="w-full flex justify-between gap-12">
         <div className="w-1/3 cursor-pointer">
           <div className="w-full h-[540px] bg-[#9C9C9C] rounded-xl"></div>
           <div className="w-full flex justify-between mt-4">

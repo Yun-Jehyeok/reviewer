@@ -16,32 +16,32 @@ export default function Navigation() {
   const [confirm, setConfirm] = useRecoilState(confirmState);
 
   const [user, setUser] = useRecoilState(userState);
+  // const [token, setToken] = useState<string | null>();
 
-  const authMutation = useMutation(authApi, {
-    onMutate: (variable) => {
-      console.log('onMutate', variable);
-    },
-    onError: (error, variable, context) => {
-      console.error('signinErr:::', error);
-    },
-    onSuccess: (data, variables, context) => {
-      console.log('signinSuccess', data, variables, context);
-      if (data.success) {
-        console.log('인증');
-        setUser({ ...data.user, token: data.token });
-      }
-    },
-    onSettled: () => {
-      console.log('signinEnd');
-    },
-  });
+  // const authMutation = useMutation(authApi, {
+  //   onMutate: (variable) => {
+  //     console.log('onMutate', variable);
+  //   },
+  //   onError: (error, variable, context) => {
+  //     console.error('signinErr:::', error);
+  //   },
+  //   onSuccess: (data, variables, context) => {
+  //     console.log('signinSuccess', data, variables, context);
+  //     if (data.success) {
+  //       console.log('인증');
+  //       setUser({ ...data.user, token: data.token });
+  //       setToken(data.token);
+  //     }
+  //   },
+  //   onSettled: () => {
+  //     console.log('signinEnd');
+  //   },
+  // });
 
-  useEffect(() => {
-    // authMutation.mutate({ id: user.id });
-  }, [authMutation, user]);
+  // authMutation.mutate({ id: user.id });
 
   return (
-    <div className="w-full px-20 py-10 flex justify-between items-center">
+    <div className="w-full py-10 flex justify-between items-center">
       <div className="font-extrabold text-2xl">
         <Link href="/">REVIEWERS</Link>
       </div>
