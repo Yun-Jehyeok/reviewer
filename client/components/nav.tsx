@@ -3,9 +3,9 @@
 import { confirmState } from '@/states/clientStates';
 import { useEffect, useState } from 'react';
 import { useRecoilState } from 'recoil';
-import Confirm from './confirm';
+import Confirm from './common/CConfirm';
 import { bgFixed } from '@/utils/utils';
-import LoginModal from './loginModal';
+import LoginModal from './login/loginModal';
 import Link from 'next/link';
 import { userState } from '@/states/userStates';
 import { useMutation } from 'react-query';

@@ -1,12 +1,11 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
-import RecoilRootWrapper from '@/components/RecoilRootWrapper';
-import QueryProviderWrapper from '@/components/QueryProviderWrapper';
+import RecoilRootWrapper from '@/components/wrapper/RecoilRootWrapper';
+import QueryProviderWrapper from '@/components/wrapper/QueryProviderWrapper';
 import Navigation from '@/components/nav';
 import Footer from '@/components/footer';
-import AuthenticationWrapper from '@/components/AuthenticationWrapper';
-import RQProvider from '@/components/RQProvider';
+import RQProvider from '@/components/wrapper/RQProvider';
 
 const inter = Inter({ subsets: ['latin'] });
 

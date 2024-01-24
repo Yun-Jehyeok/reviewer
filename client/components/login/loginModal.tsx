@@ -9,8 +9,8 @@ import { useMutation } from '@tanstack/react-query';
 import { useRecoilState } from 'recoil';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import CInput from './CInput';
-import CButton from './CButton';
+import CInput from '../common/CInput';
+import CButton from '../common/CButton';
 
 interface ILoginModal {
   setModalOpen: (flag: boolean) => void;
