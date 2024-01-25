@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 interface ICCard {
   data: {
     id: number;
@@ -9,7 +11,7 @@ interface ICCard {
 
 export default function CCard({ data }: ICCard) {
   return (
-    <div className="cursor-pointer">
+    <Link href={`/reviewers/${data.id}`} className="cursor-pointer">
       <img
         src={data.image}
         alt="dummy"
@@ -37,6 +39,6 @@ export default function CCard({ data }: ICCard) {
           </svg>
         </div>
       </div>
-    </div>
+    </Link>
   );
 }

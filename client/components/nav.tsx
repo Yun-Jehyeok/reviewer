@@ -47,7 +47,7 @@ export default function Navigation() {
       </div>
 
       <div className="flex gap-12 items-center">
-        <button>CATALOGUE</button>
+        <Link href="/reviewers">리뷰어 목록</Link>
         <button>FASHION</button>
         <button>FAVOURITE</button>
         <button onClick={() => setConfirm(true)}>LIFESTYLE</button>
