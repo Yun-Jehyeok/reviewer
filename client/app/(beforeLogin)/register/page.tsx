@@ -74,23 +74,25 @@ export default function Register() {
         phone: phoneVal,
       };
 
+      console.log('payload:::', payload);
+
       signupMutation.mutate(payload);
     },
     [email, password, name, nickname, phone, signupMutation],
   );
 
   return (
-    <div className="w-full flex justify-center mt-[120px]">
-      <div className="w-[640px] h-fit bg-white shadow-2xl rounded-3xl flex p-20">
-        <div className="w-full">
-          <div className="text-center text-4xl font-bold mb-12">Sign Up</div>
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-            <div>
-              <div className="mb-2 font-medium text-sm">E-Mail</div>
+    <div className="w-full flex justify-center my-16">
+      <div className="w-full h-fit py-36 bg-gray-50 rounded-2xl flex justify-center items-center">
+        <div className="w-[640px] h-fit bg-white shadow-lg rounded-md flex p-20">
+          <div className="w-full">
+            <div className="text-center text-4xl font-bold mb-12">Sign Up</div>
+            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
               <CInput
                 {...email}
                 type="email"
                 placeholder="이메일을 입력해주세요."
+                label="E-Mail"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -107,14 +109,12 @@ export default function Register() {
                   />
                 </svg>
               </CInput>
-            </div>
 
-            <div>
-              <div className="mb-2 font-medium text-sm">Password</div>
               <CInput
                 {...password}
                 type="password"
                 placeholder="비밀번호를 입력해주세요."
+                label="Password"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -131,14 +131,12 @@ export default function Register() {
                   />
                 </svg>
               </CInput>
-            </div>
 
-            <div>
-              <div className="mb-2 font-medium text-sm">Password Check</div>
               <CInput
                 {...pwCheck}
                 type="password"
                 placeholder="비밀번호 확인을 입력해주세요."
+                label="Password Check"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -155,11 +153,13 @@ export default function Register() {
                   />
                 </svg>
               </CInput>
-            </div>
 
-            <div>
-              <div className="mb-2 font-medium text-sm">Name</div>
-              <CInput {...name} type="text" placeholder="이름을 입력해주세요.">
+              <CInput
+                {...name}
+                type="text"
+                placeholder="이름을 입력해주세요."
+                label="Name"
+              >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
@@ -175,14 +175,12 @@ export default function Register() {
                   />
                 </svg>
               </CInput>
-            </div>
 
-            <div>
-              <div className="mb-2 font-medium text-sm">Nickname</div>
               <CInput
                 {...nickname}
                 type="text"
                 placeholder="닉네임을 입력해주세요."
+                label="Nickname"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -199,14 +197,12 @@ export default function Register() {
                   />
                 </svg>
               </CInput>
-            </div>
 
-            <div>
-              <div className="mb-2 font-medium text-sm">Phone</div>
               <CInput
                 {...phone}
                 type="text"
                 placeholder="휴대폰 번호를 입력해주세요."
+                label="Phone"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -223,10 +219,10 @@ export default function Register() {
                   />
                 </svg>
               </CInput>
-            </div>
 
-            <CButton title="SIGN UP" onClick={handleSubmit} />
-          </form>
+              <CButton title="SIGN UP" onClick={handleSubmit} />
+            </form>
+          </div>
         </div>
       </div>
     </div>

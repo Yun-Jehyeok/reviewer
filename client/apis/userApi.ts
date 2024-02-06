@@ -18,12 +18,3 @@ export const signupApi = async (user: signupIFC) => {
     console.error(err, ' : Signin Error !!!');
   }
 };
-
-export const authApi = async (user: authIFC) => {
-  try {
-    const res = await Apis.post('/user/auth', user);
-    return res;
-  } catch (err) {
-    console.error(err, ' : Signin Error !!!');
-  }
-};
