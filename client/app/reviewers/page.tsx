@@ -1,109 +1,43 @@
-import CCard from '@/components/common/CCard';
+'use client';
 
-const datas = [
-  {
-    id: 0,
-    title: '내가 널 가르쳐주겠다',
-    price: 20000,
-    image: 'https://picsum.photos/id/27/200/300',
-  },
-  {
-    id: 1,
-    title: '내가 널 가르쳐주겠다',
-    price: 20000,
-    image: 'https://picsum.photos/id/27/200/300',
-  },
-  {
-    id: 2,
-    title: '내가 널 가르쳐주겠다',
-    price: 20000,
-    image: 'https://picsum.photos/id/27/200/300',
-  },
-  {
-    id: 3,
-    title: '내가 널 가르쳐주겠다',
-    price: 20000,
-    image: 'https://picsum.photos/id/27/200/300',
-  },
-  {
-    id: 4,
-    title: '내가 널 가르쳐주겠다',
-    price: 20000,
-    image: 'https://picsum.photos/id/27/200/300',
-  },
-  {
-    id: 5,
-    title: '내가 널 가르쳐주겠다',
-    price: 20000,
-    image: 'https://picsum.photos/id/27/200/300',
-  },
-  {
-    id: 6,
-    title: '내가 널 가르쳐주겠다',
-    price: 20000,
-    image: 'https://picsum.photos/id/27/200/300',
-  },
-  {
-    id: 7,
-    title: '내가 널 가르쳐주겠다',
-    price: 20000,
-    image: 'https://picsum.photos/id/27/200/300',
-  },
-  {
-    id: 8,
-    title: '내가 널 가르쳐주겠다',
-    price: 20000,
-    image: 'https://picsum.photos/id/27/200/300',
-  },
-  {
-    id: 9,
-    title: '내가 널 가르쳐주겠다',
-    price: 20000,
-    image: 'https://picsum.photos/id/27/200/300',
-  },
-  {
-    id: 10,
-    title: '내가 널 가르쳐주겠다',
-    price: 20000,
-    image: 'https://picsum.photos/id/27/200/300',
-  },
-  {
-    id: 11,
-    title: '내가 널 가르쳐주겠다',
-    price: 20000,
-    image: 'https://picsum.photos/id/27/200/300',
-  },
-  {
-    id: 12,
-    title: '내가 널 가르쳐주겠다',
-    price: 20000,
-    image: 'https://picsum.photos/id/27/200/300',
-  },
-  {
-    id: 13,
-    title: '내가 널 가르쳐주겠다',
-    price: 20000,
-    image: 'https://picsum.photos/id/27/200/300',
-  },
-  {
-    id: 14,
-    title: '내가 널 가르쳐주겠다',
-    price: 20000,
-    image: 'https://picsum.photos/id/27/200/300',
-  },
-  {
-    id: 15,
-    title: '내가 널 가르쳐주겠다',
-    price: 20000,
-    image: 'https://picsum.photos/id/27/200/300',
-  },
-];
+import { getAllPostApi } from '@/apis/postApi';
+import CCard from '@/components/common/CCard';
+import { allPostIFC } from '@/interfaces/postIFC';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { Pagination } from 'antd';
+import { useState } from 'react';
 
 export default function Reviewers() {
+  const [page, setPage] = useState<number>(1);
+
+  const { data, error, isLoading } = useQuery<
+    allPostIFC,
+    Object,
+    allPostIFC,
+    [_1: string, _2: number]
+  >({
+    queryKey: ['posts', page],
+    queryFn: getAllPostApi,
+    staleTime: 60 * 1000,
+    gcTime: 300 * 1000,
+  });
+
+  const queryClient = useQueryClient();
+
+  const handlePagination = async (data: number) => {
+    setPage(data);
+
+    try {
+      await queryClient.getQueryData(['posts', data]);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   return (
     <div className="w-full">
       <div className="w-full flex justify-between">
-        <div className="">총 124개</div>
+        <div className="">총 {data ? data.allPostsCnt : 0}개</div>
         {/* 필터링 */}
         <div className="w-fit flex gap-4">
           <select>
@@ -129,10 +63,30 @@ export default function Reviewers() {
       </div>
 
       {/* 리스트 */}
-      <div className="w-full grid grid-cols-4 gap-x-8 gap-y-6 mt-6">
-        {datas.map((data) => {
-          return <CCard key={data.id} data={data} />;
-        })}
+      {data && data.posts ? (
+        <div className="w-full grid grid-cols-4 gap-x-8 gap-y-6 mt-6">
+          {data.posts.map((post) => {
+            let data = {
+              id: post._id,
+              title: post.title,
+              price: Number(post.price),
+              image: 'https://picsum.photos/id/27/200/300',
+            };
+            return <CCard key={data.id} data={data} />;
+          })}
+        </div>
+      ) : (
+        <div>등록된 리뷰어가 없습니다.</div>
+      )}
+
+      <div className="w-full flex justify-center mt-12">
+        <Pagination
+          defaultCurrent={page}
+          total={data ? data.allPostsCnt : 0}
+          defaultPageSize={16}
+          current={page}
+          onChange={handlePagination}
+        />
       </div>
     </div>
   );

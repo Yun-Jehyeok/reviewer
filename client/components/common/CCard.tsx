@@ -2,7 +2,7 @@ import Link from 'next/link';
 
 interface ICCard {
   data: {
-    id: number;
+    id: string;
     title: string;
     price: number;
     image: string;
