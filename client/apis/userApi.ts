@@ -1,4 +1,4 @@
-import { authIFC, signinIFC, signupIFC } from '@/interfaces/userIFC';
+import { signinIFC, signupIFC } from '@/interfaces/userIFC';
 import { Apis } from '@/utils/api';
 
 export const signinApi = async (user: signinIFC) => {

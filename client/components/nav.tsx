@@ -1,14 +1,14 @@
 'use client';
 
 import { confirmState } from '@/states/clientStates';
+import { userState } from '@/states/userStates';
+import { bgFixed } from '@/utils/utils';
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useRecoilState } from 'recoil';
-import Confirm from './common/CConfirm';
-import { bgFixed } from '@/utils/utils';
-import LoginModal from './login/loginModal';
-import Link from 'next/link';
-import { userState } from '@/states/userStates';
 import CButton from './common/CButton';
+import Confirm from './common/CConfirm';
+import LoginModal from './login/loginModal';
 
 export default function Navigation() {
   const [modalOpen, setModalOpen] = useState<boolean>(false);
@@ -47,6 +47,7 @@ export default function Navigation() {
 
       <div className="flex gap-8 items-center">
         <Link href="/reviewers">리뷰어 목록</Link>
+        <Link href="/reviewers/register">리뷰어 등록</Link>
         <button>알림</button>
         <button onClick={() => setConfirm(true)}>메시지</button>
         {isAuth ? (
