@@ -4,6 +4,26 @@ const { User } = require('../../models/user');
 
 const router = express.Router();
 
+router.get('/skip/:page', async (req, res) => {
+  try {
+    let page = (Number(req.params.page) - 1) * 16;
+
+    const postCount = await Post.countDocuments();
+    const postFindResult = await Post.find()
+      .skip(page)
+      .limit(16)
+      .sort({ date: -1 });
+
+    res.status(200).json({
+      success: true,
+      allPostsCnt: postCount,
+      posts: postFindResult,
+    });
+  } catch (e) {
+    res.status(400).json({ success: false, msg: e.message });
+  }
+});
+
 router.post('/', (req, res) => {
   const { userId, title, content, lang, price } = req.body;
 

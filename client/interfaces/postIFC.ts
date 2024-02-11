@@ -8,6 +8,11 @@ export interface postIFC {
   creator: string;
 }
 
+export interface allPostIFC {
+  posts: postIFC[];
+  allPostsCnt: number;
+}
+
 export interface registerPostIFC {
   userId: string;
   title: string;
