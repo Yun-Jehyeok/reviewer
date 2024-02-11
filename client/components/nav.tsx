@@ -85,9 +85,12 @@ export default function Navigation() {
                   </div>
                   <div className="w-full h-[1px] border border-gray-200"></div>
                   <div className="p-4 py-2 w-full flex justify-end gap-4">
-                    <div className="text-sm text-blue-600 cursor-pointer">
-                      Mypage
-                    </div>
+                    <Link href="/mypage">
+                      <div className="text-sm text-blue-600 cursor-pointer">
+                        Mypage
+                      </div>
+                    </Link>
+
                     <div
                       className="text-sm text-blue-600 cursor-pointer"
                       onClick={onClickLogout}

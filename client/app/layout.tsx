@@ -6,6 +6,7 @@ import RQProvider from '@/components/wrapper/RQProvider';
 import RecoilRootWrapper from '@/components/wrapper/RecoilRootWrapper';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
+import Script from 'next/script';
 import './globals.css';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -23,6 +24,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
+        <Script src="https://cdn.iamport.kr/v1/iamport.js" />
+
+        <Script
+          src="https://cdn.iamport.kr/v1/iamport.js"
+          strategy="beforeInteractive"
+        />
         <AntdProvider>
           <RecoilRootWrapper>
             <QueryProviderWrapper>
