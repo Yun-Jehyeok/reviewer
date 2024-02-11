@@ -10,7 +10,7 @@ interface ICInput {
   type: string;
   isErr?: boolean;
   errMsg?: string;
-  children: React.ReactNode;
+  children?: React.ReactNode;
 }
 
 export default function CInput({
