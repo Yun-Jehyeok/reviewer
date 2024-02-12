@@ -26,7 +26,7 @@ export default function CInput({
   return (
     <div>
       {label !== '' && <div className="mb-2 font-medium text-sm">{label}</div>}
-      <div className="w-full h-10 flex gap-2 rounded-md border border-gray-400 px-4">
+      <div className="w-full h-10 flex gap-2 rounded-md border border-gray-400 px-4 bg-white">
         <input
           className="flex-1 h-full border-none text-sm focus:outline-none"
           type={type}

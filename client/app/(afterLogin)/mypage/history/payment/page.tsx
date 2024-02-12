@@ -1,6 +1,7 @@
 'use client';
 
 import CButton from '@/components/common/CButton';
+import { useRouter } from 'next/navigation';
 
 const data = [
   { id: 0, date: '2022-02-03', price: '20,000' },
@@ -14,7 +15,11 @@ const data = [
 ];
 
 export default function PayHistory() {
-  const navigateToPayment = () => {};
+  const router = useRouter();
+
+  const navigateToPayment = () => {
+    router.push('/payment');
+  };
 
   return (
     <div className="w-full">

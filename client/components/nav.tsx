@@ -48,7 +48,11 @@ export default function Navigation() {
     router.push('/mypage');
   };
 
-  const navigateToPayment = () => {};
+  const navigateToPayment = () => {
+    setShowDropdown(false);
+
+    router.push('/payment');
+  };
 
   return (
     <div className="w-full py-10 flex justify-between items-center">
