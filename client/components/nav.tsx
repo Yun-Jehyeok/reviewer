@@ -4,6 +4,7 @@ import { confirmState } from '@/states/clientStates';
 import { userState } from '@/states/userStates';
 import { bgFixed } from '@/utils/utils';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useRecoilState } from 'recoil';
 import CButton from './common/CButton';
@@ -17,6 +18,8 @@ export default function Navigation() {
   const [showDropdown, setShowDropdown] = useState<boolean>(false);
 
   const [user, setUser] = useRecoilState(userState);
+
+  const router = useRouter();
 
   useEffect(() => {
     setIsAuth(user.token !== '');
@@ -38,6 +41,14 @@ export default function Navigation() {
       token: '',
     });
   };
+
+  const navigateToMypage = () => {
+    setShowDropdown(false);
+
+    router.push('/mypage');
+  };
+
+  const navigateToPayment = () => {};
 
   return (
     <div className="w-full py-10 flex justify-between items-center">
@@ -82,14 +93,22 @@ export default function Navigation() {
                     <div className="w-full flex justify-center">
                       <div className="w-24 h-24 rounded-full bg-gray-500"></div>
                     </div>
+
+                    <div className="w-full flex justify-center items-center mt-8">
+                      <CButton
+                        title="포인트 충전하기"
+                        onClick={navigateToPayment}
+                      />
+                    </div>
                   </div>
                   <div className="w-full h-[1px] border border-gray-200"></div>
                   <div className="p-4 py-2 w-full flex justify-end gap-4">
-                    <Link href="/mypage">
-                      <div className="text-sm text-blue-600 cursor-pointer">
-                        Mypage
-                      </div>
-                    </Link>
+                    <div
+                      className="text-sm text-blue-600 cursor-pointer"
+                      onClick={navigateToMypage}
+                    >
+                      Mypage
+                    </div>
 
                     <div
                       className="text-sm text-blue-600 cursor-pointer"
