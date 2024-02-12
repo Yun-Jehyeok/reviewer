@@ -4,6 +4,7 @@ import { confirmState } from '@/states/clientStates';
 import { userState } from '@/states/userStates';
 import { bgFixed } from '@/utils/utils';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useRecoilState } from 'recoil';
 import CButton from './common/CButton';
@@ -17,6 +18,8 @@ export default function Navigation() {
   const [showDropdown, setShowDropdown] = useState<boolean>(false);
 
   const [user, setUser] = useRecoilState(userState);
+
+  const router = useRouter();
 
   useEffect(() => {
     setIsAuth(user.token !== '');
@@ -37,6 +40,18 @@ export default function Navigation() {
       email: '',
       token: '',
     });
+  };
+
+  const navigateToMypage = () => {
+    setShowDropdown(false);
+
+    router.push('/mypage');
+  };
+
+  const navigateToPayment = () => {
+    setShowDropdown(false);
+
+    router.push('/payment');
   };
 
   return (
@@ -82,12 +97,23 @@ export default function Navigation() {
                     <div className="w-full flex justify-center">
                       <div className="w-24 h-24 rounded-full bg-gray-500"></div>
                     </div>
+
+                    <div className="w-full flex justify-center items-center mt-8">
+                      <CButton
+                        title="포인트 충전하기"
+                        onClick={navigateToPayment}
+                      />
+                    </div>
                   </div>
                   <div className="w-full h-[1px] border border-gray-200"></div>
                   <div className="p-4 py-2 w-full flex justify-end gap-4">
-                    <div className="text-sm text-blue-600 cursor-pointer">
+                    <div
+                      className="text-sm text-blue-600 cursor-pointer"
+                      onClick={navigateToMypage}
+                    >
                       Mypage
                     </div>
+
                     <div
                       className="text-sm text-blue-600 cursor-pointer"
                       onClick={onClickLogout}

@@ -5,7 +5,7 @@ import CButton from '@/components/common/CButton';
 import { postIFC } from '@/interfaces/postIFC';
 import { userState } from '@/states/userStates';
 import { useQuery } from '@tanstack/react-query';
-import * as DOMPurify from 'dompurify';
+import DOMPurify from 'dompurify';
 import { useParams } from 'next/navigation';
 import { useRecoilState } from 'recoil';
 
