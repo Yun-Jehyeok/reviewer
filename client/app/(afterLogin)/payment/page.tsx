@@ -17,8 +17,6 @@ export default function Payment() {
 
     const { success, error_msg } = response;
 
-    console.log('response:::', response);
-
     if (success) {
       alert('결제 성공');
     } else {

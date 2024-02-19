@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useRecoilState } from 'recoil';
 import CButton from './common/CButton';
-import Confirm from './common/CConfirm';
+import CConfirm from './common/CConfirm';
 import LoginModal from './login/loginModal';
 
 export default function Navigation() {
@@ -133,7 +133,7 @@ export default function Navigation() {
 
       {modalOpen ? <LoginModal setModalOpen={setModalOpen} /> : ''}
 
-      {confirm ? <Confirm title="Confirm 메세지" /> : ''}
+      {confirm ? <CConfirm title="Confirm 메세지" /> : ''}
     </div>
   );
 }

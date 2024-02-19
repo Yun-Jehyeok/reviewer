@@ -79,7 +79,6 @@ export default function RegisterReviewer() {
       data.push(techVal.value);
 
       setTechs(data);
-      console.log('techs:::', techs);
     }
   };
 
@@ -115,11 +114,9 @@ export default function RegisterReviewer() {
         price: price.value,
       };
 
-      console.log('payload:::', payload);
-
       registerPostMutation.mutate(payload);
     },
-    [user, title, description, description, price, registerPostMutation],
+    [user, title, description, price, registerPostMutation, techs],
   );
 
   return (
