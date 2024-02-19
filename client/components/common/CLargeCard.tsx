@@ -1,6 +1,8 @@
+import Link from 'next/link';
+
 interface ICLargeCard {
   data: {
-    id: number;
+    id: string;
     title: string;
     price: number;
     image: string;
@@ -9,7 +11,7 @@ interface ICLargeCard {
 
 export default function CLargeCard({ data }: ICLargeCard) {
   return (
-    <div className="cursor-pointer">
+    <Link href={`/reviewers/${data.id}`} className="cursor-pointer">
       <img
         src={data.image}
         alt="dummy"
@@ -37,6 +39,6 @@ export default function CLargeCard({ data }: ICLargeCard) {
           </svg>
         </div>
       </div>
-    </div>
+    </Link>
   );
 }

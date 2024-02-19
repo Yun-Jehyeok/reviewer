@@ -1,44 +1,58 @@
 'use client';
 
 import { confirmState } from '@/states/clientStates';
+import { userState } from '@/states/userStates';
+import { bgFixed } from '@/utils/utils';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useRecoilState } from 'recoil';
+import CButton from './common/CButton';
 import Confirm from './common/CConfirm';
-import { bgFixed } from '@/utils/utils';
 import LoginModal from './login/loginModal';
-import Link from 'next/link';
-import { userState } from '@/states/userStates';
-import { useMutation } from 'react-query';
-import { authApi } from '@/apis/userApi';
 
 export default function Navigation() {
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [confirm, setConfirm] = useRecoilState(confirmState);
+  const [isAuth, setIsAuth] = useState<boolean>(false);
+  const [showDropdown, setShowDropdown] = useState<boolean>(false);
 
   const [user, setUser] = useRecoilState(userState);
-  // const [token, setToken] = useState<string | null>();
 
-  // const authMutation = useMutation(authApi, {
-  //   onMutate: (variable) => {
-  //     console.log('onMutate', variable);
-  //   },
-  //   onError: (error, variable, context) => {
-  //     console.error('signinErr:::', error);
-  //   },
-  //   onSuccess: (data, variables, context) => {
-  //     console.log('signinSuccess', data, variables, context);
-  //     if (data.success) {
-  //       console.log('인증');
-  //       setUser({ ...data.user, token: data.token });
-  //       setToken(data.token);
-  //     }
-  //   },
-  //   onSettled: () => {
-  //     console.log('signinEnd');
-  //   },
-  // });
+  const router = useRouter();
 
-  // authMutation.mutate({ id: user.id });
+  useEffect(() => {
+    setIsAuth(user.token !== '');
+  }, [user]);
+
+  const handleSignIn = () => {
+    setModalOpen(true);
+    bgFixed();
+  };
+
+  const onClickLogout = () => {
+    setShowDropdown(false);
+    localStorage.removeItem('token');
+
+    setUser({
+      id: '',
+      name: '',
+      email: '',
+      token: '',
+    });
+  };
+
+  const navigateToMypage = () => {
+    setShowDropdown(false);
+
+    router.push('/mypage');
+  };
+
+  const navigateToPayment = () => {
+    setShowDropdown(false);
+
+    router.push('/payment');
+  };
 
   return (
     <div className="w-full py-10 flex justify-between items-center">
@@ -46,20 +60,75 @@ export default function Navigation() {
         <Link href="/">REVIEWERS</Link>
       </div>
 
-      <div className="flex gap-12 items-center">
-        <button>CATALOGUE</button>
-        <button>FASHION</button>
-        <button>FAVOURITE</button>
-        <button onClick={() => setConfirm(true)}>LIFESTYLE</button>
-        <button
-          className="bg-black text-white rounded-md px-4 py-2 hover:bg-gray-800"
-          onClick={() => {
-            setModalOpen(true);
-            bgFixed();
-          }}
-        >
-          SIGN IN
-        </button>
+      <div className="flex gap-8 items-center">
+        <Link href="/reviewers">리뷰어 목록</Link>
+        <Link href="/reviewers/register">리뷰어 등록</Link>
+        <button>알림</button>
+        <button onClick={() => setConfirm(true)}>메시지</button>
+        {isAuth ? (
+          <div className="relative">
+            <div
+              className="w-10 h-10 rounded-full bg-black flex justify-center items-center cursor-pointer hover:bg-gray-800"
+              onClick={() => setShowDropdown(!showDropdown)}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="white"
+                className="w-6 h-6"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"
+                />
+              </svg>
+            </div>
+
+            {showDropdown && (
+              <div className="absolute top-14 -left-[120px]">
+                <div className="bg-white rounded-md border border-gray-200 z-10 absolute w-[280px] h-fit shadow-md">
+                  <div className="p-8 w-full">
+                    <div className="w-full text-center text-xl font-bold mb-4">
+                      {user.name}
+                    </div>
+                    <div className="w-full flex justify-center">
+                      <div className="w-24 h-24 rounded-full bg-gray-500"></div>
+                    </div>
+
+                    <div className="w-full flex justify-center items-center mt-8">
+                      <CButton
+                        title="포인트 충전하기"
+                        onClick={navigateToPayment}
+                      />
+                    </div>
+                  </div>
+                  <div className="w-full h-[1px] border border-gray-200"></div>
+                  <div className="p-4 py-2 w-full flex justify-end gap-4">
+                    <div
+                      className="text-sm text-blue-600 cursor-pointer"
+                      onClick={navigateToMypage}
+                    >
+                      Mypage
+                    </div>
+
+                    <div
+                      className="text-sm text-blue-600 cursor-pointer"
+                      onClick={onClickLogout}
+                    >
+                      Logout
+                    </div>
+                  </div>
+                </div>
+                <div className="w-3 h-3 rotate-45 bg-white border border-gray-200 absolute -top-1 left-[135px]"></div>
+              </div>
+            )}
+          </div>
+        ) : (
+          <CButton title="SIGN IN" onClick={handleSignIn} />
+        )}
       </div>
 
       {modalOpen ? <LoginModal setModalOpen={setModalOpen} /> : ''}

@@ -36,10 +36,7 @@ if (process.env.NODE_ENV === 'production') {
 
 mongoose
   .set('strictQuery', true)
-  .connect(mongo_url, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
+  .connect(mongo_url)
   .then(() => {
     console.log('mongodb connecting success');
   })
@@ -48,6 +45,7 @@ mongoose
   });
 
 app.use('/api/user', require('./routes/api/user'));
+app.use('/api/post', require('./routes/api/post'));
 
 app.listen(port, () => {
   console.log(`Server started on ${PORT} port`);
