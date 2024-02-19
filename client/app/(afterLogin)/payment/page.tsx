@@ -3,9 +3,13 @@
 import CInput from '@/components/common/CInput';
 import { useInput } from '@/hooks/useInput';
 import { RequestPayParams, RequestPayResponse } from '@/interfaces/portone';
+import { userState } from '@/states/userStates';
 import { bgFixed, cancelBgFixed } from '@/utils/utils';
+import { useRecoilState } from 'recoil';
 
 export default function Payment() {
+  const [user, setUser] = useRecoilState(userState);
+
   const price = useInput(0);
 
   function callback(response: RequestPayResponse) {
@@ -38,10 +42,10 @@ export default function Payment() {
       pay_method: 'card', // 결제수단
       merchant_uid: `mid_${new Date().getTime()}`, // 주문번호
       amount: Number(price.value), // 결제금액
-      name: '아임포트 결제 데이터 분석', // 주문명
-      buyer_name: '홍길동', // 구매자 이름
+      name: 'Reviwer 포인트 결제', // 주문명
+      buyer_name: user.name, // 구매자 이름
       buyer_tel: '01012341234', // 구매자 전화번호
-      buyer_email: 'example@example.com', // 구매자 이메일
+      buyer_email: user.email, // 구매자 이메일
       buyer_addr: '신사동 661-16', // 구매자 주소
       buyer_postcode: '06018', // 구매자 우편번호
     };
@@ -57,8 +61,8 @@ export default function Payment() {
       </h1>
 
       <div className="w-full flex justify-center">
-        <div className="w-[600px] h-fit p-20 bg-gray-50 rounded-3xl">
-          <div className="w-full flex justify-between mb-8 text-xl">
+        <div className="w-[600px] h-fit p-16 bg-gray-50 rounded-3xl">
+          <div className="w-full flex justify-between mb-8 text-xl border-b border-gray-200 pb-4">
             <p className="font-bold">보유 캐시</p>
             <p>
               <span className="font-bold">0</span> 캐시
@@ -74,16 +78,14 @@ export default function Payment() {
           </div>
           <div className="payment-box payment-method">
             <div className="title font-bold text-xl mb-2">결제수단</div>
-            <div
-              className="bg-white flex items-center pl-4 border border-gray-200 rounded mb-2"
-              data-field-name="card"
-            >
+            <div className="bg-white flex items-center pl-4 border border-gray-200 rounded-sm cursor-pointer mb-2">
               <input
                 checked
                 id="card"
                 type="radio"
                 value=""
                 name="payment-type"
+                readOnly
                 className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 
                                         focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
               />
@@ -94,15 +96,13 @@ export default function Payment() {
                 신용카드
               </label>
             </div>
-            <div
-              className="bg-white flex items-center pl-4 border border-gray-200 rounded"
-              data-field-name="phone"
-            >
+            <div className="bg-white flex items-center pl-4 border border-gray-200 rounded-sm cursor-pointer">
               <input
                 id="phone"
                 type="radio"
                 value=""
                 name="payment-type"
+                readOnly
                 className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 
                                         focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
               />
@@ -141,7 +141,7 @@ export default function Payment() {
           </div>
 
           <button
-            className="w-full bg-black text-white rounded-md px-4 py-2 hover:bg-gray-800 mt-20"
+            className="w-full bg-black text-white rounded-md px-4 py-2 hover:bg-gray-800 mt-12"
             onClick={handlePayment}
           >
             충전하기
