@@ -20,3 +20,8 @@ export interface registerPostIFC {
   lang: string[];
   price: number;
 }
+
+export interface applyIFC {
+  applicantId: string;
+  reviewerId: string;
+}

@@ -1,15 +1,15 @@
 'use client';
 
 import { signupApi } from '@/apis/userApi';
+import CButton from '@/components/common/CButton';
+import CInput from '@/components/common/CInput';
 import { useInput } from '@/hooks/useInput';
-import { useCallback, useState } from 'react';
+import { signupIFC } from '@/interfaces/userIFC';
+import { userState } from '@/states/userStates';
 import { useMutation } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
+import { useCallback, useState } from 'react';
 import { useRecoilState } from 'recoil';
-import { userState } from '@/states/userStates';
-import { signupIFC } from '@/interfaces/userIFC';
-import CInput from '@/components/common/CInput';
-import CButton from '@/components/common/CButton';
 
 export default function Register() {
   const router = useRouter();
@@ -74,11 +74,9 @@ export default function Register() {
         phone: phoneVal,
       };
 
-      console.log('payload:::', payload);
-
       signupMutation.mutate(payload);
     },
-    [email, password, name, nickname, phone, signupMutation],
+    [email, password, name, nickname, pwCheck, phone, signupMutation],
   );
 
   return (

@@ -58,7 +58,6 @@ router.post('/login', (req, res) => {
 router.post('/register', (req, res) => {
   const { name, email, password, phone, nickname } = req.body;
 
-  console.log('here!!', req.body);
   if (!name)
     return res
       .status(400)

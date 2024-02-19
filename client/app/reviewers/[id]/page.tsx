@@ -1,10 +1,10 @@
 'use client';
 
-import { getPostApi } from '@/apis/postApi';
+import { applyApi, getPostApi } from '@/apis/postApi';
 import CButton from '@/components/common/CButton';
 import { postIFC } from '@/interfaces/postIFC';
 import { userState } from '@/states/userStates';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import DOMPurify from 'dompurify';
 import { useParams } from 'next/navigation';
 import { useRecoilState } from 'recoil';
@@ -25,10 +25,35 @@ export default function ReviewerDetail() {
     gcTime: 300 * 1000,
   });
 
+  const applyMutation = useMutation({
+    mutationFn: applyApi,
+    onMutate: (variable) => {
+      console.log('onMutate', variable);
+    },
+    onError: (error, variable, context) => {
+      console.error('applyErr:::', error);
+    },
+    onSuccess: (data, variables, context) => {
+      console.log('applySuccess', data, variables, context);
+      // if (data.success) {
+      //   setUser({ ...data.user, token: data.token });
+      //   localStorage.setItem('token', data.token);
+      //   router.push('/');
+      // }
+    },
+    onSettled: () => {
+      console.log('applyEnd');
+    },
+  });
+
   const onClick = (
     e: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement>,
   ) => {
-    console.log('신청하기');
+    let conf = confirm('해당 리뷰어에게 리뷰를 신청하시겠습니까?');
+
+    if (conf) {
+      applyMutation.mutate({ applicantId: user.id, reviewerId: post!.creator });
+    }
   };
 
   if (!post) return null;
