@@ -4,13 +4,13 @@ import { signinApi } from '@/apis/userApi';
 import { useInput } from '@/hooks/useInput';
 import { userState } from '@/states/userStates';
 import { cancelBgFixed } from '@/utils/utils';
-import { useCallback } from 'react';
 import { useMutation } from '@tanstack/react-query';
-import { useRecoilState } from 'recoil';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import CInput from '../common/CInput';
+import { useRouter } from 'next/navigation';
+import { useCallback } from 'react';
+import { useRecoilState } from 'recoil';
 import CButton from '../common/CButton';
+import CInput from '../common/CInput';
 
 interface ILoginModal {
   setModalOpen: (flag: boolean) => void;
@@ -43,6 +43,7 @@ export default function LoginModal({ setModalOpen }: ILoginModal) {
       }
     },
     onSettled: () => {
+      cancelBgFixed();
       console.log('signinEnd');
     },
   });
