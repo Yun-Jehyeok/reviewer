@@ -52,7 +52,10 @@ export default function ReviewerDetail() {
     let conf = confirm('해당 리뷰어에게 리뷰를 신청하시겠습니까?');
 
     if (conf) {
-      applyMutation.mutate({ applicantId: user.id, reviewerId: post!.creator });
+      applyMutation.mutate({
+        applicantId: user._id,
+        reviewerId: post!.creator,
+      });
     }
   };
 

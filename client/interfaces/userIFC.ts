@@ -1,8 +1,20 @@
 export interface userIFC {
+  _id: string;
+  reputation: number;
+  register_date: string;
+  profile_img: string;
+  posts: string[];
+  point: number;
+  phone: string;
+  nickname: string;
   name: string;
+  login_way: string;
+  lang: string[];
+  isSubmit: boolean;
+  grade: string;
+  getApplications: string[];
   email: string;
-  id: string;
-  token: string;
+  applications: string[];
 }
 
 export interface signinIFC {

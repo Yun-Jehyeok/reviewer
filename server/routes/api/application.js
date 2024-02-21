@@ -27,16 +27,56 @@ router.post('/apply', (req, res) => {
   newApplication.save().then(() => {
     User.findByIdAndUpdate(reviewerId, {
       $push: {
-        applications: newApplication._id,
+        getApplications: newApplication._id,
       },
     })
       .then(() => {
-        res.status(200).json({ success: true });
+        User.findByIdAndUpdate(applicantId, {
+          $push: {
+            applications: newApplication._id,
+          },
+        })
+          .then(() => {
+            res.status(200).json({ success: true });
+          })
+          .catch((e) => {
+            res.status(400).json({ success: false, msg: e.msg });
+          });
       })
       .catch((e) => {
         res.status(400).json({ success: false, msg: e.msg });
       });
   });
+});
+
+router.get('/reviews/:id', async (req, res) => {
+  try {
+    const reviews = await Application.find({ reviewerId: req.params.id })
+      .sort({ date: -1 })
+      .populate(['applicantId', 'reviewerId']);
+
+    res.status(200).json({
+      success: true,
+      reviews,
+    });
+  } catch (e) {
+    res.status(400).json({ success: false, msg: e.message });
+  }
+});
+
+router.get('/applications/:id', async (req, res) => {
+  try {
+    const reviews = await Application.find({ applicantId: req.params.id })
+      .sort({ date: -1 })
+      .populate(['applicantId', 'reviewerId']);
+
+    res.status(200).json({
+      success: true,
+      reviews,
+    });
+  } catch (e) {
+    res.status(400).json({ success: false, msg: e.message });
+  }
 });
 
 module.exports = router;

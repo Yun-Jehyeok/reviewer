@@ -39,7 +39,7 @@ export default function LoginModal({ setModalOpen }: ILoginModal) {
         setUser({ ...data.user, token: data.token });
         localStorage.setItem('token', data.token);
 
-        router.push('/');
+        // router.push('/');
       }
     },
     onSettled: () => {

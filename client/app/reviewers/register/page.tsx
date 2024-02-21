@@ -107,7 +107,7 @@ export default function RegisterReviewer() {
       e.preventDefault();
 
       let payload: registerPostIFC = {
-        userId: user.id,
+        userId: user._id,
         title: title.value,
         content: description,
         lang: techs,
