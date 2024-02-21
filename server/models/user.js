@@ -80,6 +80,12 @@ const UserSchema = new mongoose.Schema({
       ref: 'application',
     },
   ],
+  getApplications: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'application',
+    },
+  ],
 });
 
 const User = mongoose.model('user', UserSchema);

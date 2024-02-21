@@ -40,14 +40,11 @@ router.post('/login', (req, res) => {
         (err, token) => {
           if (err) return res.status(400).json({ success: false, msg: err });
 
+          delete user.password;
           res.json({
             success: true,
             token,
-            user: {
-              id: user.id,
-              name: user.name,
-              email: user.email,
-            },
+            user,
           });
         },
       );
@@ -109,11 +106,7 @@ router.post('/register', (req, res) => {
               res.json({
                 success: true,
                 token,
-                user: {
-                  id: user.id,
-                  name: user.name,
-                  email: user.email,
-                },
+                user: delete user.password,
               });
             },
           );
