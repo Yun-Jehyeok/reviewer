@@ -5,9 +5,10 @@ import { useInput } from '@/hooks/useInput';
 import { userState } from '@/states/userStates';
 import { cancelBgFixed } from '@/utils/utils';
 import { useMutation } from '@tanstack/react-query';
+import Error from 'next/error';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { useRecoilState } from 'recoil';
 import CButton from '../common/CButton';
 import CInput from '../common/CInput';
@@ -16,7 +17,16 @@ interface ILoginModal {
   setModalOpen: (flag: boolean) => void;
 }
 
+interface ILoginErr extends Error {
+  response: { data: { msg: string } };
+}
+
 export default function LoginModal({ setModalOpen }: ILoginModal) {
+  const [emailErr, setEmailErr] = useState(false);
+  const [pwErr, setPwErr] = useState(false);
+  const [emailErrMsg, setEmailErrMsg] = useState('이메일을 입력해주세요.');
+  const [pwErrMsg, setPwErrMsg] = useState('비밀번호를 입력해주세요.');
+
   const router = useRouter();
 
   const email = useInput('');
@@ -29,8 +39,17 @@ export default function LoginModal({ setModalOpen }: ILoginModal) {
     onMutate: (variable) => {
       console.log('onMutate', variable);
     },
-    onError: (error, variable, context) => {
+    onError: (error: ILoginErr, variable, context) => {
       console.error('signinErr:::', error);
+      if (error.response.data.msg === '이메일을 확인해주세요.') {
+        setPwErr(false);
+        setEmailErr(true);
+        setEmailErrMsg('이메일을 확인해주세요.');
+      } else {
+        setEmailErr(false);
+        setPwErr(true);
+        setPwErrMsg('비밀번호를 확인해주세요.');
+      }
     },
     onSuccess: (data, variables, context) => {
       console.log('signinSuccess', data, variables, context);
@@ -54,11 +73,31 @@ export default function LoginModal({ setModalOpen }: ILoginModal) {
     ) => {
       e.preventDefault();
 
+      setEmailErr(false);
+      setPwErr(false);
+
       let emailVal = email.value;
       let pwVal = password.value;
 
-      if (emailVal === '') return;
-      if (pwVal === '') return;
+      let errFlag = false;
+      if (emailVal === '') {
+        setEmailErr(true);
+        setEmailErrMsg('이메일을 입력해주세요.');
+        errFlag = true;
+      }
+      if (pwVal === '') {
+        setPwErr(true);
+        setEmailErrMsg('비밀번호를 입력해주세요.');
+        errFlag = true;
+      }
+      let email_regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/i;
+      if (!email_regex.test(emailVal)) {
+        setEmailErr(true);
+        setEmailErrMsg('이메일 형식을 확인해주세요.');
+        errFlag = true;
+      }
+
+      if (errFlag) return;
 
       let payload = {
         email: emailVal,
@@ -83,6 +122,8 @@ export default function LoginModal({ setModalOpen }: ILoginModal) {
                 {...email}
                 type="email"
                 placeholder="이메일을 입력해주세요."
+                isErr={emailErr}
+                errMsg={emailErrMsg}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -107,6 +148,8 @@ export default function LoginModal({ setModalOpen }: ILoginModal) {
                 {...password}
                 type="password"
                 placeholder="비밀번호를 입력해주세요."
+                isErr={pwErr}
+                errMsg={pwErrMsg}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
