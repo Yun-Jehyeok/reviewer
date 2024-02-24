@@ -1,6 +1,7 @@
 'use client';
 
 import { getReviewsApi } from '@/apis/applicationApi';
+import CSpinner from '@/components/common/CSpinner';
 import { applicationIFC } from '@/interfaces/applicationIFC';
 import { userState } from '@/states/userStates';
 import { useQuery } from '@tanstack/react-query';
@@ -9,7 +10,11 @@ import { useRecoilState } from 'recoil';
 export default function ReviweHistory() {
   const [user, setUser] = useRecoilState(userState);
 
-  const { data: reviews, error } = useQuery<
+  const {
+    data: reviews,
+    error,
+    isPending,
+  } = useQuery<
     applicationIFC[],
     Object,
     applicationIFC[],
@@ -21,10 +26,9 @@ export default function ReviweHistory() {
     gcTime: 300 * 1000,
   });
 
-  console.log('reviews:::', reviews);
-
   return (
     <div className="w-full">
+      {isPending && <CSpinner />}
       <div className="text-2xl font-bold mb-4">리뷰 내역</div>
       <div className="w-full flex flex-col">
         {reviews &&

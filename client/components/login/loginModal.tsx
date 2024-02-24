@@ -12,6 +12,7 @@ import { useCallback, useState } from 'react';
 import { useRecoilState } from 'recoil';
 import CButton from '../common/CButton';
 import CInput from '../common/CInput';
+import CSpinner from '../common/CSpinner';
 
 interface ILoginModal {
   setModalOpen: (flag: boolean) => void;
@@ -58,7 +59,7 @@ export default function LoginModal({ setModalOpen }: ILoginModal) {
         setUser({ ...data.user, token: data.token });
         localStorage.setItem('token', data.token);
 
-        // router.push('/');
+        router.push('/');
       }
     },
     onSettled: () => {
@@ -111,6 +112,8 @@ export default function LoginModal({ setModalOpen }: ILoginModal) {
 
   return (
     <div className="w-screen h-screen fixed top-0 left-0 bg-gray-500 flex flex-col justify-center bg-opacity-40 overflow-hidden">
+      {signInMutation.isPending && <CSpinner />}
+
       <div className="relative w-[480px] h-fit py-20 bg-white shadow-xl items-center mx-auto my-0 rounded-xl flex">
         <div className="w-full h-full px-12 flex justify-center flex-col">
           <div className="mb-12 text-2xl font-bold">Log In To REVIEWERS</div>

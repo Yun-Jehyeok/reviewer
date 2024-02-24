@@ -3,6 +3,7 @@
 import { signupApi } from '@/apis/userApi';
 import CButton from '@/components/common/CButton';
 import CInput from '@/components/common/CInput';
+import CSpinner from '@/components/common/CSpinner';
 import { useInput } from '@/hooks/useInput';
 import { signupIFC } from '@/interfaces/userIFC';
 import { userState } from '@/states/userStates';
@@ -160,6 +161,7 @@ export default function Register() {
 
   return (
     <div className="w-full flex justify-center my-16">
+      {signupMutation.isPending && <CSpinner />}
       <div className="w-full h-fit py-36 bg-gray-50 rounded-2xl flex justify-center items-center">
         <div className="w-[640px] h-fit bg-white shadow-lg rounded-md flex p-20">
           <div className="w-full">
