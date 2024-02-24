@@ -18,7 +18,6 @@ const UserSchema = new mongoose.Schema({
   nickname: {
     type: String,
     required: true,
-    unique: true,
   },
   grade: {
     type: String,
@@ -34,7 +33,6 @@ const UserSchema = new mongoose.Schema({
   phone: {
     type: String,
     required: true,
-    unique: true,
   },
   login_way: {
     type: String,

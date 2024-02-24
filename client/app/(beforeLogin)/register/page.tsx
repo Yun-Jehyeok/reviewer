@@ -7,9 +7,14 @@ import { useInput } from '@/hooks/useInput';
 import { signupIFC } from '@/interfaces/userIFC';
 import { userState } from '@/states/userStates';
 import { useMutation } from '@tanstack/react-query';
+import Error from 'next/error';
 import { useRouter } from 'next/navigation';
 import { useCallback, useState } from 'react';
 import { useRecoilState } from 'recoil';
+
+interface IRegisterErr extends Error {
+  response: { data: { msg: string } };
+}
 
 export default function Register() {
   const router = useRouter();
@@ -23,6 +28,22 @@ export default function Register() {
   const nickname = useInput('');
   const phone = useInput('');
 
+  const [emailErr, setEmailErr] = useState(false);
+  const [pwErr, setPwErr] = useState(false);
+  const [pwCheckErr, setPwCheckErr] = useState(false);
+  const [nameErr, setNameErr] = useState(false);
+  const [nicknameErr, setNicknameErr] = useState(false);
+  const [phoneErr, setPhoneErr] = useState(false);
+
+  const [emailErrMsg, setEmailErrMsg] = useState('이메일을 입력해주세요.');
+  const [pwErrMsg, setPwErrMsg] = useState('비밀번호를 입력해주세요.');
+  const [pwCheckErrMsg, setPwCheckErrMsg] =
+    useState('비밀번호 확인을 입력해주세요.');
+  const [nameErrMsg, setNameErrMsg] = useState('이름을 입력해주세요.');
+  const [nicknameErrMsg, setNicknameErrMsg] =
+    useState('닉네임을 입력해주세요.');
+  const [phoneErrMsg, setPhoneErrMsg] = useState('휴대폰 번호를 입력해주세요.');
+
   const [errMsg, setErrMsg] = useState<string>('');
 
   const signupMutation = useMutation({
@@ -30,8 +51,13 @@ export default function Register() {
     onMutate: (variable) => {
       console.log('onMutate', variable);
     },
-    onError: (error, variable, context) => {
+    onError: (error: IRegisterErr, variable, context) => {
       console.error('signupErr:::', error);
+      if (error.response.data.msg === '이미 존재하는 이메일입니다.') {
+        setPwErr(false);
+        setEmailErr(true);
+        setEmailErrMsg('이미 존재하는 이메일입니다.');
+      }
     },
     onSuccess: (data, variables, context) => {
       console.log('signupSuccess', data, variables, context);
@@ -52,6 +78,13 @@ export default function Register() {
     ) => {
       e.preventDefault();
 
+      setEmailErr(false);
+      setPwErr(false);
+      setPwCheckErr(false);
+      setNameErr(false);
+      setNicknameErr(false);
+      setPhoneErr(false);
+
       let emailVal = email.value;
       let pwVal = password.value;
       let pwCheckVal = pwCheck.value;
@@ -59,12 +92,58 @@ export default function Register() {
       let nicknameVal = nickname.value;
       let phoneVal = phone.value;
 
-      if (emailVal === '') return;
-      if (pwVal === '') return;
-      if (pwCheckVal === '') return;
-      if (nameVal === '') return;
-      if (nicknameVal === '') return;
-      if (phoneVal === '') return;
+      let errFlag = false;
+
+      let emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/i;
+      let pwRegex =
+        /^(?!((?:[A-Za-z]+)|(?:[~!@#$%^&*()_+=]+)|(?:[0-9]+))$)[A-Za-z\d~!@#$%^&*()_+=]{8,}$/;
+
+      if (emailVal === '') {
+        setEmailErr(true);
+        setEmailErrMsg('이메일을 입력해주세요.');
+        errFlag = true;
+      } else if (!emailRegex.test(emailVal)) {
+        setEmailErr(true);
+        setEmailErrMsg('이메일 형식을 확인해주세요.');
+        errFlag = true;
+      }
+      if (pwVal === '') {
+        setPwErr(true);
+        setPwErrMsg('비밀번호를 입력해주세요.');
+        errFlag = true;
+      } else if (!pwRegex.test(pwVal)) {
+        setPwErr(true);
+        setPwErrMsg(
+          '비밀번호는 영문, 숫자, 특수문자 중 2가지 이상 조합하여 8자리 이상으로 입력해주세요.',
+        );
+        errFlag = true;
+      }
+      if (pwCheckVal === '') {
+        setPwCheckErr(true);
+        setPwCheckErrMsg('비밀번호 확인을 입력해주세요.');
+        errFlag = true;
+      } else if (pwCheckVal !== pwVal) {
+        setPwCheckErr(true);
+        setPwCheckErrMsg('비밀번호와 비밀번호 확인은 동일해야합니다.');
+        errFlag = true;
+      }
+      if (nameVal === '') {
+        setNameErr(true);
+        setNameErrMsg('이름을 입력해주세요.');
+        errFlag = true;
+      }
+      if (nicknameVal === '') {
+        setNicknameErr(true);
+        setNicknameErrMsg('닉네임을 입력해주세요.');
+        errFlag = true;
+      }
+      if (phoneVal === '') {
+        setPhoneErr(true);
+        setPhoneErrMsg('휴대폰 번호를 입력해주세요.');
+        errFlag = true;
+      }
+
+      if (errFlag) return;
 
       let payload: signupIFC = {
         email: emailVal,
@@ -91,6 +170,8 @@ export default function Register() {
                 type="email"
                 placeholder="이메일을 입력해주세요."
                 label="E-Mail"
+                isErr={emailErr}
+                errMsg={emailErrMsg}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -113,6 +194,8 @@ export default function Register() {
                 type="password"
                 placeholder="비밀번호를 입력해주세요."
                 label="Password"
+                isErr={pwErr}
+                errMsg={pwErrMsg}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -135,6 +218,8 @@ export default function Register() {
                 type="password"
                 placeholder="비밀번호 확인을 입력해주세요."
                 label="Password Check"
+                isErr={pwCheckErr}
+                errMsg={pwCheckErrMsg}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -157,6 +242,8 @@ export default function Register() {
                 type="text"
                 placeholder="이름을 입력해주세요."
                 label="Name"
+                isErr={nameErr}
+                errMsg={nameErrMsg}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -179,6 +266,8 @@ export default function Register() {
                 type="text"
                 placeholder="닉네임을 입력해주세요."
                 label="Nickname"
+                isErr={nicknameErr}
+                errMsg={nicknameErrMsg}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -201,6 +290,8 @@ export default function Register() {
                 type="text"
                 placeholder="휴대폰 번호를 입력해주세요."
                 label="Phone"
+                isErr={phoneErr}
+                errMsg={phoneErrMsg}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
