@@ -5,6 +5,7 @@ import CInput from '@/components/common/CInput';
 import { useInput } from '@/hooks/useInput';
 
 import { registerPostApi } from '@/apis/postApi';
+import CSpinner from '@/components/common/CSpinner';
 import { registerPostIFC } from '@/interfaces/postIFC';
 import { userState } from '@/states/userStates';
 import { useMutation } from '@tanstack/react-query';
@@ -121,6 +122,7 @@ export default function RegisterReviewer() {
 
   return (
     <div className="py-12">
+      {registerPostMutation.isPending && <CSpinner />}
       <h1 className="text-center w-full text-3xl font-bold mb-12">
         Reviewer 등록
       </h1>

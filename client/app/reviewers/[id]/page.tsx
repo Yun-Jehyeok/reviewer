@@ -2,6 +2,7 @@
 
 import { applyApi, getPostApi } from '@/apis/postApi';
 import CButton from '@/components/common/CButton';
+import CSpinner from '@/components/common/CSpinner';
 import { postIFC } from '@/interfaces/postIFC';
 import { userState } from '@/states/userStates';
 import { useMutation, useQuery } from '@tanstack/react-query';
@@ -13,12 +14,11 @@ export default function ReviewerDetail() {
   const params = useParams<{ id: string }>();
   const [user, setUser] = useRecoilState(userState);
 
-  const { data: post, error } = useQuery<
-    postIFC,
-    Object,
-    postIFC,
-    [_1: string, _2: string]
-  >({
+  const {
+    data: post,
+    error,
+    isPending,
+  } = useQuery<postIFC, Object, postIFC, [_1: string, _2: string]>({
     queryKey: ['posts', params.id],
     queryFn: getPostApi,
     staleTime: 60 * 1000,
@@ -63,6 +63,7 @@ export default function ReviewerDetail() {
 
   return (
     <div className="w-full h-fit flex gap-12">
+      {isPending && <CSpinner />}
       {/* 오른쪽 */}
       <div className="w-2/3">
         <div>
