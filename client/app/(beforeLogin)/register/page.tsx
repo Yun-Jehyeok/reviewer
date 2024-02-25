@@ -1,6 +1,6 @@
 'use client';
 
-import { signupApi } from '@/apis/userApi';
+import { authPhoneApi, signupApi } from '@/apis/userApi';
 import CButton from '@/components/common/CButton';
 import CInput from '@/components/common/CInput';
 import CSpinner from '@/components/common/CSpinner';
@@ -35,6 +35,7 @@ export default function Register() {
   const [nameErr, setNameErr] = useState(false);
   const [nicknameErr, setNicknameErr] = useState(false);
   const [phoneErr, setPhoneErr] = useState(false);
+  const [authErr, setAuthErr] = useState(false);
 
   const [emailErrMsg, setEmailErrMsg] = useState('이메일을 입력해주세요.');
   const [pwErrMsg, setPwErrMsg] = useState('비밀번호를 입력해주세요.');
@@ -44,8 +45,39 @@ export default function Register() {
   const [nicknameErrMsg, setNicknameErrMsg] =
     useState('닉네임을 입력해주세요.');
   const [phoneErrMsg, setPhoneErrMsg] = useState('휴대폰 번호를 입력해주세요.');
+  const [authErrMsg, setAuthErrMsg] = useState('인증번호를 입력해주세요.');
 
-  const [errMsg, setErrMsg] = useState<string>('');
+  const [showAuth, setShowAuth] = useState(false);
+  const authNum = useInput('');
+
+  const [authNumResponse, setAuthNumResponse] = useState('00000000');
+
+  const phoneMutation = useMutation({
+    mutationFn: authPhoneApi,
+    onMutate: (variable) => {
+      console.log('onMutate', variable);
+    },
+    onError: (error: IRegisterErr, variable, context) => {
+      console.error('phoneAuthErr:::', error);
+    },
+    onSuccess: (data, variables, context) => {
+      console.log('phoneAuthSuccess', data, variables, context);
+      if (data.success) setAuthNumResponse(data.msg);
+    },
+    onSettled: () => {
+      console.log('phoneAuthEnd');
+    },
+  });
+
+  const handleAuth = (
+    e: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement>,
+  ) => {
+    e.preventDefault();
+    setShowAuth(true);
+    setAuthNumResponse('00000000');
+
+    phoneMutation.mutate({ phone: phone.value });
+  };
 
   const signupMutation = useMutation({
     mutationFn: signupApi,
@@ -143,6 +175,15 @@ export default function Register() {
         setPhoneErrMsg('휴대폰 번호를 입력해주세요.');
         errFlag = true;
       }
+      if (authNum.value === '') {
+        setAuthErr(true);
+        setAuthErrMsg('인증번호를 입력해주세요.');
+        errFlag = true;
+      } else if (authNum.value !== authNumResponse) {
+        setAuthErr(true);
+        setAuthErrMsg('인증번호를 확인해주세요.');
+        errFlag = true;
+      }
 
       if (errFlag) return;
 
@@ -156,7 +197,17 @@ export default function Register() {
 
       signupMutation.mutate(payload);
     },
-    [email, password, name, nickname, pwCheck, phone, signupMutation],
+    [
+      email,
+      password,
+      name,
+      nickname,
+      pwCheck,
+      phone,
+      signupMutation,
+      authNum,
+      authNumResponse,
+    ],
   );
 
   return (
@@ -287,29 +338,57 @@ export default function Register() {
                 </svg>
               </CInput>
 
-              <CInput
-                {...phone}
-                type="text"
-                placeholder="휴대폰 번호를 입력해주세요."
-                label="Phone"
-                isErr={phoneErr}
-                errMsg={phoneErrMsg}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1.5}
-                  stroke="currentColor"
-                  className="w-6 h-6"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M10.5 1.5H8.25A2.25 2.25 0 0 0 6 3.75v16.5a2.25 2.25 0 0 0 2.25 2.25h7.5A2.25 2.25 0 0 0 18 20.25V3.75a2.25 2.25 0 0 0-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3"
-                  />
-                </svg>
-              </CInput>
+              <div>
+                <div className="w-full flex gap-4">
+                  <div className="flex-1">
+                    <CInput
+                      {...phone}
+                      type="text"
+                      placeholder="휴대폰 번호를 입력해주세요."
+                      label="Phone"
+                      isErr={phoneErr}
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth={1.5}
+                        stroke="currentColor"
+                        className="w-6 h-6"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M10.5 1.5H8.25A2.25 2.25 0 0 0 6 3.75v16.5a2.25 2.25 0 0 0 2.25 2.25h7.5A2.25 2.25 0 0 0 18 20.25V3.75a2.25 2.25 0 0 0-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3"
+                        />
+                      </svg>
+                    </CInput>
+                  </div>
+
+                  <div
+                    className={`w-fit flex flex-col justify-end ${
+                      phoneErr && 'relative -top-1'
+                    }`}
+                  >
+                    <CButton title="인증하기" onClick={handleAuth} />
+                  </div>
+                </div>
+
+                {phoneErr && (
+                  <div className="text-[#ea002c] text-xs mt-1 pl-4">
+                    {phoneErrMsg}
+                  </div>
+                )}
+              </div>
+              {showAuth && (
+                <CInput
+                  {...authNum}
+                  placeholder="인증번호를 입력해주세요"
+                  type="text"
+                  isErr={authErr}
+                  errMsg={authErrMsg}
+                />
+              )}
 
               <CButton title="SIGN UP" onClick={handleSubmit} />
             </form>
