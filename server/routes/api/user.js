@@ -4,8 +4,9 @@ const jwt = require('jsonwebtoken');
 const { User } = require('../../models/user');
 const config = require('../../config/index');
 const { auth } = require('../../middleware/auth');
+const coolsms = require('coolsms-node-sdk');
 
-const { JWT_SECRET } = config;
+const { JWT_SECRET, COOLSMS_APIKEY, COOLSMS_APIKEY_SECRET } = config;
 
 const router = express.Router();
 
@@ -93,6 +94,28 @@ router.post('/register', (req, res) => {
       });
     });
   });
+});
+
+router.post('/phone', async (req, res) => {
+  const { phone } = req.body;
+
+  let authNum = '';
+  for (let i = 0; i < 6; i++) {
+    authNum += Math.floor(Math.random() * 10);
+  }
+
+  const mysms = coolsms.default;
+  const messageService = new mysms(COOLSMS_APIKEY, COOLSMS_APIKEY_SECRET);
+  const result = await messageService.sendOne({
+    to: phone,
+    from: '01056294023',
+    text: `인증번호 [${authNum}]를 입력해주세요.`,
+  });
+
+  if (result.statusCode === '2000')
+    return res.status(200).json({ success: true, msg: authNum });
+
+  return res.status(400).json({ success: false, msg: '인증 문자 전송 실패' });
 });
 
 router.post('/auth', auth, async (req, res) => {

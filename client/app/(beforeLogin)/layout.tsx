@@ -4,6 +4,6 @@ interface Props {
   children: ReactNode;
 }
 
-export default async function BeforeLoginLayout({ children }: Props) {
+export default function BeforeLoginLayout({ children }: Props) {
   return <div>{children}</div>;
 }

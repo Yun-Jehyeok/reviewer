@@ -11,6 +11,6 @@ const api = axios.create({
 export const Apis = {
   get: (url: string, params?: any) =>
     api.get(url, params).then((res: any) => res.data),
-  post: (url: string, payload: any) =>
+  post: (url: string, payload?: any) =>
     api.post(url, payload).then((res: any) => res.data),
 };
