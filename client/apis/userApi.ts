@@ -10,6 +10,9 @@ export const signupApi = async (user: signupIFC) => {
 };
 
 export const authPhoneApi = async (data: phoneIFC) => {
-  console.log('phone:::', data);
   return await Apis.post('/user/phone', data);
+};
+
+export const withdrawalApi = async (userId: string) => {
+  return await Apis.delete(`/user/withdrawal/${userId}`);
 };

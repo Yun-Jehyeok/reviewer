@@ -5,6 +5,8 @@ const { User } = require('../../models/user');
 const config = require('../../config/index');
 const { auth } = require('../../middleware/auth');
 const coolsms = require('coolsms-node-sdk');
+const { Post } = require('../../models/post');
+const { Application } = require('../../models/application');
 
 const { JWT_SECRET, COOLSMS_APIKEY, COOLSMS_APIKEY_SECRET } = config;
 
@@ -135,6 +137,20 @@ router.post('/auth', auth, async (req, res) => {
     res.json({ success: true, user: userRes });
   } catch (e) {
     res.status(400).json({ success: false, msg: e.message });
+  }
+});
+
+router.delete('/withdrawal/:id', async (req, res) => {
+  try {
+    console.log('paramsID:::', req.params.id);
+
+    await User.deleteOne({ _id: req.params.id });
+    await Post.deleteMany({ creator: req.params.id });
+
+    return res.status(200).json({ success: true });
+  } catch (e) {
+    console.log(e);
+    return res.status(400).json({ error: e });
   }
 });
 
