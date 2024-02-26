@@ -13,4 +13,8 @@ export const Apis = {
     api.get(url, params).then((res: any) => res.data),
   post: (url: string, payload?: any) =>
     api.post(url, payload).then((res: any) => res.data),
+  put: (url: string, payload?: any) =>
+    api.put(url, payload).then((res: any) => res.data),
+  delete: (url: string, payload?: any) =>
+    api.delete(url, payload).then((res: any) => res.data),
 };
