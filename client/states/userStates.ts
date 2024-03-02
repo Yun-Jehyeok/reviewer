@@ -5,7 +5,10 @@ import { recoilPersist } from 'recoil-persist';
 
 const { persistAtom } = recoilPersist();
 
-export const userState = atom<userIFC>({
+interface IUserState extends userIFC {
+  token: string;
+}
+export const userState = atom<IUserState>({
   key: 'userState',
   default: {
     _id: '',
@@ -24,6 +27,7 @@ export const userState = atom<userIFC>({
     getApplications: [],
     email: '',
     applications: [],
+    token: '',
   },
   effects_UNSTABLE: [persistAtom],
 });

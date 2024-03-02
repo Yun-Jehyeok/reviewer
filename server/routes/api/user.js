@@ -6,9 +6,15 @@ const config = require('../../config/index');
 const { auth } = require('../../middleware/auth');
 const coolsms = require('coolsms-node-sdk');
 const { Post } = require('../../models/post');
-const { Application } = require('../../models/application');
+const nodemailer = require('nodemailer');
 
-const { JWT_SECRET, COOLSMS_APIKEY, COOLSMS_APIKEY_SECRET } = config;
+const {
+  JWT_SECRET,
+  COOLSMS_APIKEY,
+  COOLSMS_APIKEY_SECRET,
+  NODEMAILER_USER,
+  NODEMAILER_PASS,
+} = config;
 
 const router = express.Router();
 
@@ -142,8 +148,6 @@ router.post('/auth', auth, async (req, res) => {
 
 router.delete('/withdrawal/:id', async (req, res) => {
   try {
-    console.log('paramsID:::', req.params.id);
-
     await User.deleteOne({ _id: req.params.id });
     await Post.deleteMany({ creator: req.params.id });
 
@@ -152,6 +156,80 @@ router.delete('/withdrawal/:id', async (req, res) => {
     console.log(e);
     return res.status(400).json({ error: e });
   }
+});
+
+router.post('/email', async (req, res) => {
+  const { email } = req.body;
+
+  User.findOne({ email }).then(async (user) => {
+    if (!user)
+      return res
+        .status(400)
+        .json({ success: false, msg: '이메일을 확인해주세요.' });
+
+    let authNum = '';
+    for (let i = 0; i < 6; i++) {
+      authNum += Math.floor(Math.random() * 10);
+    }
+
+    let transporter = nodemailer.createTransport({
+      service: 'gmail',
+      host: 'smtp.gmlail.com',
+      port: 587,
+      secure: false,
+      auth: {
+        user: NODEMAILER_USER,
+        pass: NODEMAILER_PASS,
+      },
+    });
+
+    let mailOptions = {
+      from: NODEMAILER_USER,
+      to: email,
+      subject: '[REVIEWERS] 비밀번호 찾기 인증번호',
+      html: `<div>아래 인증번호를 입력해주세요.</div><br/><div>${authNum}</div>`,
+    };
+
+    transporter.sendMail(mailOptions, function (error, info) {
+      if (error) {
+        console.log('emailError:::', error);
+        return res
+          .status(400)
+          .json({ success: false, msg: '인증번호를 보내는데 실패했습니다.' });
+      }
+
+      res.send({ success: true, msg: authNum });
+      transporter.close();
+    });
+  });
+});
+
+router.put('/pw', (req, res) => {
+  const { email, password } = req.body;
+
+  User.findOne({ email }).then((user) => {
+    if (!user)
+      return res
+        .status(400)
+        .json({ success: false, msg: '이메일을 확인해주세요.' });
+
+    bcrypt.genSalt(10, (err, salt) => {
+      bcrypt.hash(password, salt, async (err, hash) => {
+        if (err) return res.status(400).json({ success: false, msg: err });
+
+        try {
+          await User.findByIdAndUpdate(
+            user.id,
+            { password: hash },
+            { new: true },
+          );
+          res.json({ success: true, msg: '비밀번호가 변경되었습니다.' });
+        } catch (e) {
+          res.json({ success: false, msg: e.message });
+        }
+      });
+    });
+  });
 });
 
 module.exports = router;

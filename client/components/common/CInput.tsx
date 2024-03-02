@@ -14,7 +14,7 @@ interface ICInput {
 }
 
 export default function CInput({
-  label,
+  label = '',
   value,
   onChange,
   placeholder,
@@ -24,7 +24,7 @@ export default function CInput({
   children,
 }: ICInput) {
   return (
-    <div>
+    <div className="w-full">
       {label !== '' && <div className="mb-2 font-medium text-sm">{label}</div>}
       <div
         className={`w-full h-10 flex gap-2 rounded-md border ${

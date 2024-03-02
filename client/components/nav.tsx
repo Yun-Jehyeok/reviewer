@@ -35,9 +35,22 @@ export default function Navigation() {
     localStorage.removeItem('token');
 
     setUser({
-      id: '',
+      _id: '',
+      reputation: 0,
+      register_date: '',
+      profile_img: '',
+      posts: [],
+      point: 0,
+      phone: '',
+      nickname: '',
       name: '',
+      login_way: '',
+      lang: [],
+      isSubmit: false,
+      grade: '',
+      getApplications: [],
       email: '',
+      applications: [],
       token: '',
     });
   };
