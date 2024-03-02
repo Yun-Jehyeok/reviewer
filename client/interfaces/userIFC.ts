@@ -33,7 +33,13 @@ export interface signupIFC {
 export interface authIFC {
   id: string;
 }
-
 export interface phoneIFC {
   phone: string;
+}
+export interface emailIFC {
+  email: string;
+}
+export interface changePwIFC {
+  email: string;
+  password: string;
 }

@@ -5,17 +5,13 @@ import CButton from '@/components/common/CButton';
 import CInput from '@/components/common/CInput';
 import CSpinner from '@/components/common/CSpinner';
 import { useInput } from '@/hooks/useInput';
+import { IError } from '@/interfaces/commonIFC';
 import { signupIFC } from '@/interfaces/userIFC';
 import { userState } from '@/states/userStates';
 import { useMutation } from '@tanstack/react-query';
-import Error from 'next/error';
 import { useRouter } from 'next/navigation';
 import { useCallback, useState } from 'react';
 import { useRecoilState } from 'recoil';
-
-interface IRegisterErr extends Error {
-  response: { data: { msg: string } };
-}
 
 export default function Register() {
   const router = useRouter();
@@ -57,7 +53,7 @@ export default function Register() {
     onMutate: (variable) => {
       console.log('onMutate', variable);
     },
-    onError: (error: IRegisterErr, variable, context) => {
+    onError: (error: IError, variable, context) => {
       console.error('phoneAuthErr:::', error);
     },
     onSuccess: (data, variables, context) => {
@@ -84,7 +80,7 @@ export default function Register() {
     onMutate: (variable) => {
       console.log('onMutate', variable);
     },
-    onError: (error: IRegisterErr, variable, context) => {
+    onError: (error: IError, variable, context) => {
       console.error('signupErr:::', error);
       if (error.response.data.msg === '이미 존재하는 이메일입니다.') {
         setPwErr(false);

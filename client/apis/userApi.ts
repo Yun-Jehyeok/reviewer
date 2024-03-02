@@ -1,4 +1,10 @@
-import { phoneIFC, signinIFC, signupIFC } from '@/interfaces/userIFC';
+import {
+  changePwIFC,
+  emailIFC,
+  phoneIFC,
+  signinIFC,
+  signupIFC,
+} from '@/interfaces/userIFC';
 import { Apis } from '@/utils/api';
 
 export const signinApi = async (user: signinIFC) => {
@@ -15,4 +21,12 @@ export const authPhoneApi = async (data: phoneIFC) => {
 
 export const withdrawalApi = async (userId: string) => {
   return await Apis.delete(`/user/withdrawal/${userId}`);
+};
+
+export const authEmailApi = async (data: emailIFC) => {
+  return await Apis.post('/user/email', data);
+};
+
+export const changePwApi = async (data: changePwIFC) => {
+  return await Apis.put('/user/pw', data);
 };

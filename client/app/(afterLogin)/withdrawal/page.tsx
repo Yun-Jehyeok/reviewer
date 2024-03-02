@@ -2,15 +2,11 @@
 
 import { withdrawalApi } from '@/apis/userApi';
 import CButton from '@/components/common/CButton';
+import { IError } from '@/interfaces/commonIFC';
 import { userState } from '@/states/userStates';
 import { useMutation } from '@tanstack/react-query';
-import Error from 'next/error';
 import { useRouter } from 'next/navigation';
 import { useRecoilState } from 'recoil';
-
-interface IWithdrawalErr extends Error {
-  response: { data: { msg: string } };
-}
 
 export default function Withdrawals() {
   const router = useRouter();
@@ -22,7 +18,7 @@ export default function Withdrawals() {
     onMutate: (variable) => {
       console.log('onMutate', variable);
     },
-    onError: (error: IWithdrawalErr, variable, context) => {
+    onError: (error: IError, variable, context) => {
       console.error('withdrawalErr:::', error);
     },
     onSuccess: (data, variables, context) => {
@@ -45,6 +41,7 @@ export default function Withdrawals() {
           getApplications: [],
           email: '',
           applications: [],
+          token: '',
         });
         localStorage.removeItem('token');
         router.push('/');

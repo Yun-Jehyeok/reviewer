@@ -2,10 +2,10 @@
 
 import { signinApi } from '@/apis/userApi';
 import { useInput } from '@/hooks/useInput';
+import { IError } from '@/interfaces/commonIFC';
 import { userState } from '@/states/userStates';
 import { cancelBgFixed } from '@/utils/utils';
 import { useMutation } from '@tanstack/react-query';
-import Error from 'next/error';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useCallback, useState } from 'react';
@@ -16,10 +16,6 @@ import CSpinner from '../common/CSpinner';
 
 interface ILoginModal {
   setModalOpen: (flag: boolean) => void;
-}
-
-interface ILoginErr extends Error {
-  response: { data: { msg: string } };
 }
 
 export default function LoginModal({ setModalOpen }: ILoginModal) {
@@ -40,7 +36,7 @@ export default function LoginModal({ setModalOpen }: ILoginModal) {
     onMutate: (variable) => {
       console.log('onMutate', variable);
     },
-    onError: (error: ILoginErr, variable, context) => {
+    onError: (error: IError, variable, context) => {
       console.error('signinErr:::', error);
       if (error.response.data.msg === '이메일을 확인해주세요.') {
         setPwErr(false);
@@ -189,7 +185,7 @@ export default function LoginModal({ setModalOpen }: ILoginModal) {
 
           <div className="text-center mt-2">
             <Link
-              href="/register"
+              href="/findpw"
               onClick={() => {
                 setModalOpen(false);
                 cancelBgFixed();
