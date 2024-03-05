@@ -29,3 +29,13 @@ export const getApplicationsApi: QueryFunction<
 
   return res.reviews;
 };
+
+export const proceedingApi = async (id: string) => {
+  let payload = { id };
+  return await Apis.put('/application/status/proceeding', payload);
+};
+
+export const completeAppApi = async (id: string) => {
+  let payload = { id };
+  return await Apis.put('/application/status/complete', payload);
+};

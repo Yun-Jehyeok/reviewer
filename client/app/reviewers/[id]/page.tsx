@@ -35,11 +35,9 @@ export default function ReviewerDetail() {
     },
     onSuccess: (data, variables, context) => {
       console.log('applySuccess', data, variables, context);
-      // if (data.success) {
-      //   setUser({ ...data.user, token: data.token });
-      //   localStorage.setItem('token', data.token);
-      //   router.push('/');
-      // }
+      if (data.success) {
+        alert('리뷰가 신청되었습니다.');
+      }
     },
     onSettled: () => {
       console.log('applyEnd');
@@ -63,7 +61,7 @@ export default function ReviewerDetail() {
 
   return (
     <div className="w-full h-fit flex gap-12">
-      {isPending && <CSpinner />}
+      {(isPending || applyMutation.isPending) && <CSpinner />}
       {/* 오른쪽 */}
       <div className="w-2/3">
         <div>
