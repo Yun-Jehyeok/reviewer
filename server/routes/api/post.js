@@ -45,7 +45,7 @@ router.post('/', (req, res) => {
         },
       })
         .then(() => {
-          res.status(200).json({ success: true });
+          res.status(200).json({ success: true, id: newPost._id });
         })
         .catch((e) => {
           res.status(400).json({ success: false });
