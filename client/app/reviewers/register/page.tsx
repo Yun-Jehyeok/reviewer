@@ -8,8 +8,10 @@ import { registerPostApi } from '@/apis/postApi';
 import CSpinner from '@/components/common/CSpinner';
 import { registerPostIFC } from '@/interfaces/postIFC';
 import { userState } from '@/states/userStates';
+import { checkBlank } from '@/utils/utils';
 import { useMutation } from '@tanstack/react-query';
 import dynamic from 'next/dynamic';
+import { useRouter } from 'next/navigation';
 import { useCallback, useState } from 'react';
 import 'react-quill/dist/quill.snow.css';
 import { useRecoilState } from 'recoil';
@@ -55,32 +57,83 @@ const formats = [
   'image',
 ];
 
+const allTechs = [
+  'C',
+  'C++',
+  'C#',
+  'Dart',
+  'Go',
+  'Java',
+  'JSP',
+  'JavaScript',
+  'Kotlin',
+  'Objective-C',
+  'PHP',
+  'Python',
+  'R',
+  'Ruby',
+  'Swift',
+  'React',
+  'React Native',
+  'Spring',
+  'Spring Boot',
+  'Django',
+  'Flask',
+  '.NET',
+  'Node.js',
+  'Express.js',
+  'NestJS',
+  'Angular',
+  'Vue.js',
+  'Android',
+  'Electron',
+];
+
 export default function RegisterReviewer() {
+  const router = useRouter();
+
   const [user, setUser] = useRecoilState(userState);
 
   const [description, setDescription] = useState<string>('');
-  const [techs, setTechs] = useState<string[]>([
-    'Python',
-    'JavaScript',
-    'C++',
-    'Spring',
-  ]);
+  const [techs, setTechs] = useState<string[]>([]);
 
   const title = useInput('');
   const price = useInput(0);
-  const techVal = useInput('');
+  const [techVal, setTechVal] = useState<string>('');
+  const [filteredTechs, setFilteredTechs] = useState<string[]>([]);
 
-  // 사용 가능 기술이랑, 기술 수준 정도도 필요
+  const [titleErr, setTitleErr] = useState<boolean>(false);
+  const [techErr, setTechErr] = useState<boolean>(false);
+  const [descErr, setDescErr] = useState<boolean>(false);
 
-  const searchTech = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    e.preventDefault();
+  const [titleErrmsg, setTitleErrmsg] = useState<string>('');
+  const [techErrmsg, setTechErrmsg] = useState<string>('');
+  const [descErrmsg, setDescErrmsg] = useState<string>('');
 
-    if (e.keyCode === 13) {
-      let data = techs;
-      data.push(techVal.value);
+  const addTech = (val: string) => {
+    if (techs.includes(val)) return;
 
-      setTechs(data);
-    }
+    let data = techs;
+    data.push(val);
+    setTechs(data);
+    setFilteredTechs([]);
+    setTechVal('');
+  };
+
+  const searchTech = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let val = e.currentTarget.value;
+    setTechVal(val);
+
+    let filtered: string[] = [];
+    if (val !== '') filtered = allTechs.filter((v) => v.includes(val));
+    else filtered = [];
+
+    setFilteredTechs(filtered);
+  };
+
+  const removeTech = (val: string) => {
+    let data = techs.filter((v) => v !== val);
+    setTechs(data);
   };
 
   const registerPostMutation = useMutation({
@@ -93,8 +146,7 @@ export default function RegisterReviewer() {
     },
     onSuccess: (data, variables, context) => {
       console.log('registerPostSuccess', data, variables, context);
-      if (data.success) {
-      }
+      if (data.success) router.push(`/reviewers/${data.id}`);
     },
     onSettled: () => {
       console.log('registerPostEnd');
@@ -106,6 +158,35 @@ export default function RegisterReviewer() {
       e: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement>,
     ) => {
       e.preventDefault();
+
+      let errFlag = false;
+      if (
+        checkBlank(
+          title.value,
+          setTitleErr,
+          '제목을 입력해주세요.',
+          setTitleErrmsg,
+        )
+      )
+        errFlag = true;
+
+      if (
+        checkBlank(
+          description,
+          setDescErr,
+          '설명을 입력해주세요.',
+          setDescErrmsg,
+        )
+      )
+        errFlag = true;
+
+      if (techs.length < 1) {
+        setTechErr(true);
+        setTechErrmsg('기술을 하나 이상 입력해주세요.');
+        errFlag = true;
+      }
+
+      if (errFlag) return;
 
       let payload: registerPostIFC = {
         userId: user._id,
@@ -126,12 +207,14 @@ export default function RegisterReviewer() {
       <h1 className="text-center w-full text-3xl font-bold mb-12">
         Reviewer 등록
       </h1>
-      <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
+      <div className="flex flex-col gap-6">
         <CInput
           {...title}
           type="text"
           label="제목"
           placeholder="제목을 입력해주세요."
+          isErr={titleErr}
+          errMsg={titleErrmsg}
         />
         <CInput
           {...price}
@@ -139,17 +222,38 @@ export default function RegisterReviewer() {
           label="시간 당 가격 (원)"
           placeholder="시간 당 가격을 입력해주세요."
         />
-        <div>
+        <div className="relative">
           <div className="mb-2 font-medium text-sm ">기술</div>
-          <div className="w-full h-10 rounded-md border border-gray-400 px-4">
+          <div
+            className={`w-full h-10 rounded-md border ${
+              techErr ? 'border-[#ea002c]' : 'border-gray-400'
+            } px-4`}
+          >
             <input
               className="w-full h-full border-none text-sm focus:outline-none"
-              {...techVal}
+              value={techVal}
               type="text"
-              placeholder="사용 가능한 기술을 입력하고 Enter를 입력해주세요."
-              onKeyUp={searchTech}
+              placeholder="사용 가능한 기술을 입력해주세요."
+              onChange={searchTech}
             />
+            {techErr && (
+              <div className="text-[#ea002c] text-xs mt-1">{techErrmsg}</div>
+            )}
           </div>
+
+          {filteredTechs.length > 0 && (
+            <div className="absolute top-[68px] left-0 z-[10] w-full mt-2 border border-gray-200 rounded-md bg-white">
+              {filteredTechs.map((v) => (
+                <div
+                  key={v}
+                  className="w-full bg-white hover:bg-gray-100 cursor-pointer py-2 px-4 rounded-md text-sm"
+                  onClick={() => addTech(v)}
+                >
+                  {v}
+                </div>
+              ))}
+            </div>
+          )}
 
           <div className="flex gap-4 mt-4">
             {techs.map((v) => (
@@ -158,7 +262,7 @@ export default function RegisterReviewer() {
                 className="w-fit h-10 bg-gray-100 rounded-full flex justify-end items-center px-4 gap-8 cursor-pointer hover:shadow-md hover:border-black transition-all"
               >
                 <div className="text-sm">{v}</div>
-                <div>
+                <div onClick={() => removeTech(v)}>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
@@ -189,12 +293,15 @@ export default function RegisterReviewer() {
             onChange={setDescription}
             placeholder="설명을 입력해주세요."
           />
+          {descErr && (
+            <div className="text-[#ea002c] text-xs mt-1 pl-4">{descErrmsg}</div>
+          )}
         </div>
 
         <div className="w-full flex justify-end">
           <CButton title="등록하기" onClick={handleSubmit} />
         </div>
-      </form>
+      </div>
     </div>
   );
 }
