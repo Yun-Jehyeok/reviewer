@@ -49,6 +49,48 @@ router.post('/apply', (req, res) => {
   });
 });
 
+// 대기중 -> 진행중
+router.put('/status/proceeding', (req, res) => {
+  const { id } = req.body;
+
+  let application = Application.findById(id);
+  if (!application)
+    return res
+      .status(400)
+      .json({ success: false, msg: '해당 신청 내역을 찾을 수 없습니다.' });
+
+  Application.findByIdAndUpdate(id, {
+    status: 'proceeding',
+  })
+    .then(() => {
+      res.status(200).json({ success: true });
+    })
+    .catch((e) => {
+      res.status(400).json({ success: false, msg: e.msg });
+    });
+});
+
+// 진행중 -> 완료
+router.put('/status/complete', (req, res) => {
+  const { id } = req.body;
+
+  let application = Application.findById(id);
+  if (!application)
+    return res
+      .status(400)
+      .json({ success: false, msg: '해당 신청 내역을 찾을 수 없습니다.' });
+
+  Application.findByIdAndUpdate(id, {
+    status: 'complete',
+  })
+    .then(() => {
+      res.status(200).json({ success: true });
+    })
+    .catch((e) => {
+      res.status(400).json({ success: false, msg: e.msg });
+    });
+});
+
 router.get('/reviews/:id', async (req, res) => {
   try {
     const reviews = await Application.find({ reviewerId: req.params.id })

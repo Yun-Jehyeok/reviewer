@@ -84,8 +84,7 @@ export default function Layout({ children }: Props) {
           ))}
         </div>
 
-        <div className="flex-1 border-l border-gray-200 pl-12 pr-8">
-          {/* <CButton title="결제하기" onClick={handlePayment} /> */}
+        <div className="flex-1 border-l border-gray-200 pl-12 pr-8 min-h-[40vh]">
           {children}
         </div>
       </div>
