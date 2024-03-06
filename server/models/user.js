@@ -66,24 +66,12 @@ const UserSchema = new mongoose.Schema({
     required: true,
     default: false,
   },
-  posts: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'post',
-    },
-  ],
-  applications: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'application',
-    },
-  ],
   getApplications: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'application',
-    },
+    { type: mongoose.Schema.Types.ObjectId, ref: 'application' },
   ],
+  applications: [{ type: mongoose.Schema.Types.ObjectId, ref: 'application' }],
+  posts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'post' }],
+  alarms: [{ type: mongoose.Schema.Types.ObjectId, ref: 'alarm' }],
 });
 
 const User = mongoose.model('user', UserSchema);

@@ -7,9 +7,11 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useRecoilState } from 'recoil';
-import CButton from './common/CButton';
-import CConfirm from './common/CConfirm';
-import LoginModal from './login/loginModal';
+import CButton from '../common/CButton';
+import CConfirm from '../common/CConfirm';
+import LoginModal from '../login/loginModal';
+import NavAlarm from './navAlarm';
+import NavMessages from './navMessages';
 
 export default function Navigation() {
   const [modalOpen, setModalOpen] = useState<boolean>(false);
@@ -76,8 +78,8 @@ export default function Navigation() {
       <div className="flex gap-8 items-center">
         <Link href="/reviewers">리뷰어 목록</Link>
         <Link href="/reviewers/register">리뷰어 등록</Link>
-        <button>알림</button>
-        <button onClick={() => setConfirm(true)}>메시지</button>
+        <NavAlarm />
+        <NavMessages />
         {isAuth ? (
           <div className="relative">
             <div

@@ -1,5 +1,5 @@
 import Footer from '@/components/footer';
-import Navigation from '@/components/nav';
+import Navigation from '@/components/navigation/nav';
 import AntdProvider from '@/components/wrapper/AntdProvider';
 import QueryProviderWrapper from '@/components/wrapper/QueryProviderWrapper';
 import RQProvider from '@/components/wrapper/RQProvider';
