@@ -2,7 +2,7 @@ import { completeAppApi } from '@/apis/applicationApi';
 import { applicationIFC } from '@/interfaces/applicationIFC';
 import { IError } from '@/interfaces/commonIFC';
 import { useMutation } from '@tanstack/react-query';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import io from 'socket.io-client';
 
 type Message = {
@@ -17,34 +17,44 @@ export default function ProceedingContent({
   item: applicationIFC;
   setModalOpen: (e: boolean) => void;
 }) {
-  let socket;
+  const socket = io('http://localhost:8080');
 
   const [username, setUsername] = useState(''); //이름 지정
-  const [chosenUsername, setChosenUsername] = useState(''); //선택된 유저 이름 지정
+  const [chosenUsername, setChosenUsername] = useState('윤제혁'); //선택된 유저 이름 지정
   const [message, setMessage] = useState(''); // 메시지 (채팅창에 치는 중인 글)
-  const [messages, setMessages] = useState<Array<Message>>([]); //매세지들 (채팅창에 전부 다 쳐서 쌓인 글들)
+  const [messages, setMessages] = useState<Array<Message>>([
+    { author: '팀장님', message: '에라이 누가 한숨을 저렇게 쉬냐' },
+    { author: '팀장님', message: '에라이 누가 한숨을 저렇게 쉬냐' },
+    { author: '팀장님', message: '에라이 누가 한숨을 저렇게 쉬냐' },
+    { author: '팀장님', message: '에라이 누가 한숨을 저렇게 쉬냐' },
+    { author: '팀장님', message: '에라이 누가 한숨을 저렇게 쉬냐' },
+    { author: '윤제혁', message: '에라이 누가 한숨을 저렇게 쉬냐' },
+    { author: '윤제혁', message: '에라이 누가 한숨을 저렇게 쉬냐' },
+    { author: '윤제혁', message: '에라이 누가 한숨을 저렇게 쉬냐' },
+    { author: '윤제혁', message: '에라이 누가 한숨을 저렇게 쉬냐' },
+    { author: '윤제혁', message: '에라이 누가 한숨을 저렇게 쉬냐' },
+    { author: '윤제혁', message: '에라이 누가 한숨을 저렇게 쉬냐' },
+    { author: '윤제혁', message: '에라이 누가 한숨을 저렇게 쉬냐' },
+  ]); //매세지들 (채팅창에 전부 다 쳐서 쌓인 글들)
 
-  //   useEffect(() => {
-  //     socketInitializer();
-  //   }, []);
+  useEffect(() => {
+    socketInitializer();
+  }, []);
 
   const socketInitializer = async () => {
-    await fetch('/api/socket'); //socket API에 도달한다.
-
-    socket = io(); //
-
-    socket.on('newIncomingMessage', (msg) => {
-      // 새로 메시지가 들어왔을 때 즉, 서버에서 다시 메시지를 사용자들에게 뿌렸을 때이다.
-      setMessages((currentMsg) => [
-        ...currentMsg,
-        { author: msg.author, message: msg.message },
-      ]);
-      console.log('newIncomingMessage: ', messages);
-    });
+    socket.emit(
+      'init',
+      '65d9c5edb1a5119f97683ccf',
+      '65d31bff1f5d465ff49cb81a',
+      (res: { success: boolean; msg: any }) => {
+        console.log('res:::', res);
+      },
+    );
+    // socket.emit('chat message', 'abc');
   };
 
   const sendMessage = async () => {
-    socket.emit('createdMessage', { author: chosenUsername, message }); //메시지를 서버에 보낸다. 이후 newIncoming
+    socket.emit('chat message', { author: chosenUsername, message }); //메시지를 서버에 보낸다. 이후 newIncoming
     setMessages((currentMsg) => [
       ...currentMsg,
       { author: chosenUsername, message },
@@ -95,14 +105,27 @@ export default function ProceedingContent({
       <main className="gap-4 flex flex-col items-center justify-center w-full h-full">
         <>
           <div className="flex flex-col justify-end bg-white h-[20rem] w-full border border-gray-300 shadow-md ">
-            <div className="h-full last:border-b-0 overflow-y-scroll rounded-md">
+            <div className="h-full last:border-b-0 overflow-y-scroll rounded-md flex flex-col gap-2 px-2 py-4 pt-2">
               {messages.map((msg, i) => {
                 return (
                   <div
-                    className="w-full py-1 px-2 border-b border-gray-200"
+                    className={`w-full flex py-1 px-2 border-gray-200 ${
+                      msg.author === '윤제혁' && 'justify-end'
+                    }`}
                     key={i}
                   >
-                    {msg.author} : {msg.message}
+                    <div className="text-sm">
+                      <div
+                        className={`mb-1 ${
+                          msg.author === '윤제혁' && 'text-end'
+                        }`}
+                      >
+                        {msg.author}
+                      </div>
+                      <div className="p-1 bg-sky-50 rounded-sm px-2">
+                        {msg.message}
+                      </div>
+                    </div>
                   </div>
                 );
               })}

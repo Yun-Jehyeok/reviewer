@@ -5,6 +5,8 @@ const hpp = require('hpp');
 const helmet = require('helmet');
 const cors = require('cors');
 const morgan = require('morgan');
+const { createServer } = require('http');
+const { Server } = require('socket.io');
 
 const app = express();
 
@@ -49,6 +51,17 @@ app.use('/api/post', require('./routes/api/post'));
 app.use('/api/application', require('./routes/api/application'));
 app.use('/api/alarm', require('./routes/api/alarm'));
 
-app.listen(port, () => {
+const httpServer = createServer(app);
+
+const io = new Server(httpServer, {
+  cors: {
+    credentials: true,
+  },
+});
+
+const chatWebSocket = require('./middleware/socket');
+chatWebSocket(io);
+
+httpServer.listen(port, () => {
   console.log(`Server started on ${PORT} port`);
 });
