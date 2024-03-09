@@ -1,6 +1,7 @@
 const express = require('express');
 const { User } = require('../../models/user');
 const { Application } = require('../../models/application');
+const { ChatRoom } = require('../../models/chatRoom');
 
 const router = express.Router();
 
@@ -23,6 +24,8 @@ router.post('/apply', (req, res) => {
     applicantId,
     reviewerId,
   });
+
+  console.log('application:::', newApplication);
 
   newApplication.save().then(() => {
     User.findByIdAndUpdate(reviewerId, {
@@ -53,21 +56,30 @@ router.post('/apply', (req, res) => {
 router.put('/status/proceeding', (req, res) => {
   const { id } = req.body;
 
-  let application = Application.findById(id);
-  if (!application)
-    return res
-      .status(400)
-      .json({ success: false, msg: '해당 신청 내역을 찾을 수 없습니다.' });
+  Application.findById(id).then((application) => {
+    if (!application)
+      return res
+        .status(400)
+        .json({ success: false, msg: '해당 신청 내역을 찾을 수 없습니다.' });
 
-  Application.findByIdAndUpdate(id, {
-    status: 'proceeding',
-  })
-    .then(() => {
-      res.status(200).json({ success: true });
-    })
-    .catch((e) => {
-      res.status(400).json({ success: false, msg: e.msg });
+    // ChatRoom 생성
+    let newChatRoom = new ChatRoom({
+      users: [application.applicantId, application.reviewerId],
     });
+
+    newChatRoom.save().then(
+      Application.findByIdAndUpdate(id, {
+        status: 'proceeding',
+        chatRoom: newChatRoom._id,
+      })
+        .then(() => {
+          res.status(200).json({ success: true });
+        })
+        .catch((e) => {
+          res.status(400).json({ success: false, msg: e.msg });
+        }),
+    );
+  });
 });
 
 // 진행중 -> 완료

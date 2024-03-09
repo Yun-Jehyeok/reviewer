@@ -21,6 +21,7 @@ const ChatSchema = new Schema({
     required: true,
     default: Date.now,
   },
+  userName: { type: String, required: true },
 });
 
 const Chat = mongoose.model('chat', ChatSchema);
