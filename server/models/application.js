@@ -23,6 +23,11 @@ const ApplicationSchema = new mongoose.Schema({
     default: moment().format('MMMM DD, YYYY'),
     required: true,
   },
+  chatRoom: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'chatRoom',
+  },
+  // video: {}
 });
 
 const Application = mongoose.model('application', ApplicationSchema);

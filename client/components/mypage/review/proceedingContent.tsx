@@ -1,13 +1,19 @@
 import { completeAppApi } from '@/apis/applicationApi';
 import { applicationIFC } from '@/interfaces/applicationIFC';
 import { IError } from '@/interfaces/commonIFC';
+import { userState } from '@/states/userStates';
 import { useMutation } from '@tanstack/react-query';
 import { useCallback, useEffect, useState } from 'react';
+import { useRecoilState } from 'recoil';
 import io from 'socket.io-client';
 
 type Message = {
-  author: string;
+  _id?: string;
+  user: string;
+  roomId?: string;
   message: string;
+  userName: string;
+  createdAt?: string;
 };
 
 export default function ProceedingContent({
@@ -19,23 +25,14 @@ export default function ProceedingContent({
 }) {
   const socket = io('http://localhost:8080');
 
+  const [user, setUser] = useRecoilState(userState);
+
   const [username, setUsername] = useState(''); //이름 지정
   const [chosenUsername, setChosenUsername] = useState('윤제혁'); //선택된 유저 이름 지정
   const [message, setMessage] = useState(''); // 메시지 (채팅창에 치는 중인 글)
-  const [messages, setMessages] = useState<Array<Message>>([
-    { author: '팀장님', message: '에라이 누가 한숨을 저렇게 쉬냐' },
-    { author: '팀장님', message: '에라이 누가 한숨을 저렇게 쉬냐' },
-    { author: '팀장님', message: '에라이 누가 한숨을 저렇게 쉬냐' },
-    { author: '팀장님', message: '에라이 누가 한숨을 저렇게 쉬냐' },
-    { author: '팀장님', message: '에라이 누가 한숨을 저렇게 쉬냐' },
-    { author: '윤제혁', message: '에라이 누가 한숨을 저렇게 쉬냐' },
-    { author: '윤제혁', message: '에라이 누가 한숨을 저렇게 쉬냐' },
-    { author: '윤제혁', message: '에라이 누가 한숨을 저렇게 쉬냐' },
-    { author: '윤제혁', message: '에라이 누가 한숨을 저렇게 쉬냐' },
-    { author: '윤제혁', message: '에라이 누가 한숨을 저렇게 쉬냐' },
-    { author: '윤제혁', message: '에라이 누가 한숨을 저렇게 쉬냐' },
-    { author: '윤제혁', message: '에라이 누가 한숨을 저렇게 쉬냐' },
-  ]); //매세지들 (채팅창에 전부 다 쳐서 쌓인 글들)
+  const [messages, setMessages] = useState<Array<Message>>([]); //매세지들 (채팅창에 전부 다 쳐서 쌓인 글들)
+
+  const [chatId, setChatId] = useState('0');
 
   useEffect(() => {
     socketInitializer();
@@ -44,23 +41,39 @@ export default function ProceedingContent({
   const socketInitializer = async () => {
     socket.emit(
       'init',
-      '65d9c5edb1a5119f97683ccf',
-      '65d31bff1f5d465ff49cb81a',
+      item.chatRoom,
       (res: { success: boolean; msg: any }) => {
-        console.log('res:::', res);
+        console.log('res:::', res.msg.chats);
+
+        if (res.success) {
+          setMessages(res.msg.chats);
+          console.log('messages:::', messages);
+        }
       },
     );
-    // socket.emit('chat message', 'abc');
   };
 
   const sendMessage = async () => {
-    socket.emit('chat message', { author: chosenUsername, message }); //메시지를 서버에 보낸다. 이후 newIncoming
     setMessages((currentMsg) => [
       ...currentMsg,
-      { author: chosenUsername, message },
+      { user: user._id, userName: user.nickname, message },
     ]);
-    console.log('Sent Message');
+    console.log('Sent Message', messages);
     setMessage('');
+
+    socket.emit(
+      'chat message',
+      {
+        roomId: item.chatRoom,
+        author: user._id,
+        message,
+        userName: user.nickname,
+      },
+      (res: { success: boolean; msg: any }) => {
+        console.log('res:::', res);
+      },
+    ); //메시지를 서버에 보낸다. 이후 newIncoming
+    // 여기만 ㅅㅂ 어떻게좀 하면 좋겠는데...
   };
 
   const handleKeypress = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -106,29 +119,30 @@ export default function ProceedingContent({
         <>
           <div className="flex flex-col justify-end bg-white h-[20rem] w-full border border-gray-300 shadow-md ">
             <div className="h-full last:border-b-0 overflow-y-scroll rounded-md flex flex-col gap-2 px-2 py-4 pt-2">
-              {messages.map((msg, i) => {
-                return (
-                  <div
-                    className={`w-full flex py-1 px-2 border-gray-200 ${
-                      msg.author === '윤제혁' && 'justify-end'
-                    }`}
-                    key={i}
-                  >
-                    <div className="text-sm">
-                      <div
-                        className={`mb-1 ${
-                          msg.author === '윤제혁' && 'text-end'
-                        }`}
-                      >
-                        {msg.author}
-                      </div>
-                      <div className="p-1 bg-sky-50 rounded-sm px-2">
-                        {msg.message}
+              {message.length > 0 &&
+                messages.map((msg, i) => {
+                  return (
+                    <div
+                      className={`w-full flex py-1 px-2 border-gray-200 ${
+                        msg.user === user._id && 'justify-end'
+                      }`}
+                      key={i}
+                    >
+                      <div className="text-sm">
+                        <div
+                          className={`mb-1 ${
+                            msg.user === user._id && 'text-end'
+                          }`}
+                        >
+                          {msg.userName}
+                        </div>
+                        <div className="p-1 bg-sky-50 rounded-sm px-2">
+                          {msg.message}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
             </div>
             <div className="border-t border-gray-300 w-full flex rounded-bl-md">
               <input

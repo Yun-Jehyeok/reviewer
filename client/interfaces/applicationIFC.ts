@@ -6,4 +6,5 @@ export interface applicationIFC {
   applicantId: userIFC;
   status: string;
   register_date: string;
+  chatRoom: string;
 }

@@ -1,48 +1,46 @@
+const { Chat } = require('../models/chat');
 const { ChatRoom } = require('../models/chatRoom');
 
 module.exports = (io) => {
   io.on('connection', (socket) => {
     console.log('a user connected');
-    io.on('init', (reviewerId, applicantId, cb) => {
-      console.log('reviewerId:::', reviewerId);
-      console.log('applicantId:::', applicantId);
 
-      ChatRoom.findOne({ users: [reviewerId, applicantId] })
+    socket.on('init', (roomId, cb) => {
+      ChatRoom.findById(roomId)
+        .populate('chats')
         .then((room) => {
           if (!room) {
-            let newRoom = new ChatRoom({
-              users: [reviewerId, applicantId],
-            });
-
-            newRoom
-              .save()
-              .then((res) => {
-                cb(true, '새로운 채팅방이 생성되었습니다.');
-                // io.emit('init', {
-                //   success: true,
-                //   msg: '새로운 채팅방이 생성되었습니다.',
-                // });
-              })
-              .catch((err) => {
-                cb(false, '채팅방 생성에 실패했습니다.');
-                // io.emit('init', {
-                //   success: false,
-                //   msg: '새로운 채팅방 생성에 실패했습니다.',
-                // });
-              });
+            cb({ success: false, msg: '채팅방을 찾을 수 없습니다.' });
           } else {
-            // 이미 채팅방이 있으면
-            // 해당 채팅방 정보들 그냥 싹 넘겨주는걸로
-            cb(true, room.populate('chats'));
-            // io.emit('init', { success: true, room: room.populate('chats') });
+            cb({ success: true, msg: room });
           }
         })
         .catch((err) => {
-          res.status(400).json({ success: false, msg: e.msg });
+          cb({ success: true, msg: e.msg });
         });
     });
-    socket.on('chat message', (msg) => {
-      console.log('message: ' + msg.author, msg.message);
+    socket.on('chat message', (msg, cb) => {
+      const { roomId, author, message, userName } = msg;
+
+      const newChat = new Chat({ roomId, user: author, message, userName });
+      newChat
+        .save()
+        .then(() => {
+          ChatRoom.findByIdAndUpdate(roomId, {
+            $push: {
+              chats: newChat._id,
+            },
+          })
+            .then(() => {
+              cb({ success: true, msg: 'Save Chat' });
+            })
+            .catch((e) => {
+              cb({ success: false, msg: e.msg });
+            });
+        })
+        .catch((e) => {
+          cb({ success: false, msg: e.msg });
+        });
     });
     socket.on('disconnect', () => {
       console.log('user disconnected');
