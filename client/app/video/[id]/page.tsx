@@ -231,25 +231,43 @@ const Video = () => {
     }
   };
 
+  const navigateToMypage = () => {
+    router.push('/mypage');
+  };
+
   return (
-    <div className="w-full h-screen pt-20 px-32 relative overflow-x-hidden -mb-[200px]">
-      <div className="w-full flex justify-between gap-4">
+    <div className="w-screen h-screen relative bg-gray-900 overflow-hidden p-8">
+      <div className="w-full h-[calc(100vh-356px)] mb-8 bg-black rounded-md"></div>
+      {/* <video
+        id="remotevideo"
+        className="w-full h-4/5 mb-8"
+        ref={myVideoRef}
+        autoPlay
+      ></video> */}
+      <div className="w-full flex gap-4">
         <video
           id="remotevideo"
-          className="bg-black w-1/2 h-1/2 rounded-2xl"
+          className="bg-black w-[240px] h-[180px] rounded-md cursor-pointer"
           ref={myVideoRef}
           autoPlay
         />
         <video
           id="remotevideo"
-          className="bg-black w-1/2 rounded-2xl"
+          className="bg-black w-[240px] rounded-md cursor-pointer"
           ref={remoteVideoRef}
           autoPlay
         />
+        <video
+          id="testvideo"
+          className="bg-black w-[240px] rounded-md cursor-pointer"
+          ref={testRef}
+          autoPlay
+        />
       </div>
+
       <div className="flex justify-center mt-8">
         <div className="flex gap-6">
-          <div className="w-12 h-12 rounded-full bg-[#7e33e0] flex justify-center items-center cursor-pointer hover:bg-[#A463EC]">
+          <div className="w-12 h-12 rounded-full bg-black flex justify-center items-center cursor-pointer">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -265,7 +283,7 @@ const Video = () => {
               />
             </svg>
           </div>
-          <div className="w-12 h-12 rounded-full bg-[#7e33e0] flex justify-center items-center cursor-pointer hover:bg-[#A463EC]">
+          <div className="w-12 h-12 rounded-full bg-black flex justify-center items-center cursor-pointer">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -281,7 +299,7 @@ const Video = () => {
             </svg>
           </div>
           <div
-            className="w-12 h-12 rounded-full bg-[#7e33e0] flex justify-center items-center cursor-pointer hover:bg-[#A463EC]"
+            className="w-12 h-12 rounded-full bg-black flex justify-center items-center cursor-pointer"
             onClick={handleVideo}
           >
             <svg
@@ -299,15 +317,27 @@ const Video = () => {
               />
             </svg>
           </div>
+          <div
+            className="w-12 h-12 rounded-full bg-red-500 flex justify-center items-center cursor-pointer"
+            onClick={navigateToMypage}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="white"
+              className="w-6 h-6"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9"
+              />
+            </svg>
+          </div>
         </div>
       </div>
-
-      <video
-        id="testvideo"
-        className="bg-black w-1/2 rounded-2xl"
-        ref={testRef}
-        autoPlay
-      />
     </div>
   );
 };
