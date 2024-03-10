@@ -3,6 +3,7 @@ import { applicationIFC } from '@/interfaces/applicationIFC';
 import { IError } from '@/interfaces/commonIFC';
 import { userState } from '@/states/userStates';
 import { useMutation } from '@tanstack/react-query';
+import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 import { useRecoilState } from 'recoil';
 import io from 'socket.io-client';
@@ -73,7 +74,6 @@ export default function ProceedingContent({
         console.log('res:::', res);
       },
     ); //메시지를 서버에 보낸다. 이후 newIncoming
-    // 여기만 ㅅㅂ 어떻게좀 하면 좋겠는데...
   };
 
   const handleKeypress = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -112,6 +112,12 @@ export default function ProceedingContent({
     },
     [closeMutation, item],
   );
+
+  const router = useRouter();
+
+  const navigateToVideo = () => {
+    router.push('/video/1');
+  };
 
   return (
     <div className="w-full">
@@ -167,7 +173,10 @@ export default function ProceedingContent({
           </div>
 
           <div className="w-full grid grid-cols-2 mt-6 gap-2">
-            <button className="h-10 rounded-lg border border-gray-300 text-sm hover:shadow-md transition-all">
+            <button
+              className="h-10 rounded-lg border border-gray-300 text-sm hover:shadow-md transition-all"
+              onClick={navigateToVideo}
+            >
               화상 채팅 참여하기
             </button>
             <button
