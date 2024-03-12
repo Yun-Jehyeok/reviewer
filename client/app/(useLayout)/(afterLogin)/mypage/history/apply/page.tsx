@@ -31,6 +31,9 @@ export default function ApplyHistory() {
       getApplications: [],
       email: '',
       applications: [],
+      price: 0,
+      introduce: '',
+      oneLineIntroduce: '',
     },
     applicantId: {
       _id: '',
@@ -49,6 +52,9 @@ export default function ApplyHistory() {
       getApplications: [],
       email: '',
       applications: [],
+      price: 0,
+      introduce: '',
+      oneLineIntroduce: '',
     },
     status: '',
     register_date: '',
@@ -84,7 +90,7 @@ export default function ApplyHistory() {
       {isPending && <CSpinner />}
       <div className="text-2xl font-bold mb-4">리뷰 신청 내역</div>
       <div className="w-full flex flex-col">
-        {reviews &&
+        {reviews ? (
           reviews.map((v, i) => {
             return (
               <div
@@ -133,7 +139,16 @@ export default function ApplyHistory() {
                 </div>
               </div>
             );
-          })}
+          })
+        ) : (
+          <div className="w-full h-[540px] bg-[#F4F6F5] rounded-3xl flex justify-center flex-col">
+            <div className="h-fit w-full flex flex-col gap-4">
+              <div className="text-[#9b9b9b] text-lg text-center">
+                신청한 리뷰가 없습니다.
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {showModal && <ReviewModal item={data} setModalOpen={setShowModal} />}
