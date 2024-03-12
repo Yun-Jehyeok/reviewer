@@ -39,7 +39,9 @@ export default function Layout({ children }: Props) {
 
   const router = useRouter();
 
-  const navigateToUpdateUser = () => {};
+  const navigateToUpdateUser = () => {
+    router.push('/edituser');
+  };
 
   const onClickTab = (e: React.MouseEvent<HTMLDivElement>) => {
     let val = e.currentTarget.dataset.value;
@@ -60,8 +62,12 @@ export default function Layout({ children }: Props) {
           <div className="flex gap-8">
             <div className="w-32 h-32 rounded-full bg-gray-500"></div>
             <div className="flex flex-col justify-center gap-2">
-              <div className="text-2xl font-bold">윤제혁</div>
-              <div className="text-sm text-gray-500">한 줄 소개</div>
+              <div className="text-2xl font-bold">{user.nickname}</div>
+              <div className="text-sm text-gray-500">
+                {user.oneLineIntroduce !== ''
+                  ? user.oneLineIntroduce
+                  : '한 줄 소개를 작성해주세요.'}
+              </div>
             </div>
           </div>
           <CButton title="프로필 수정" onClick={navigateToUpdateUser} />
