@@ -1,5 +1,6 @@
 import {
   changePwIFC,
+  editUserIFC,
   emailIFC,
   phoneIFC,
   signinIFC,
@@ -29,4 +30,8 @@ export const authEmailApi = async (data: emailIFC) => {
 
 export const changePwApi = async (data: changePwIFC) => {
   return await Apis.put('/user/pw', data);
+};
+
+export const editUserApi = async (data: editUserIFC) => {
+  return await Apis.put(`/user/${data.id}`, data);
 };

@@ -232,4 +232,29 @@ router.put('/pw', (req, res) => {
   });
 });
 
+router.put('/:id', (req, res) => {
+  const { nickname, price, oneLineIntroduce, introduce, techs } = req.body;
+
+  User.findById(req.params.id).then((user) => {
+    if (!user)
+      return res
+        .status(400)
+        .json({ success: false, msg: '유저를 찾을 수 없습니다.' });
+
+    User.findByIdAndUpdate(req.params.id, {
+      price,
+      oneLineIntroduce,
+      introduce,
+      nickname,
+      lang: techs,
+    })
+      .then((user) => {
+        res.json({ success: true, msg: user });
+      })
+      .catch((err) => {
+        res.status(400).json({ success: false, msg: err.msg });
+      });
+  });
+});
+
 module.exports = router;

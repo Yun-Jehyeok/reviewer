@@ -19,6 +19,10 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  price: {
+    type: Number,
+    default: 0,
+  },
   grade: {
     type: String,
     required: true,
@@ -65,6 +69,14 @@ const UserSchema = new mongoose.Schema({
     type: Boolean,
     required: true,
     default: false,
+  },
+  oneLineIntroduce: {
+    type: String,
+    default: '',
+  },
+  introduce: {
+    type: String,
+    default: '',
   },
   getApplications: [
     { type: mongoose.Schema.Types.ObjectId, ref: 'application' },

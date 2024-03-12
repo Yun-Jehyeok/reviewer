@@ -15,6 +15,9 @@ export interface userIFC {
   getApplications: string[];
   email: string;
   applications: string[];
+  price: number;
+  introduce: string;
+  oneLineIntroduce: string;
 }
 
 export interface signinIFC {
@@ -42,4 +45,13 @@ export interface emailIFC {
 export interface changePwIFC {
   email: string;
   password: string;
+}
+
+export interface editUserIFC {
+  id: string;
+  nickname: string;
+  price: number;
+  oneLineIntroduce: string;
+  introduce: string;
+  techs: string[];
 }

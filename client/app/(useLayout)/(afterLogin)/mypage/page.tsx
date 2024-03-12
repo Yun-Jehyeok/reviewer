@@ -1,9 +1,20 @@
 'use client';
 
 import CButton from '@/components/common/CButton';
+import { userState } from '@/states/userStates';
+import DOMPurify from 'dompurify';
+import { useRouter } from 'next/navigation';
+import { useRecoilState } from 'recoil';
 
 export default function Mypage() {
-  const handleEdit = () => {};
+  const [user, setUser] = useRecoilState(userState);
+
+  console.log('user:::', user);
+  const router = useRouter();
+
+  const handleEdit = () => {
+    router.push('/edituser');
+  };
 
   return (
     <div className="w-full">
@@ -12,55 +23,42 @@ export default function Mypage() {
       <div className="w-full text-lg">
         <div className="w-full flex gap-8 py-4">
           <div className="w-[120px] font-bold">닉네임</div>
-          <div className="flex-1">IMU</div>
+          <div className="flex-1">{user.nickname}</div>
         </div>
 
         <div className="w-full flex gap-8 py-4">
           <div className="w-[120px] font-bold">사용 언어</div>
-          <div className="flex-1">Python, JavaScript, Java, React</div>
+          <div className="flex-1">
+            {user.lang.length > 0
+              ? user.lang.map((v) => v + ', ')
+              : '사용 언어를 설정해주세요.'}
+          </div>
         </div>
 
         <div className="w-full flex gap-8 py-4">
           <div className="w-[120px] font-bold">가격</div>
           <div className="flex-1">
-            20,000&nbsp;원<span className="text-sm">&nbsp;/&nbsp;시간</span>
+            {user.price}
+            <span className="text-sm">&nbsp;/&nbsp;시간</span>
           </div>
         </div>
 
         <div className="w-full flex gap-8 py-4">
           <div className="w-[120px] font-bold">설명</div>
           <div className="flex-1">
-            Lorem Ipsum is simply dummy text of the printing and typesetting
-            industry. Lorem Ipsum has been the industrys standard dummy text
-            ever since the 1500s, when an unknown printer took a galley of type
-            and scrambled it to make a type specimen book. It has survived not
-            only five centuries, but also the leap into electronic typesetting,
-            remaining essentially unchanged. It was popularised in the 1960s
-            with the release of Letraset sheets containing Lorem Ipsum passages,
-            and more recently with desktop publishing software like Aldus
-            PageMaker including versions of Lorem Ipsum.
-            <br />
-            <br />
-            Lorem Ipsum is simply dummy text of the printing and typesetting
-            industry. Lorem Ipsum has been the industrys standard dummy text
-            ever since the 1500s, when an unknown printer took a galley of type
-            and scrambled it to make a type specimen book. It has survived not
-            only five centuries, but also the leap into electronic typesetting,
-            remaining essentially unchanged. It was popularised in the 1960s
-            with the release of Letraset sheets containing Lorem Ipsum passages,
-            and more recently with desktop publishing software like Aldus
-            PageMaker including versions of Lorem Ipsum.
-            <br />
-            <br />
-            Lorem Ipsum is simply dummy text of the printing and typesetting
-            industry. Lorem Ipsum has been the industrys standard dummy text
-            ever since the 1500s, when an unknown printer took a galley of type
-            and scrambled it to make a type specimen book. It has survived not
-            only five centuries, but also the leap into electronic typesetting,
-            remaining essentially unchanged. It was popularised in the 1960s
-            with the release of Letraset sheets containing Lorem Ipsum passages,
-            and more recently with desktop publishing software like Aldus
-            PageMaker including versions of Lorem Ipsum.
+            {user.introduce !== '' ? (
+              <div
+                style={{
+                  width: '100%',
+                  whiteSpace: 'normal',
+                }}
+                dangerouslySetInnerHTML={{
+                  __html: DOMPurify.sanitize(String(user.introduce)),
+                }}
+              />
+            ) : (
+              '상세 설명을 작성해주세요.'
+            )}
           </div>
         </div>
       </div>
