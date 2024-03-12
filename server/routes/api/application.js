@@ -23,9 +23,8 @@ router.post('/apply', (req, res) => {
   const newApplication = new Application({
     applicantId,
     reviewerId,
+    point: req.body.point,
   });
-
-  console.log('application:::', newApplication);
 
   newApplication.save().then(() => {
     User.findByIdAndUpdate(reviewerId, {
@@ -37,6 +36,9 @@ router.post('/apply', (req, res) => {
         User.findByIdAndUpdate(applicantId, {
           $push: {
             applications: newApplication._id,
+          },
+          $inc: {
+            point: -req.body.point,
           },
         })
           .then(() => {
@@ -82,8 +84,8 @@ router.put('/status/proceeding', (req, res) => {
   });
 });
 
-// 진행중 -> 완료
-router.put('/status/complete', (req, res) => {
+// 진행중 -> 완료 (리뷰어)
+router.put('/status/complete/reviewer', (req, res) => {
   const { id } = req.body;
 
   let application = Application.findById(id);
@@ -92,15 +94,86 @@ router.put('/status/complete', (req, res) => {
       .status(400)
       .json({ success: false, msg: '해당 신청 내역을 찾을 수 없습니다.' });
 
-  Application.findByIdAndUpdate(id, {
-    status: 'complete',
-  })
-    .then(() => {
-      res.status(200).json({ success: true });
-    })
-    .catch((e) => {
-      res.status(400).json({ success: false, msg: e.msg });
-    });
+  Application.findById(id).then((foundApp) => {
+    if (foundApp.applicantComplete) {
+      Application.findByIdAndUpdate(id, {
+        status: 'complete',
+        reviewerComplete: true,
+      })
+        .then((app) => {
+          User.findByIdAndUpdate(app.reviewerId, {
+            $inc: {
+              point: app.point,
+            },
+          })
+            .then(() => {
+              res.status(200).json({ success: true });
+            })
+            .catch((e) => {
+              res.status(400).json({ success: false, msg: e.msg });
+            });
+        })
+        .catch((e) => {
+          res.status(400).json({ success: false, msg: e.msg });
+        });
+    } else {
+      Application.findByIdAndUpdate(id, {
+        reviewerComplete: true,
+      })
+        .then(() => {
+          res.status(200).json({ success: true });
+        })
+        .catch((e) => {
+          res.status(400).json({ success: false, msg: e.msg });
+        });
+    }
+  });
+});
+
+// 진행중 -> 완료 (지원자)
+router.put('/status/complete/applicant', (req, res) => {
+  const { id } = req.body;
+
+  let application = Application.findById(id);
+  if (!application)
+    return res
+      .status(400)
+      .json({ success: false, msg: '해당 신청 내역을 찾을 수 없습니다.' });
+
+  Application.findById(id).then((foundApp) => {
+    if (foundApp.reviewerComplete) {
+      Application.findByIdAndUpdate(id, {
+        status: 'complete',
+        applicantComplete: true,
+      })
+        .then((app) => {
+          User.findByIdAndUpdate(app.reviewerId, {
+            $inc: {
+              point: app.point,
+            },
+          })
+            .then(() => {
+              res.status(200).json({ success: true });
+            })
+            .catch((e) => {
+              res.status(400).json({ success: false, msg: e.msg });
+            });
+        })
+        .catch((e) => {
+          res.status(400).json({ success: false, msg: e.msg });
+        });
+    } else {
+      Application.findByIdAndUpdate(id, {
+        applicantComplete: true,
+      })
+        .then((app) => {
+          res.status(200).json({ success: true });
+        })
+        .catch((e) => {
+          res.status(400).json({ success: false, msg: e.msg });
+        });
+    }
+  });
 });
 
 router.get('/reviews/:id', async (req, res) => {

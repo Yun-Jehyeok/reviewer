@@ -4,7 +4,7 @@ export interface postIFC {
   content: string;
   register_date: string;
   lang: string[];
-  price: Number;
+  price: number;
   creator: string;
 }
 
@@ -24,4 +24,5 @@ export interface registerPostIFC {
 export interface applyIFC {
   applicantId: string;
   reviewerId: string;
+  point: number;
 }

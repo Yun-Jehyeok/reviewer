@@ -1,7 +1,11 @@
-import { completeAppApi } from '@/apis/applicationApi';
+import {
+  completeApplicantAppApi,
+  completeReviwerAppApi,
+} from '@/apis/applicationApi';
 import { applicationIFC } from '@/interfaces/applicationIFC';
 import { IError } from '@/interfaces/commonIFC';
 import { userState } from '@/states/userStates';
+import { cancelBgFixed } from '@/utils/utils';
 import { useMutation } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
@@ -85,8 +89,8 @@ export default function ProceedingContent({
     }
   };
 
-  const closeMutation = useMutation({
-    mutationFn: completeAppApi,
+  const applicantCloseMutation = useMutation({
+    mutationFn: completeApplicantAppApi,
     onMutate: (variable) => {
       console.log('onMutate', variable);
     },
@@ -98,6 +102,25 @@ export default function ProceedingContent({
       if (data.success) setModalOpen(false);
     },
     onSettled: () => {
+      cancelBgFixed();
+      console.log('changeToCloseEnd');
+    },
+  });
+
+  const reviewerCloseMutation = useMutation({
+    mutationFn: completeReviwerAppApi,
+    onMutate: (variable) => {
+      console.log('onMutate', variable);
+    },
+    onError: (error: IError, variable, context) => {
+      console.error('changeToCloseErr:::', error);
+    },
+    onSuccess: (data, variables, context) => {
+      console.log('changeToCloseSuccess', data, variables, context);
+      if (data.success) setModalOpen(false);
+    },
+    onSettled: () => {
+      cancelBgFixed();
       console.log('changeToCloseEnd');
     },
   });
@@ -108,9 +131,13 @@ export default function ProceedingContent({
 
       let confirm = window.confirm('리뷰를 종료하시겠습니까?');
 
-      if (confirm) closeMutation.mutate(item._id);
+      if (confirm) {
+        if (item.applicantId._id === user._id)
+          applicantCloseMutation.mutate(item._id);
+        else reviewerCloseMutation.mutate(item._id);
+      }
     },
-    [closeMutation, item],
+    [reviewerCloseMutation, applicantCloseMutation, user, item],
   );
 
   const router = useRouter();

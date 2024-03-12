@@ -31,7 +31,13 @@ export default function ReviewModal({
         <div className="w-full h-full px-12 flex justify-center flex-col">
           <div className="mb-8 flex justify-between w-full items-center">
             <div className="text-3xl font-bold">상세</div>
-            <div className="w-fit h-fit text-sm rounded-full py-1 px-4 border border-green-200 bg-green-100">
+            <div
+              className={`w-fit h-fit text-sm rounded-full py-1 px-4 border ${
+                status === 'application' && 'border-gray-500 text-gray-500'
+              } ${status === 'proceeding' && 'border-green-500 text-green-500'}
+                    ${status === 'complete' && 'border-gray-500 text-gray-500'}
+                    ${status === 'cancel' && 'border-red-500 text-red-500'}`}
+            >
               {status === 'application' && '리뷰 대기중'}
               {status === 'proceeding' && '진행중'}
               {status === 'complete' && '완료'}

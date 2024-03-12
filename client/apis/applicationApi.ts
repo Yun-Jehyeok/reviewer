@@ -35,7 +35,12 @@ export const proceedingApi = async (id: string) => {
   return await Apis.put('/application/status/proceeding', payload);
 };
 
-export const completeAppApi = async (id: string) => {
+export const completeReviwerAppApi = async (id: string) => {
   let payload = { id };
-  return await Apis.put('/application/status/complete', payload);
+  return await Apis.put('/application/status/complete/reviewer', payload);
+};
+
+export const completeApplicantAppApi = async (id: string) => {
+  let payload = { id };
+  return await Apis.put('/application/status/complete/applicant', payload);
 };

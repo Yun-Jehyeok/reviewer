@@ -7,12 +7,14 @@ import { postIFC } from '@/interfaces/postIFC';
 import { userState } from '@/states/userStates';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import DOMPurify from 'dompurify';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { useRecoilState } from 'recoil';
 
 export default function ReviewerDetail() {
   const params = useParams<{ id: string }>();
   const [user, setUser] = useRecoilState(userState);
+
+  const router = useRouter();
 
   const {
     data: post,
@@ -37,6 +39,7 @@ export default function ReviewerDetail() {
       console.log('applySuccess', data, variables, context);
       if (data.success) {
         alert('리뷰가 신청되었습니다.');
+        router.push('/mypage/history/apply');
       }
     },
     onSettled: () => {
@@ -47,12 +50,24 @@ export default function ReviewerDetail() {
   const onClick = (
     e: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement>,
   ) => {
+    if (user._id === '') {
+      alert('로그인이 필요한 서비스입니다.');
+      return;
+    }
+
     let conf = confirm('해당 리뷰어에게 리뷰를 신청하시겠습니까?');
 
     if (conf) {
+      if (user.point < post!.price) {
+        alert('리뷰 신청을 위한 포인트가 부족합니다.');
+        router.push('/payment');
+        return;
+      }
+
       applyMutation.mutate({
         applicantId: user._id,
         reviewerId: post!.creator,
+        point: post!.price,
       });
     }
   };
@@ -62,7 +77,7 @@ export default function ReviewerDetail() {
   return (
     <div className="w-full h-fit flex gap-12">
       {(isPending || applyMutation.isPending) && <CSpinner />}
-      {/* 오른쪽 */}
+      {/* 왼쪽 */}
       <div className="w-2/3">
         <div>
           <img src="https://picsum.photos/id/27/1130/590" alt="dummy" />
@@ -131,21 +146,21 @@ export default function ReviewerDetail() {
         </div>
       </div>
 
-      {/* 왼쪽 */}
+      {/* 오른쪽 */}
       <div className="flex-1">
-        <div className="w-full h-fit px-8 py-4 border border-gray-200 rounded-md flex justify-between items-center">
-          <div className="text-lg font-bold">
-            {String(post.price)}원
-            <span className="text-sm text-gray-400 font-medium">
-              &nbsp;/&nbsp;시간당
-            </span>
-          </div>
-          <div className="w-32">
+        {user._id !== post.creator && (
+          <div className="w-full h-fit px-8 py-4 border border-gray-200 rounded-md flex justify-between items-center mb-8">
+            <div className="text-lg font-bold">
+              {String(post.price)}원
+              <span className="text-sm text-gray-400 font-medium">
+                &nbsp;/&nbsp;시간당
+              </span>
+            </div>
             <CButton title="신청하기" onClick={onClick} />
           </div>
-        </div>
+        )}
 
-        <div className="w-full h-fit p-12 bg-white rounded-lg shadow-2xl mt-8">
+        <div className="w-full h-fit p-12 bg-white rounded-lg shadow-2xl">
           {/* 사진 */}
           <div className="w-full flex justify-center mb-8">
             <div className="w-24 h-24 rounded-full bg-gray-500"></div>
