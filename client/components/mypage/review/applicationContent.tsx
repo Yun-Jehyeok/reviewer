@@ -52,16 +52,22 @@ export default function ApplicationContent({
             <div className="text-base font-bold mb-1">닉네임</div>
             {/* 클릭해서 해당 유저 정보로 갈 수 있도록 */}
             <div className="text-sm cursor-pointer w-fit hover:underline">
-              윤제혁
+              {item.applicantId.nickname}
             </div>
           </div>
           <div>
             <div className="text-base font-bold mb-1">언어</div>
-            <div className="text-sm">Python</div>
+            <div className="text-sm">
+              {item.applicantId.lang.length > 0
+                ? item.applicantId.lang.map((v) => {
+                    return <span key={v}>{v}, </span>;
+                  })
+                : '없음'}
+            </div>
           </div>
           <div>
             <div className="text-base font-bold mb-1">Level</div>
-            <div className="text-sm">Lv1</div>
+            <div className="text-sm">{item.applicantId.grade}</div>
           </div>
         </div>
 

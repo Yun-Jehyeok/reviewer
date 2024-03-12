@@ -52,6 +52,7 @@ export default function ReviweHistory() {
     },
     status: '',
     register_date: '',
+    chatRoom: '',
   });
 
   const [user, setUser] = useRecoilState(userState);
@@ -88,25 +89,35 @@ export default function ReviweHistory() {
             return (
               <div
                 key={v._id}
-                className={`pt-6 ${
-                  i !== 6 && 'border-b border-gray-200 pb-6'
-                } hover:bg-gray-50 cursor-pointer px-8 group`}
+                className="pt-6 border-b border-gray-200 pb-6 hover:bg-gray-50 cursor-pointer px-8 group"
                 onClick={() => openDetail(v)}
               >
                 <div className="w-full flex justify-between items-center">
                   <div>
                     <span className="text-lg font-bold cursor-pointer group-hover:underline">
-                      {/* {v.applicantId.nickname}&nbsp;
+                      {v.applicantId.nickname}&nbsp;
                       <span className="font-medium text-sm">
                         ({v.applicantId.grade})
-                      </span> */}
+                      </span>
                     </span>
                     &nbsp;&nbsp;
                     <span className="text-sm text-gray-400 font-medium">
                       {v.register_date.slice(0, 10)}
                     </span>
                   </div>
-                  <div className="w-fit h-fit text-sm rounded-full py-1 px-4 border border-green-300 bg-green-100">
+                  <div
+                    className={`w-fit h-fit text-sm rounded-full py-1 px-4 border ${
+                      v.status === 'application' &&
+                      'border-gray-500 text-gray-500'
+                    } ${
+                      v.status === 'proceeding' &&
+                      'border-green-500 text-green-500'
+                    }
+                    ${
+                      v.status === 'complete' && 'border-gray-500 text-gray-500'
+                    }
+                    ${v.status === 'cancel' && 'border-red-500 text-red-500'}`}
+                  >
                     {v.status === 'application' && '리뷰 대기중'}
                     {v.status === 'proceeding' && '진행중'}
                     {v.status === 'complete' && '완료'}

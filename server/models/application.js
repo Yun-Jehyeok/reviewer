@@ -28,6 +28,21 @@ const ApplicationSchema = new mongoose.Schema({
     ref: 'chatRoom',
   },
   // video: {}
+  point: {
+    type: Number,
+    default: 0,
+    required: true,
+  },
+  reviewerComplete: {
+    type: Boolean,
+    default: false,
+    required: true,
+  },
+  applicantComplete: {
+    type: Boolean,
+    default: false,
+    required: true,
+  },
 });
 
 const Application = mongoose.model('application', ApplicationSchema);

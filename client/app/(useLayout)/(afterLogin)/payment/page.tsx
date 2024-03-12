@@ -63,7 +63,7 @@ export default function Payment() {
           <div className="w-full flex justify-between mb-8 text-xl border-b border-gray-200 pb-4">
             <p className="font-bold">보유 캐시</p>
             <p>
-              <span className="font-bold">0</span> 캐시
+              <span className="font-bold">{user.point}</span> 캐시
             </p>
           </div>
           <div className="w-full mb-8">
