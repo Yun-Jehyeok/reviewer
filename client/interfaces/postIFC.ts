@@ -1,4 +1,5 @@
 import { reviewIFC } from './reviewIFC';
+import { userIFC } from './userIFC';
 
 export interface postIFC {
   _id: string;
@@ -7,7 +8,7 @@ export interface postIFC {
   register_date: string;
   lang: string[];
   price: number;
-  creator: string;
+  creator: userIFC;
   reviews: reviewIFC[];
 }
 
