@@ -58,7 +58,7 @@ router.get('/:id', (req, res) => {
   const id = req.params.id;
 
   Post.findOne({ _id: id })
-    .populate('reviews')
+    .populate(['reviews', 'creator'])
     .then((post) => {
       if (!post)
         return res
