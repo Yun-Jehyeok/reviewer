@@ -28,7 +28,7 @@ export default function ReviewModal({
       <div
         className={`relative w-[${width}] h-fit py-12 bg-white shadow-xl items-center mx-auto my-0 rounded-xl flex`}
       >
-        <div className="w-full h-full px-12 flex justify-center flex-col">
+        <div className="w-full h-full max-h-[70vh] overflow-y-auto px-12 flex justify-center flex-col">
           <div className="mb-8 flex justify-between w-full items-center">
             <div className="text-3xl font-bold">상세</div>
             <div
@@ -56,7 +56,7 @@ export default function ReviewModal({
           )}
 
           {/* 완료 */}
-          {status === 'complete' && <CompleteContent />}
+          {status === 'complete' && <CompleteContent item={item} />}
 
           {/* 취소 */}
           {status === 'cancel' && <CancelContent />}

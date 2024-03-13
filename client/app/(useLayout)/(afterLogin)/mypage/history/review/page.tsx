@@ -14,6 +14,7 @@ export default function ReviweHistory() {
   const [showModal, setShowModal] = useState<boolean>(false);
   const [data, setData] = useState<applicationIFC>({
     _id: '',
+    postId: '',
     reviewerId: {
       _id: '',
       reputation: 0,

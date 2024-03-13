@@ -50,6 +50,7 @@ app.use('/api/user', require('./routes/api/user'));
 app.use('/api/post', require('./routes/api/post'));
 app.use('/api/application', require('./routes/api/application'));
 app.use('/api/alarm', require('./routes/api/alarm'));
+app.use('/api/review', require('./routes/api/review'));
 
 const httpServer = createServer(app);
 
