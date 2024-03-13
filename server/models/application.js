@@ -2,6 +2,11 @@ const moment = require('moment');
 const mongoose = require('mongoose');
 
 const ApplicationSchema = new mongoose.Schema({
+  postId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'post',
+    required: true,
+  },
   applicantId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'user',
@@ -43,6 +48,7 @@ const ApplicationSchema = new mongoose.Schema({
     default: false,
     required: true,
   },
+  review: { type: mongoose.Schema.Types.ObjectId, ref: 'review' },
 });
 
 const Application = mongoose.model('application', ApplicationSchema);

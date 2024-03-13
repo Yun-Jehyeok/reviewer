@@ -30,6 +30,7 @@ const PostSchema = new mongoose.Schema({
     default: moment().format('MMMM DD, YYYY'),
     required: true,
   },
+  reviews: [{ type: mongoose.Schema.Types.ObjectId, ref: 'review' }],
 });
 
 const Post = mongoose.model('post', PostSchema);

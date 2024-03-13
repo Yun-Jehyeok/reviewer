@@ -6,7 +6,7 @@ const { ChatRoom } = require('../../models/chatRoom');
 const router = express.Router();
 
 router.post('/apply', (req, res) => {
-  const { applicantId, reviewerId } = req.body;
+  const { applicantId, reviewerId, postId } = req.body;
 
   let applicant = User.findOne({ _id: applicantId });
   let reviewer = User.findOne({ _id: reviewerId });
@@ -24,6 +24,7 @@ router.post('/apply', (req, res) => {
     applicantId,
     reviewerId,
     point: req.body.point,
+    postId,
   });
 
   newApplication.save().then(() => {
@@ -180,7 +181,7 @@ router.get('/reviews/:id', async (req, res) => {
   try {
     const reviews = await Application.find({ reviewerId: req.params.id })
       .sort({ date: -1 })
-      .populate(['applicantId', 'reviewerId']);
+      .populate(['applicantId', 'reviewerId', 'review']);
 
     res.status(200).json({
       success: true,
