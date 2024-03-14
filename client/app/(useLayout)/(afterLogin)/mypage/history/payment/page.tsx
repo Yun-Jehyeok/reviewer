@@ -1,6 +1,5 @@
 'use client';
 
-import CButton from '@/components/common/CButton';
 import { useRouter } from 'next/navigation';
 
 const data = [
@@ -25,12 +24,19 @@ export default function PayHistory() {
     <div className="w-full">
       <div className="text-2xl font-bold mb-8">결제 내역</div>
 
-      <div className="w-full flex justify-end items-center gap-4 mb-2">
+      <div className="w-full h-[320px] bg-[#F4F6F5] rounded-3xl flex justify-center flex-col">
+        <div className="h-fit w-full flex flex-col gap-4">
+          <div className="text-[#9b9b9b] text-lg text-center">
+            차후 추가 예정입니다.
+          </div>
+        </div>
+      </div>
+      {/* <div className="w-full flex justify-end items-center gap-4 mb-2">
         <div>보유 포인트 : 20,000</div>
         <CButton title="충전하기" onClick={navigateToPayment} />
-      </div>
+      </div> */}
 
-      <div className="w-full border-t-2 border-black">
+      {/* <div className="w-full border-t-2 border-black">
         <div className="w-full flex border-b border-gray-200 py-4 font-bold">
           <div className="w-[200px] text-center">결제 일자</div>
           <div className="flex-1 text-center">결제 금액</div>
@@ -49,7 +55,7 @@ export default function PayHistory() {
             </div>
           );
         })}
-      </div>
+      </div> */}
     </div>
   );
 }
