@@ -4,9 +4,9 @@ import { paymentApi } from '@/apis/userApi';
 import CInput from '@/components/common/CInput';
 import { useInput } from '@/hooks/useInput';
 import { IError } from '@/interfaces/commonIFC';
-import { RequestPayResponse } from '@/interfaces/portone';
+import { RequestPayParams, RequestPayResponse } from '@/interfaces/portone';
 import { userState } from '@/states/userStates';
-import { cancelBgFixed } from '@/utils/utils';
+import { bgFixed, cancelBgFixed } from '@/utils/utils';
 import { useMutation } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { useRecoilState } from 'recoil';
@@ -54,31 +54,29 @@ export default function Payment() {
   const handlePayment = (
     e: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement>,
   ) => {
-    console.log('user:::', user);
-    paymentMutation.mutate({ id: user._id, point: Number(price.value) });
-    // if (!window.IMP) return;
-    // bgFixed();
+    if (!window.IMP) return;
+    bgFixed();
 
-    // /* 1. 가맹점 식별하기 */
-    // const { IMP } = window;
-    // IMP.init('imp64767037'); // 가맹점 식별코드
+    /* 1. 가맹점 식별하기 */
+    const { IMP } = window;
+    IMP.init('imp64767037'); // 가맹점 식별코드
 
-    // /* 2. 결제 데이터 정의하기 */
-    // const data: RequestPayParams = {
-    //   pg: 'nice_v2', // PG사 : https://developers.portone.io/docs/ko/tip/pg-2 참고
-    //   pay_method: 'card', // 결제수단
-    //   merchant_uid: `mid_${new Date().getTime()}`, // 주문번호
-    //   amount: Number(price.value), // 결제금액
-    //   name: 'Reviwer 포인트 결제', // 주문명
-    //   buyer_name: user.name, // 구매자 이름
-    //   buyer_tel: '01012341234', // 구매자 전화번호
-    //   buyer_email: user.email, // 구매자 이메일
-    //   buyer_addr: '신사동 661-16', // 구매자 주소
-    //   buyer_postcode: '06018', // 구매자 우편번호
-    // };
+    /* 2. 결제 데이터 정의하기 */
+    const data: RequestPayParams = {
+      pg: 'nice_v2', // PG사 : https://developers.portone.io/docs/ko/tip/pg-2 참고
+      pay_method: 'card', // 결제수단
+      merchant_uid: `mid_${new Date().getTime()}`, // 주문번호
+      amount: Number(price.value), // 결제금액
+      name: 'Reviwer 포인트 결제', // 주문명
+      buyer_name: user.name, // 구매자 이름
+      buyer_tel: '01012341234', // 구매자 전화번호
+      buyer_email: user.email, // 구매자 이메일
+      buyer_addr: '신사동 661-16', // 구매자 주소
+      buyer_postcode: '06018', // 구매자 우편번호
+    };
 
-    // /* 4. 결제 창 호출하기 */
-    // IMP.request_pay(data, callback);
+    /* 4. 결제 창 호출하기 */
+    IMP.request_pay(data, callback);
   };
 
   return (
