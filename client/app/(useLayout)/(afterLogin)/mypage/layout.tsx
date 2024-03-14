@@ -2,8 +2,9 @@
 
 import CButton from '@/components/common/CButton';
 import { userState } from '@/states/userStates';
-import { useRouter } from 'next/navigation';
-import { ReactNode, useState } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
+
+import { ReactNode, useEffect, useState } from 'react';
 import { useRecoilState } from 'recoil';
 
 interface Props {
@@ -38,6 +39,15 @@ export default function Layout({ children }: Props) {
   ]);
 
   const router = useRouter();
+  const path = usePathname();
+
+  useEffect(() => {
+    let tmpTabs = tabs;
+    tmpTabs = tmpTabs.map((v) => {
+      return { ...v, checked: v.url === path };
+    });
+    setTabs(tmpTabs);
+  }, [tabs, path]);
 
   const navigateToUpdateUser = () => {
     router.push('/edituser');
