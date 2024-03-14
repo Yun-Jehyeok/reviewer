@@ -56,7 +56,9 @@ export default function ReviewModal({
           )}
 
           {/* 완료 */}
-          {status === 'complete' && <CompleteContent item={item} />}
+          {status === 'complete' && (
+            <CompleteContent item={item} setModalOpen={setModalOpen} />
+          )}
 
           {/* 취소 */}
           {status === 'cancel' && <CancelContent />}

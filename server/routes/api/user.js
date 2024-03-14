@@ -257,4 +257,19 @@ router.put('/:id', (req, res) => {
   });
 });
 
+router.put('/payment/:id', (req, res) => {
+  const { point } = req.body;
+  User.findByIdAndUpdate(req.params.id, {
+    $inc: {
+      point,
+    },
+  })
+    .then(() => {
+      res.status(200).json({ success: true });
+    })
+    .catch((err) => {
+      res.status(400).json({ success: false, msg: err.msg });
+    });
+});
+
 module.exports = router;

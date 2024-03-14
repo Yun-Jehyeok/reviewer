@@ -28,6 +28,9 @@ export const userState = atom<IUserState>({
     email: '',
     applications: [],
     token: '',
+    price: 0,
+    introduce: '',
+    oneLineIntroduce: '',
   },
   effects_UNSTABLE: [persistAtom],
 });
