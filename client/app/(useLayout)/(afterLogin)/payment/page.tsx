@@ -1,26 +1,53 @@
 'use client';
 
+import { paymentApi } from '@/apis/userApi';
 import CInput from '@/components/common/CInput';
 import { useInput } from '@/hooks/useInput';
+import { IError } from '@/interfaces/commonIFC';
 import { RequestPayParams, RequestPayResponse } from '@/interfaces/portone';
 import { userState } from '@/states/userStates';
 import { bgFixed, cancelBgFixed } from '@/utils/utils';
+import { useMutation } from '@tanstack/react-query';
+import { useRouter } from 'next/navigation';
 import { useRecoilState } from 'recoil';
 
 export default function Payment() {
   const [user, setUser] = useRecoilState(userState);
 
-  const price = useInput(0);
+  const price = useInput('0');
+
+  const router = useRouter();
+
+  const paymentMutation = useMutation({
+    mutationFn: paymentApi,
+    onMutate: (variable) => {
+      console.log('onMutate', variable);
+    },
+    onError: (error: IError, variable, context) => {
+      console.error('paymentErr:::', error);
+    },
+    onSuccess: (data, variables, context) => {
+      console.log('paymentSuccess', data, variables, context);
+      if (data.success) {
+        router.push('/');
+      }
+    },
+    onSettled: () => {
+      cancelBgFixed();
+      console.log('paymentEnd');
+    },
+  });
 
   function callback(response: RequestPayResponse) {
-    cancelBgFixed();
+    // cancelBgFixed();
 
-    const { success, error_msg } = response;
+    const { imp_uid, merchant_uid } = response;
+    console.log('response:::', response);
 
-    if (success) {
-      alert('결제 성공');
+    if (imp_uid !== '') {
+      paymentMutation.mutate({ id: user._id, point: Number(price.value) });
     } else {
-      alert(`결제 실패: ${error_msg}`);
+      alert(`결제 실패에 실패했습니다.`);
     }
   }
 
@@ -94,7 +121,7 @@ export default function Payment() {
                 신용카드
               </label>
             </div>
-            <div className="bg-white flex items-center pl-4 border border-gray-200 rounded-sm cursor-pointer">
+            {/* <div className="bg-white flex items-center pl-4 border border-gray-200 rounded-sm cursor-pointer">
               <input
                 id="phone"
                 type="radio"
@@ -110,7 +137,7 @@ export default function Payment() {
               >
                 휴대폰
               </label>
-            </div>
+            </div> */}
           </div>
           <div className="mt-8">
             <p className="title font-bold text-xl mb-2">캐시충전 이용안내</p>

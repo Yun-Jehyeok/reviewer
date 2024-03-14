@@ -2,6 +2,7 @@ import {
   changePwIFC,
   editUserIFC,
   emailIFC,
+  paymentIFC,
   phoneIFC,
   signinIFC,
   signupIFC,
@@ -34,4 +35,9 @@ export const changePwApi = async (data: changePwIFC) => {
 
 export const editUserApi = async (data: editUserIFC) => {
   return await Apis.put(`/user/${data.id}`, data);
+};
+
+export const paymentApi = async (data: paymentIFC) => {
+  console.log('payload:::', data);
+  return await Apis.put(`/user/payment/${data.id}`, data);
 };

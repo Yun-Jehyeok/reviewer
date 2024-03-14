@@ -55,3 +55,8 @@ export interface editUserIFC {
   introduce: string;
   techs: string[];
 }
+
+export interface paymentIFC {
+  id: string;
+  point: number;
+}
