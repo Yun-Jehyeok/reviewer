@@ -1,5 +1,3 @@
-import Footer from '@/components/footer';
-import Navigation from '@/components/nav';
 import AntdProvider from '@/components/wrapper/AntdProvider';
 import QueryProviderWrapper from '@/components/wrapper/QueryProviderWrapper';
 import RQProvider from '@/components/wrapper/RQProvider';
@@ -33,19 +31,7 @@ export default function RootLayout({
         <AntdProvider>
           <RecoilRootWrapper>
             <QueryProviderWrapper>
-              <RQProvider>
-                <div className="w-full">
-                  <div className="w-full flex justify-center">
-                    <div className="w-full min-w-[1340px] max-w-[1730px] px-20">
-                      <Navigation />
-
-                      {children}
-                    </div>
-                  </div>
-
-                  <Footer />
-                </div>
-              </RQProvider>
+              <RQProvider>{children}</RQProvider>
             </QueryProviderWrapper>
           </RecoilRootWrapper>
         </AntdProvider>

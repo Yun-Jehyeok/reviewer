@@ -1,20 +1,62 @@
-import { signinIFC, signupIFC } from '@/interfaces/userIFC';
+import {
+  changePwIFC,
+  editUserIFC,
+  emailIFC,
+  paymentIFC,
+  phoneIFC,
+  signinIFC,
+  signupIFC,
+  userIFC,
+} from '@/interfaces/userIFC';
 import { Apis } from '@/utils/api';
+import { QueryFunction } from '@tanstack/react-query';
 
 export const signinApi = async (user: signinIFC) => {
-  try {
-    const res = await Apis.post('/user/login', user);
-    return res;
-  } catch (err) {
-    console.error(err, ' : Signin Error !!!');
-  }
+  return await Apis.post('/user/login', user);
 };
 
 export const signupApi = async (user: signupIFC) => {
-  try {
-    const res = await Apis.post('/user/register', user);
-    return res;
-  } catch (err) {
-    console.error(err, ' : Signin Error !!!');
+  return await Apis.post('/user/register', user);
+};
+
+export const authPhoneApi = async (data: phoneIFC) => {
+  return await Apis.post('/user/phone', data);
+};
+
+export const withdrawalApi = async (userId: string) => {
+  return await Apis.delete(`/user/withdrawal/${userId}`);
+};
+
+export const authEmailApi = async (data: emailIFC) => {
+  return await Apis.post('/user/email', data);
+};
+
+export const changePwApi = async (data: changePwIFC) => {
+  return await Apis.put('/user/pw', data);
+};
+
+export const editUserApi = async (data: editUserIFC) => {
+  return await Apis.put(`/user/${data.id}`, data);
+};
+
+export const paymentApi = async (data: paymentIFC) => {
+  return await Apis.put(`/user/payment/${data.id}`, data);
+};
+
+export const getUserApi: QueryFunction<userIFC, [_1: string]> = async ({
+  queryKey,
+}) => {
+  const [_1] = queryKey;
+  const token = localStorage.getItem('token');
+  const res = await Apis.get(`/user/${token}`, {
+    next: {
+      tags: ['user'],
+    },
+  });
+
+  if (!res.success) {
+    throw new Error('Failed to fetch data');
   }
+
+  return res.user;
 };

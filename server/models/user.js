@@ -18,7 +18,10 @@ const UserSchema = new mongoose.Schema({
   nickname: {
     type: String,
     required: true,
-    unique: true,
+  },
+  price: {
+    type: Number,
+    default: 0,
   },
   grade: {
     type: String,
@@ -34,7 +37,6 @@ const UserSchema = new mongoose.Schema({
   phone: {
     type: String,
     required: true,
-    unique: true,
   },
   login_way: {
     type: String,
@@ -68,12 +70,20 @@ const UserSchema = new mongoose.Schema({
     required: true,
     default: false,
   },
-  posts: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'post',
-    },
+  oneLineIntroduce: {
+    type: String,
+    default: '',
+  },
+  introduce: {
+    type: String,
+    default: '',
+  },
+  getApplications: [
+    { type: mongoose.Schema.Types.ObjectId, ref: 'application' },
   ],
+  applications: [{ type: mongoose.Schema.Types.ObjectId, ref: 'application' }],
+  posts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'post' }],
+  alarms: [{ type: mongoose.Schema.Types.ObjectId, ref: 'alarm' }],
 });
 
 const User = mongoose.model('user', UserSchema);

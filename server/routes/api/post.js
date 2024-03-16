@@ -45,7 +45,7 @@ router.post('/', (req, res) => {
         },
       })
         .then(() => {
-          res.status(200).json({ success: true });
+          res.status(200).json({ success: true, id: newPost._id });
         })
         .catch((e) => {
           res.status(400).json({ success: false });
@@ -56,16 +56,17 @@ router.post('/', (req, res) => {
 
 router.get('/:id', (req, res) => {
   const id = req.params.id;
-  console.log('id::::', id);
 
-  Post.findOne({ _id: id }).then((post) => {
-    if (!post)
-      return res
-        .status(400)
-        .json({ success: false, msg: '해당 게시글이 존재하지 않습니다.' });
+  Post.findOne({ _id: id })
+    .populate(['reviews', 'creator'])
+    .then((post) => {
+      if (!post)
+        return res
+          .status(400)
+          .json({ success: false, msg: '해당 게시글이 존재하지 않습니다.' });
 
-    res.status(200).json({ success: true, post: post });
-  });
+      res.status(200).json({ success: true, post: post });
+    });
 });
 
 module.exports = router;
