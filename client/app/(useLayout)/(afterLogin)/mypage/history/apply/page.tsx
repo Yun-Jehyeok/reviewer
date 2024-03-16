@@ -91,7 +91,7 @@ export default function ApplyHistory() {
       {isPending && <CSpinner />}
       <div className="text-2xl font-bold mb-4">리뷰 신청 내역</div>
       <div className="w-full flex flex-col">
-        {reviews ? (
+        {reviews && reviews.length > 0 ? (
           reviews.map((v, i) => {
             return (
               <div

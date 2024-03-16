@@ -54,6 +54,9 @@ export default function Navigation() {
       email: '',
       applications: [],
       token: '',
+      price: 0,
+      introduce: '',
+      oneLineIntroduce: '',
     });
   };
 

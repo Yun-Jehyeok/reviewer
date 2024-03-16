@@ -10,3 +10,19 @@ export interface applicationIFC {
   chatRoom: string;
   review?: string;
 }
+
+export interface chatIFC {
+  _id: string;
+  roomId: string;
+  user: string;
+  message: string;
+  createdAt: string[];
+  userName: string[];
+}
+
+export interface chatRoomIFC {
+  _id: string;
+  users: string[];
+  chats: chatIFC[];
+  createdAt: string;
+}

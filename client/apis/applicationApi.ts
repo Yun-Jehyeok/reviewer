@@ -1,4 +1,4 @@
-import { applicationIFC } from '@/interfaces/applicationIFC';
+import { applicationIFC, chatRoomIFC } from '@/interfaces/applicationIFC';
 import { Apis } from '@/utils/api';
 import { QueryFunction } from '@tanstack/react-query';
 
@@ -43,4 +43,18 @@ export const completeReviwerAppApi = async (id: string) => {
 export const completeApplicantAppApi = async (id: string) => {
   let payload = { id };
   return await Apis.put('/application/status/complete/applicant', payload);
+};
+
+export const getChatRoomApi: QueryFunction<
+  chatRoomIFC,
+  [_1: string, _2: string]
+> = async ({ queryKey }) => {
+  const [_1, roomId] = queryKey;
+  const res = await Apis.get(`/application/chats/${roomId}`);
+
+  if (!res.success) {
+    throw new Error('Failed to fetch data');
+  }
+
+  return res.room;
 };

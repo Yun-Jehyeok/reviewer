@@ -31,8 +31,9 @@ module.exports = (io) => {
               chats: newChat._id,
             },
           })
-            .then(() => {
-              cb({ success: true, msg: 'Save Chat' });
+            .populate('chats')
+            .then((room) => {
+              cb({ success: true, msg: room });
             })
             .catch((e) => {
               cb({ success: false, msg: e.msg });
