@@ -3,8 +3,10 @@ import CButton from '@/components/common/CButton';
 import CSpinner from '@/components/common/CSpinner';
 import { applicationIFC } from '@/interfaces/applicationIFC';
 import { IError } from '@/interfaces/commonIFC';
+import { userState } from '@/states/userStates';
 import { useMutation } from '@tanstack/react-query';
 import { Dispatch, SetStateAction, useCallback } from 'react';
+import { useRecoilState } from 'recoil';
 
 export default function ApplicationContent({
   item,
@@ -13,6 +15,8 @@ export default function ApplicationContent({
   item: applicationIFC;
   setStatus: Dispatch<SetStateAction<string>>;
 }) {
+  const [user, setUser] = useRecoilState(userState);
+
   const proceedingMutation = useMutation({
     mutationFn: proceedingApi,
     onMutate: (variable) => {
@@ -82,7 +86,13 @@ export default function ApplicationContent({
         </div>
       </div>
 
-      <CButton title="수락하기" onClick={acceptApplication} isFull={true} />
+      {user._id === item.reviewerId._id ? (
+        <CButton title="수락하기" onClick={acceptApplication} isFull={true} />
+      ) : (
+        <div className="w-full bg-black text-white rounded-md px-4 py-2 text-center">
+          리뷰어가 수락하면 리뷰가 시작됩니다.
+        </div>
+      )}
     </div>
   );
 }
