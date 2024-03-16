@@ -38,6 +38,10 @@ Using the tier system, our code review service offers the expertise of master de
 
 Next.js, TypeScript, React-Query, TailwindCss, Express.js, MongoDB.
 
+## Too Many Errors
+
+아직 미구현 부분이나 에러가 많습니다. 모든 내용은 [Issues](https://github.com/Yun-Jehyeok/reviewer/issues)에 정리되어 있습니다.
+
 ## Getting Started
 
-Click this [URL]()!!
+Click this [URL](https://reviewer-o0ytjci29-jehyeoks-projects.vercel.app/)!!
