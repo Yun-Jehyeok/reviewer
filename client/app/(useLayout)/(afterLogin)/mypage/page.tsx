@@ -1,23 +1,36 @@
 'use client';
 
+import { getUserApi } from '@/apis/userApi';
 import CButton from '@/components/common/CButton';
-import { userState } from '@/states/userStates';
+import CSpinner from '@/components/common/CSpinner';
+import { userIFC } from '@/interfaces/userIFC';
+import { useQuery } from '@tanstack/react-query';
 import DOMPurify from 'dompurify';
 import { useRouter } from 'next/navigation';
-import { useRecoilState } from 'recoil';
 
 export default function Mypage() {
-  const [user, setUser] = useRecoilState(userState);
+  const {
+    data: user,
+    error,
+    isPending,
+  } = useQuery<userIFC, Object, userIFC, [_1: string]>({
+    queryKey: ['user'],
+    queryFn: getUserApi,
+    staleTime: 60 * 1000,
+    gcTime: 300 * 1000,
+  });
 
-  console.log('user:::', user);
   const router = useRouter();
 
   const handleEdit = () => {
     router.push('/edituser');
   };
 
+  if (!user) return;
+
   return (
     <div className="w-full">
+      {isPending && <CSpinner />}
       <div className="text-2xl font-bold mb-8">프로필</div>
 
       <div className="w-full text-lg">

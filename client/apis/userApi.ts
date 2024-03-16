@@ -6,8 +6,10 @@ import {
   phoneIFC,
   signinIFC,
   signupIFC,
+  userIFC,
 } from '@/interfaces/userIFC';
 import { Apis } from '@/utils/api';
+import { QueryFunction } from '@tanstack/react-query';
 
 export const signinApi = async (user: signinIFC) => {
   return await Apis.post('/user/login', user);
@@ -38,6 +40,23 @@ export const editUserApi = async (data: editUserIFC) => {
 };
 
 export const paymentApi = async (data: paymentIFC) => {
-  console.log('payload:::', data);
   return await Apis.put(`/user/payment/${data.id}`, data);
+};
+
+export const getUserApi: QueryFunction<userIFC, [_1: string]> = async ({
+  queryKey,
+}) => {
+  const [_1] = queryKey;
+  const token = localStorage.getItem('token');
+  const res = await Apis.get(`/user/${token}`, {
+    next: {
+      tags: ['user'],
+    },
+  });
+
+  if (!res.success) {
+    throw new Error('Failed to fetch data');
+  }
+
+  return res.user;
 };

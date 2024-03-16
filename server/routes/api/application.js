@@ -207,4 +207,24 @@ router.get('/applications/:id', async (req, res) => {
   }
 });
 
+router.get('/chats/:roomId', async (req, res) => {
+  try {
+    await ChatRoom.findById(req.params.roomId)
+      .populate('chats')
+      .then((room) => {
+        if (!room)
+          return res
+            .status(400)
+            .json({ success: false, msg: '해당 채팅룸을 찾을 수 없습니다.' });
+
+        res.status(200).json({ success: true, room });
+      })
+      .catch((err) => {
+        res.status(400).json({ success: false, msg: e.message });
+      });
+  } catch (e) {
+    res.status(400).json({ success: false, msg: e.message });
+  }
+});
+
 module.exports = router;

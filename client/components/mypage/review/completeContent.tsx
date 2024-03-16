@@ -1,13 +1,14 @@
 'use client';
 
+import { getChatRoomApi } from '@/apis/applicationApi';
 import { createReviewApi } from '@/apis/reviewApi';
 import CButton from '@/components/common/CButton';
 import { useInput } from '@/hooks/useInput';
-import { applicationIFC } from '@/interfaces/applicationIFC';
+import { applicationIFC, chatRoomIFC } from '@/interfaces/applicationIFC';
 import { IError } from '@/interfaces/commonIFC';
 import { userState } from '@/states/userStates';
 import { cancelBgFixed } from '@/utils/utils';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { useCallback, useState } from 'react';
 import { useRecoilState } from 'recoil';
 
@@ -20,6 +21,19 @@ export default function CompleteContent({ item, setModalOpen }: IProps) {
   console.log('item:::', item);
 
   const [user, setUser] = useRecoilState(userState);
+
+  const {
+    data: chatRoom,
+    error,
+    isPending,
+  } = useQuery<chatRoomIFC, Object, chatRoomIFC, [_1: string, _2: string]>({
+    queryKey: ['chatRoom', item.chatRoom],
+    queryFn: getChatRoomApi,
+    staleTime: 60 * 1000,
+    gcTime: 300 * 1000,
+  });
+
+  console.log('chatRoom:::', chatRoom);
 
   const review = useInput('');
   const [current, setCurrent] = useState(0);
@@ -102,7 +116,30 @@ export default function CompleteContent({ item, setModalOpen }: IProps) {
       <div className="mt-8">
         <div className="text-lg font-bold mb-2">채팅 내역</div>
         <div className="flex flex-col justify-end bg-white h-48 w-full border border-gray-300 shadow-md ">
-          <div className="h-full last:border-b-0 overflow-y-scroll rounded-md flex flex-col gap-2 px-2 py-4 pt-2"></div>
+          <div className="h-full last:border-b-0 overflow-y-scroll rounded-md flex flex-col gap-2 px-2 py-4 pt-2">
+            {chatRoom &&
+              chatRoom.chats.length > 0 &&
+              chatRoom.chats.map((msg, i) => {
+                return (
+                  <div
+                    className={`w-full flex py-1 px-2 border-gray-200 ${
+                      msg.user === user._id && 'justify-end'
+                    }`}
+                    key={i}
+                  >
+                    <div className="text-sm">
+                      {msg.user !== user._id && (
+                        <div className="mb-1">{msg.userName}</div>
+                      )}
+
+                      <div className="p-1 bg-sky-50 rounded-sm px-2">
+                        {msg.message}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+          </div>
         </div>
       </div>
 

@@ -13,6 +13,8 @@ interface Props {
 
 export default function Layout({ children }: Props) {
   const [user, setUser] = useRecoilState(userState);
+  const [nickname, setNickname] = useState('');
+  const [oneLineIntroduce, setOneLineIntroduce] = useState('');
   const [tabs, setTabs] = useState([
     { id: 0, value: 'profile', title: '프로필', checked: true, url: '/mypage' },
     {
@@ -38,16 +40,21 @@ export default function Layout({ children }: Props) {
     },
   ]);
 
+  useEffect(() => {
+    setNickname(user.nickname);
+    setOneLineIntroduce(user.oneLineIntroduce);
+  }, [user]);
+
   const router = useRouter();
   const path = usePathname();
 
-  useEffect(() => {
-    let tmpTabs = tabs;
-    tmpTabs = tmpTabs.map((v) => {
-      return { ...v, checked: v.url === path };
-    });
-    setTabs(tmpTabs);
-  }, [tabs, path]);
+  // useEffect(() => {
+  //   let tmpTabs = tabs;
+  //   tmpTabs = tmpTabs.map((v) => {
+  //     return { ...v, checked: v.url === path };
+  //   });
+  //   setTabs(tmpTabs);
+  // }, [tabs, path]);
 
   const navigateToUpdateUser = () => {
     router.push('/edituser');
@@ -72,10 +79,10 @@ export default function Layout({ children }: Props) {
           <div className="flex gap-8">
             <div className="w-32 h-32 rounded-full bg-gray-500"></div>
             <div className="flex flex-col justify-center gap-2">
-              <div className="text-2xl font-bold">{user.nickname}</div>
+              <div className="text-2xl font-bold">{nickname}</div>
               <div className="text-sm text-gray-500">
-                {user.oneLineIntroduce !== ''
-                  ? user.oneLineIntroduce
+                {oneLineIntroduce !== ''
+                  ? oneLineIntroduce
                   : '한 줄 소개를 작성해주세요.'}
               </div>
             </div>

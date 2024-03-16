@@ -18,6 +18,20 @@ const {
 
 const router = express.Router();
 
+router.get('/:token', auth, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select('-password');
+
+    if (!user) {
+      return res.status(400).json({ msg: '유저가 존재하지 않습니다.' });
+    }
+
+    res.json({ success: true, user });
+  } catch (e) {
+    res.status(400).json({ success: false, msg: e.message });
+  }
+});
+
 router.post('/login', (req, res) => {
   const { email, password } = req.body;
 

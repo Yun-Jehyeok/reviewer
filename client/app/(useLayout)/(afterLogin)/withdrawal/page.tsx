@@ -42,6 +42,9 @@ export default function Withdrawals() {
           email: '',
           applications: [],
           token: '',
+          price: 0,
+          introduce: '',
+          oneLineIntroduce: '',
         });
         localStorage.removeItem('token');
         router.push('/');

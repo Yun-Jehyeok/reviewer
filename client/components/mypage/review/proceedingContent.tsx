@@ -28,7 +28,7 @@ export default function ProceedingContent({
   item: applicationIFC;
   setModalOpen: (e: boolean) => void;
 }) {
-  const socket = io('http://localhost:8080');
+  const socket = io(process.env.NEXT_PUBLIC_SERVER_URL as string);
 
   const [user, setUser] = useRecoilState(userState);
 
@@ -48,22 +48,14 @@ export default function ProceedingContent({
       'init',
       item.chatRoom,
       (res: { success: boolean; msg: any }) => {
-        console.log('res:::', res.msg.chats);
-
         if (res.success) {
           setMessages(res.msg.chats);
-          console.log('messages:::', messages);
         }
       },
     );
   };
 
   const sendMessage = async () => {
-    setMessages((currentMsg) => [
-      ...currentMsg,
-      { user: user._id, userName: user.nickname, message },
-    ]);
-    console.log('Sent Message', messages);
     setMessage('');
 
     socket.emit(
@@ -75,7 +67,11 @@ export default function ProceedingContent({
         userName: user.nickname,
       },
       (res: { success: boolean; msg: any }) => {
-        console.log('res:::', res);
+        if (res.success) {
+          let data = res.msg.chats;
+          data.push({ user: user._id, userName: user.nickname, message });
+          setMessages(data);
+        }
       },
     ); //메시지를 서버에 보낸다. 이후 newIncoming
   };
@@ -152,7 +148,7 @@ export default function ProceedingContent({
         <>
           <div className="flex flex-col justify-end bg-white h-[20rem] w-full border border-gray-300 shadow-md ">
             <div className="h-full last:border-b-0 overflow-y-scroll rounded-md flex flex-col gap-2 px-2 py-4 pt-2">
-              {message.length > 0 &&
+              {messages.length > 0 &&
                 messages.map((msg, i) => {
                   return (
                     <div
@@ -162,13 +158,9 @@ export default function ProceedingContent({
                       key={i}
                     >
                       <div className="text-sm">
-                        <div
-                          className={`mb-1 ${
-                            msg.user === user._id && 'text-end'
-                          }`}
-                        >
-                          {msg.userName}
-                        </div>
+                        {msg.user !== user._id && (
+                          <div className="mb-1">{msg.userName}</div>
+                        )}
                         <div className="p-1 bg-sky-50 rounded-sm px-2">
                           {msg.message}
                         </div>

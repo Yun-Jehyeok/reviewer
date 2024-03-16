@@ -137,6 +137,7 @@ export default function ReviewerDetail() {
                           if (star <= v.score)
                             return (
                               <svg
+                                key={star}
                                 xmlns="http://www.w3.org/2000/svg"
                                 fill="#FC4C4E"
                                 viewBox="0 0 24 24"
