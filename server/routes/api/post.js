@@ -12,7 +12,7 @@ router.get('/skip/:page', async (req, res) => {
     const postFindResult = await Post.find()
       .skip(page)
       .limit(16)
-      .sort({ date: -1 });
+      .sort({ date: 1 });
 
     res.status(200).json({
       success: true,
