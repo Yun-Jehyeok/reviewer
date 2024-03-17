@@ -73,10 +73,9 @@ export default function ReviewerDetail() {
     }
   };
 
-  console.log('post:::', post);
-
   const stars = [1, 2, 3, 4, 5];
 
+  console.log('post:::', post);
   if (!post) return null;
 
   return (
