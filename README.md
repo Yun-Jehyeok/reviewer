@@ -40,7 +40,7 @@ Next.js, TypeScript, React-Query, TailwindCss, Express.js, MongoDB.
 
 ## Too Many Errors
 
-아직 미구현 부분이나 에러가 많습니다. 모든 내용은 [Issues](https://github.com/Yun-Jehyeok/reviewer/issues)에 정리되어 있습니다.
+Next, React-Query 등 새로 공부한 기술이 많아 아직 미구현 부분이나 에러가 많습니다. 모든 내용은 [Issues](https://github.com/Yun-Jehyeok/reviewer/issues)에 정리되어 있습니다.
 
 **상세페이지-LoadChunkError**가 있습니다. 상세페이지 입장 전 [여기](https://reviewer-o0ytjci29-jehyeoks-projects.vercel.app/reviewers/65e6702d93f3af3a553be68d)로 입장 후 새로고침 후 둘러봐주시면 감사하겠습니다! 최우선적으로 수정할 예정입니다.
 
