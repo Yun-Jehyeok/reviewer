@@ -59,7 +59,7 @@ router.post('/login', (req, res) => {
       jwt.sign(
         { id: user.id },
         JWT_SECRET,
-        { expiresIn: 36000 },
+        { expiresIn: 36000000 },
         (err, token) => {
           if (err) return res.status(400).json({ success: false, msg: err });
 
@@ -101,7 +101,7 @@ router.post('/register', (req, res) => {
           jwt.sign(
             { id: user.id },
             JWT_SECRET,
-            { expiresIn: 36000 },
+            { expiresIn: 36000000 },
             (err, token) => {
               if (err) return res.status(400).json({ err });
 

@@ -26,6 +26,8 @@ export default function Mypage() {
     router.push('/edituser');
   };
 
+  console.log('user:::', user);
+
   if (!user) return;
 
   return (
