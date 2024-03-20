@@ -12,11 +12,10 @@ interface ICCard {
 export default function CCard({ data }: ICCard) {
   return (
     <Link href={`/reviewers/${data.id}`} className="cursor-pointer">
-      <img
-        src={data.image}
-        alt="dummy"
-        className="w-full h-[240px] bg-[#9C9C9C] rounded-xl"
-      />
+      <div className="w-full h-[240px] bg-[#F4F6F5] rounded-xl text-center flex flex-col justify-center text-[#9b9b9b] text-lg">
+        추후 이미지 업데이트
+      </div>
+
       <div className="w-full flex justify-between mt-4">
         <div>
           <div className="text-lg font-bold">{data.title}</div>

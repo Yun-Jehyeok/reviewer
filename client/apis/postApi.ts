@@ -56,3 +56,38 @@ export const applyApi = async (data: applyIFC) => {
     console.error(err, ' : Apply Error !!!');
   }
 };
+
+export const getNewReviewsApi: QueryFunction<postIFC[], [_1: string]> = async ({
+  queryKey,
+}) => {
+  const [_1] = queryKey;
+  const res = await Apis.get(`/post/post/new`, {
+    next: {
+      tags: ['new'],
+    },
+  });
+
+  if (!res.success) {
+    throw new Error('Failed to fetch data');
+  }
+
+  return res.posts;
+};
+
+export const getBestReviewsApi: QueryFunction<
+  postIFC[],
+  [_1: string]
+> = async ({ queryKey }) => {
+  const [_1] = queryKey;
+  const res = await Apis.get(`/post/post/best`, {
+    next: {
+      tags: ['best'],
+    },
+  });
+
+  if (!res.success) {
+    throw new Error('Failed to fetch data');
+  }
+
+  return res.posts;
+};

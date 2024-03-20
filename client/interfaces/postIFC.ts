@@ -10,6 +10,7 @@ export interface postIFC {
   price: number;
   creator: userIFC;
   reviews: reviewIFC[];
+  reputation: number;
 }
 
 export interface allPostIFC {
