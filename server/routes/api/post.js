@@ -12,7 +12,7 @@ router.get('/skip/:page', async (req, res) => {
     const postFindResult = await Post.find()
       .skip(page)
       .limit(16)
-      .sort({ date: 1 });
+      .sort({ register_date: 1 });
 
     res.status(200).json({
       success: true,
@@ -67,6 +67,34 @@ router.get('/:id', (req, res) => {
 
       res.status(200).json({ success: true, post: post });
     });
+});
+
+router.get('/post/best', async (req, res) => {
+  try {
+    const postFindResult = await Post.find().limit(3).sort({ reputation: 1 });
+
+    res.status(200).json({
+      success: true,
+      posts: postFindResult,
+    });
+  } catch (err) {
+    res.status(400).json({ success: false, msg: err.msg });
+  }
+});
+
+router.get('/post/new', async (req, res) => {
+  try {
+    const postFindResult = await Post.find()
+      .limit(3)
+      .sort({ register_date: -1 });
+
+    res.status(200).json({
+      success: true,
+      posts: postFindResult,
+    });
+  } catch (err) {
+    res.status(400).json({ success: false, msg: err.msg });
+  }
 });
 
 module.exports = router;
