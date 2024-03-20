@@ -83,8 +83,8 @@ export default function ReviewerDetail() {
       {(isPending || applyMutation.isPending) && <CSpinner />}
       {/* 왼쪽 */}
       <div className="w-2/3">
-        <div>
-          <img src="https://picsum.photos/id/27/1130/590" alt="dummy" />
+        <div className="w-full h-[540px] bg-[#F4F6F5] rounded-xl text-center flex flex-col justify-center text-[#9b9b9b] text-lg">
+          추후 이미지 업데이트 예정입니다.
         </div>
 
         <div className="w-full mt-24">

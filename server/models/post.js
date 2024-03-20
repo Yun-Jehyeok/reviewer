@@ -25,6 +25,11 @@ const PostSchema = new mongoose.Schema({
     ref: 'user',
     required: true,
   },
+  reputation: {
+    type: Number,
+    required: true,
+    default: 0,
+  },
   register_date: {
     type: Date,
     default: moment().format('MMMM DD, YYYY'),
