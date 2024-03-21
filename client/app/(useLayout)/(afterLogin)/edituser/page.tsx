@@ -8,7 +8,7 @@ import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
-import { useQueryClient } from '@tanstack/react-query';
+import { useQueryClient } from "@tanstack/react-query";
 
 // IFC
 import { editUserIFC } from "@/interfaces/userIFC";
@@ -110,7 +110,7 @@ export default function EditUser() {
     const [nicknameErrmsg, setNicknameErrmsg] = useState<string>("");
     const [techErrmsg, setTechErrmsg] = useState<string>("");
 
-	const queryClient = useQueryClient();
+    const queryClient = useQueryClient();
 
     const addTech = (val: string) => {
         if (techs.includes(val)) return;
@@ -120,8 +120,8 @@ export default function EditUser() {
         if (val.indexOf("...") >= 0) data.push(techVal);
         else data.push(val);
 
-		setTechErrmsg('');
-		setTechs(data);
+        setTechErrmsg("");
+        setTechs(data);
         setFilteredTechs([]);
         setTechVal("");
     };
@@ -133,7 +133,9 @@ export default function EditUser() {
         let filtered: string[] = [];
         if (val !== "")
             filtered = allTechs.filter(
-                (v) => v.toLocaleLowerCase().match(val.toLocaleLowerCase()) || v === "...other"
+                (v) =>
+                    v.toLocaleLowerCase().match(val.toLocaleLowerCase()) ||
+                    v === "...other"
             );
         else filtered = [];
 
@@ -162,7 +164,7 @@ export default function EditUser() {
             if (data.success) {
                 console.log("Edit Success Data >>>> ", data);
                 setUser(data.msg);
-				queryClient.invalidateQueries({queryKey: ['user']});
+                queryClient.invalidateQueries({ queryKey: ["user"] });
                 router.push(`/mypage`);
             }
         },
@@ -220,9 +222,9 @@ export default function EditUser() {
         ]
     );
 
-	const goToProfile = () => {
-		router.push('/mypage');
-	}
+    const goToProfile = () => {
+        router.push("/mypage");
+    };
 
     return (
         <div className="py-12">
@@ -327,7 +329,11 @@ export default function EditUser() {
                 </div>
 
                 <div className="w-full flex justify-end gap-x-5">
-                    <CButton title="취소" isCancel={true} onClick={goToProfile} />
+                    <CButton
+                        title="취소"
+                        isCancel={true}
+                        onClick={goToProfile}
+                    />
                     <CButton title="등록하기" onClick={handleSubmit} />
                 </div>
             </div>
