@@ -87,7 +87,7 @@ const allTechs = [
     "Vue.js",
     "Android",
     "Electron",
-    "...other",
+    "...Other",
 ];
 
 export default function EditUser() {
@@ -115,7 +115,7 @@ export default function EditUser() {
     const addTech = (val: string) => {
         if (techs.includes(val)) return;
 
-        let data = techs;
+        let data = [...techs];
 
         if (val.indexOf("...") >= 0) data.push(techVal);
         else data.push(val);
@@ -148,6 +148,7 @@ export default function EditUser() {
     };
 
     useEffect(() => {
+        console.log("User >>>> ", user);
         setTechs(user.lang);
     }, []);
 
