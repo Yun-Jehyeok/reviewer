@@ -43,20 +43,24 @@ export const paymentApi = async (data: paymentIFC) => {
   return await Apis.put(`/user/payment/${data.id}`, data);
 };
 
-export const getUserApi: QueryFunction<userIFC, [_1: string]> = async ({
-  queryKey,
+export const getUserApi: QueryFunction<userIFC, [_1: string, any]> = async ({
+  queryKey
 }) => {
-  const [_1] = queryKey;
-  const token = localStorage.getItem('token');
-  const res = await Apis.get(`/user/${token}`, {
-    next: {
-      tags: ['user'],
-    },
-  });
-
-  if (!res.success) {
-    throw new Error('Failed to fetch data');
+  try {
+    const [_1, setUser] = queryKey;
+    
+    const token = localStorage.getItem('token');
+    const res = await Apis.get(`/user/${token}`, {
+      next: {
+        tags: ['user'],
+      },
+    });
+  
+    if (res.success) setUser(res.user);
+    else throw new Error('Failed to fetch data');
+    
+    return res.user;
+  } catch(err) {
+    console.error('get User APi Error >>>> ', err);
   }
-
-  return res.user;
 };

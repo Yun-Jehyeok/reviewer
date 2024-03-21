@@ -34,7 +34,7 @@ router.get('/:token', auth, async (req, res) => {
 
 router.post('/login', (req, res) => {
   const { email, password } = req.body;
-
+  
   if (!email)
     return res
       .status(400)

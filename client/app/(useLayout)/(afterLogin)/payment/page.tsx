@@ -10,13 +10,19 @@ import { bgFixed, cancelBgFixed } from '@/utils/utils';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 
+// User Recoil
+import { userState } from "@/states/userStates";
+import { useSetRecoilState } from 'recoil';
+
 export default function Payment() {
+  const setUser = useSetRecoilState(userState);
+
   const {
     data: user,
     error,
     isPending,
-  } = useQuery<userIFC, Object, userIFC, [_1: string]>({
-    queryKey: ['user'],
+  } = useQuery<userIFC, Object, userIFC, [_1: string, any]>({
+    queryKey: ['user', setUser],
     queryFn: getUserApi,
     staleTime: 60 * 1000,
     gcTime: 300 * 1000,
