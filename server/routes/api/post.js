@@ -7,17 +7,43 @@ const router = express.Router();
 router.get('/skip/:page/:filter/:langFilter', async (req, res) => {
     try {
         let page = (Number(req.params.page) - 1) * 16;
+        let { filter, langFilter } = req.params;
 
-        console.log('body:::', req.params);
-        const postCount = await Post.countDocuments();
-        const postFindResult = await Post.find()
-            .skip(page)
-            .limit(16)
-            .sort({ register_date: 1 });
+        let postFindResult = [];
+
+        if (langFilter === 'all') {
+            if (filter === 'registerDate') {
+                postFindResult = await Post.find()
+                    .skip(page)
+                    .limit(16)
+                    .sort({ register_date: -1 });
+            } else if (filter === 'reputation') {
+                postFindResult = await Post.find()
+                    .skip(page)
+                    .limit(16)
+                    .sort({ reputation: -1 });
+            }
+        } else {
+            if (filter === 'registerDate') {
+                postFindResult = await Post.find({
+                    lang: { $in: [langFilter] },
+                })
+                    .skip(page)
+                    .limit(16)
+                    .sort({ register_date: -1 });
+            } else if (filter === 'reputation') {
+                postFindResult = await Post.find({
+                    lang: { $in: [langFilter] },
+                })
+                    .skip(page)
+                    .limit(16)
+                    .sort({ reputation: -1 });
+            }
+        }
 
         res.status(200).json({
             success: true,
-            allPostsCnt: postCount,
+            allPostsCnt: postFindResult.length,
             posts: postFindResult,
         });
     } catch (e) {

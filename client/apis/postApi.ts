@@ -22,7 +22,6 @@ export const getAllPostApi: QueryFunction<
     [_1: string, _2: getAllPostReqIFC]
 > = async ({ queryKey }) => {
     const [_1, data] = queryKey;
-    console.log('reqBody:::', data);
     const res = await Apis.get(
         `/post/skip/${data.page}/${data.filter}/${data.langFilter}`,
     );
