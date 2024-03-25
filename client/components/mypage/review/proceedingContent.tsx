@@ -8,7 +8,7 @@ import { userState } from '@/states/userStates';
 import { cancelBgFixed } from '@/utils/utils';
 import { useMutation } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, useRef } from 'react';
 import { useRecoilState } from 'recoil';
 import io from 'socket.io-client';
 
@@ -39,9 +39,19 @@ export default function ProceedingContent({
 
   const [chatId, setChatId] = useState('0');
 
+  const msgBoxEl = useRef<null | HTMLDivElement>(null);
+
   useEffect(() => {
     socketInitializer();
   }, []);
+
+  useEffect(() => {
+    socket?.on('chat message', (msg: any) => {
+      console.warn('msg >>>> ', msg);
+      setMessages(msg?.chats);
+      scrollBottom();
+    });
+  }, [socket]);
 
   const socketInitializer = async () => {
     socket.emit(
@@ -50,6 +60,7 @@ export default function ProceedingContent({
       (res: { success: boolean; msg: any }) => {
         if (res.success) {
           setMessages(res.msg.chats);
+          scrollBottom();
         }
       },
     );
@@ -57,7 +68,7 @@ export default function ProceedingContent({
 
   const sendMessage = async () => {
     setMessage('');
-
+    
     socket.emit(
       'chat message',
       {
@@ -68,13 +79,24 @@ export default function ProceedingContent({
       },
       (res: { success: boolean; msg: any }) => {
         if (res.success) {
-          let data = res.msg.chats;
-          data.push({ user: user._id, userName: user.nickname, message });
-          setMessages(data);
+          // let data = res.msg.chats;
+          // data.push({ user: user._id, userName: user.nickname, message });
+          // setMessages(data);
         }
       },
     ); //메시지를 서버에 보낸다. 이후 newIncoming
   };
+
+  const scrollBottom = () => {
+    if (msgBoxEl) {
+      setTimeout(() => {
+        msgBoxEl.current?.scrollTo({
+          top: msgBoxEl.current?.scrollHeight,
+          behavior: 'smooth',
+        });
+      }, 10);
+    }
+  }
 
   const handleKeypress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.keyCode === 13) {
@@ -147,7 +169,7 @@ export default function ProceedingContent({
       <main className="gap-4 flex flex-col items-center justify-center w-full h-full">
         <>
           <div className="flex flex-col justify-end bg-white h-[20rem] w-full border border-gray-300 shadow-md ">
-            <div className="h-full last:border-b-0 overflow-y-scroll rounded-md flex flex-col gap-2 px-2 py-4 pt-2">
+            <div ref={msgBoxEl} className="h-full last:border-b-0 overflow-y-scroll rounded-md flex flex-col gap-2 px-2 py-4 pt-2 scrollbar">
               {messages.length > 0 &&
                 messages.map((msg, i) => {
                   return (
