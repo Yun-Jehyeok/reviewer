@@ -10,12 +10,12 @@ import { Pagination } from 'antd';
 import { useState } from 'react';
 
 const filter = [
-    { id: '0', value: '최신 순', label: '최신 순' },
-    { id: '1', value: '등급 순', label: '등급 순' },
-    { id: '2', value: '해결 건수 순', label: '해결 건수 순' },
+    { id: '0', value: 'registerDate', label: '최신 순' },
+    { id: '1', value: 'reputation', label: '평점 순' },
 ];
 
 const langFilter = [
+    { id: 'All', value: 'all', label: '전체 선택' },
     { id: 'C', value: 'C', label: 'C' },
     { id: 'C++', value: 'C++', label: 'C++' },
     { id: 'C#', value: 'C#', label: 'C#' },
@@ -49,8 +49,8 @@ const langFilter = [
 
 export default function Reviewers() {
     const [page, setPage] = useState<number>(1);
-    const [val, setVal] = useState<string>('최신 순');
-    const [langVal, setLangVal] = useState<string>('C');
+    const [val, setVal] = useState<string>('registerDate');
+    const [langVal, setLangVal] = useState<string>('all');
 
     const { data, error, isLoading } = useQuery<
         allPostIFC,
@@ -88,14 +88,12 @@ export default function Reviewers() {
         getPosts();
     };
 
-    console.log('data::', data);
-
     return (
         <div className="w-full">
             {isLoading && <CSpinner />}
-            <div className="w-full flex justify-between">
+            <div className="w-full flex justify-between items-center">
                 <div className="">
-                    총{' '}
+                    총&nbsp;
                     <span className="font-bold">
                         {data ? data.allPostsCnt : 0}
                     </span>
@@ -112,7 +110,7 @@ export default function Reviewers() {
             </div>
 
             {/* 리스트 */}
-            {data && data.posts ? (
+            {data && data.posts && data.posts.length > 0 ? (
                 <div className="w-full grid grid-cols-4 gap-x-8 gap-y-6 mt-6">
                     {data.posts.map((post) => {
                         let data = {
@@ -125,7 +123,13 @@ export default function Reviewers() {
                     })}
                 </div>
             ) : (
-                <div>등록된 리뷰어가 없습니다.</div>
+                <div className="w-full h-[540px] bg-[#F4F6F5] rounded-3xl flex justify-center flex-col mt-6">
+                    <div className="h-fit w-full flex flex-col gap-4">
+                        <div className="text-[#9b9b9b] text-lg text-center">
+                            조건에 맞는 리뷰어가 없습니다.
+                        </div>
+                    </div>
+                </div>
             )}
 
             <div className="w-full flex justify-center mt-12">
