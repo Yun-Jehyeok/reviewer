@@ -11,7 +11,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { useRecoilState } from 'recoil';
 
 export default function ReviewerDetail() {
-  const params = useParams<{ id: string }>();
+  const { id } = useParams() as { id: string };
   const [user, setUser] = useRecoilState(userState);
 
   const router = useRouter();
@@ -21,7 +21,7 @@ export default function ReviewerDetail() {
     error,
     isPending,
   } = useQuery<postIFC, Object, postIFC, [_1: string, _2: string]>({
-    queryKey: ['posts', params.id],
+    queryKey: ['posts', id],
     queryFn: getPostApi,
     staleTime: 60 * 1000,
     gcTime: 300 * 1000,
