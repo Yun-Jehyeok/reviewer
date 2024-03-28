@@ -13,6 +13,7 @@
     "@tanstack/react-query-devtools": "^5.17.18",
     "antd": "^5.14.0",
     "axios": "^1.6.2",
+    "bufferutil": "^4.0.8",
     "dompurify": "^3.0.8",
     "next": "^13.4.9",
     "react": "^18",
@@ -23,7 +24,8 @@
     "recoil": "^0.7.7",
     "recoil-persist": "^5.1.0",
     "socket.io-client": "^4.7.4",
-    "styled-components": "^6.1.8"
+    "styled-components": "^6.1.8",
+    "utf-8-validate": "^5.0.10"
   },
   "devDependencies": {
     "@types/dompurify": "^3.0.5",
