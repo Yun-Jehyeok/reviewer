@@ -1,15 +1,23 @@
 "use client";
 
-import { getUserApi } from "@/apis/userApi";
-import CButton from "@/components/common/CButton";
-import CSpinner from "@/components/common/CSpinner";
 import { userIFC } from "@/interfaces/userIFC";
 import { useQuery } from "@tanstack/react-query";
 import DOMPurify from "dompurify";
 import { useRouter } from "next/navigation";
-// User Recoil
-import { userState } from "@/states/userStates";
 import { useSetRecoilState } from "recoil";
+
+// API
+import { getUserApi } from "@/apis/userApi";
+
+// Recoil
+import { userState } from "@/states/userStates";
+
+// Component
+import CButton from "@/components/common/CButton";
+import CSpinner from "@/components/common/CSpinner";
+
+// Util
+import { foramttedNumber } from "@/utils/utils";
 
 export default function Mypage() {
     const setUser = useSetRecoilState(userState);
@@ -58,7 +66,7 @@ export default function Mypage() {
                 <div className="w-full flex gap-8 py-4">
                     <div className="w-[120px] font-bold">가격</div>
                     <div className="flex-1">
-                        {user.price}
+                        {foramttedNumber(user.price)}
                         <span className="text-sm">&nbsp;/&nbsp;시간</span>
                     </div>
                 </div>
@@ -74,7 +82,7 @@ export default function Mypage() {
                                 }}
                                 dangerouslySetInnerHTML={{
                                     __html: DOMPurify.sanitize(
-                                        String(user.introduce)
+                                        String(user.introduce),
                                     ),
                                 }}
                             />
