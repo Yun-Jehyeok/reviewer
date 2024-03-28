@@ -28,15 +28,15 @@ import { Socket, io } from 'socket.io-client';
 // 2. 연결할 peer에서 받은 정보를 저장하고 자신의 candidate를 보내고(send candidate)
 // 3. 받는 쪽에서 해당 candidate를 저장한다. (addICECandidate)
 const Video = () => {
-    const [isVideoOn, setIsVideoOn] = useState<boolean>(false);
-    const [isAudioOn, setIsAudioOn] = useState<boolean>(false);
+    const [isVideoOn, setIsVideoOn] = useState<boolean>(true);
+    const [isAudioOn, setIsAudioOn] = useState<boolean>(true);
 
     const router = useRouter();
 
     // Socket 정보를 담을 Ref
     const socketRef = useRef<Socket>();
     // 메인 비디오
-    const [mainRef, setMainRef] = useState<string>('');
+    const [mainRef, setMainRef] = useState<string>('myvideo');
     // 자신의 비디오
     const myVideoRef = useRef<HTMLVideoElement>(null);
     // 다른 사람의 비디오
@@ -208,13 +208,31 @@ const Video = () => {
     }, []);
 
     const handleAudio = () => {
-        console.log('handlAudio');
         setIsAudioOn(!isAudioOn);
+
+        if (myVideoRef.current) {
+            let myAudioObj: MediaStream = myVideoRef.current
+                .srcObject as MediaStream;
+            let myAudioTracks = myAudioObj.getAudioTracks();
+            myAudioTracks.forEach((track) => {
+                track.enabled = !track.enabled;
+            });
+            myVideoRef.current.srcObject = myAudioObj;
+        }
     };
 
     const handleVideo = () => {
-        console.log('handleVideo');
         setIsVideoOn(!isVideoOn);
+
+        if (myVideoRef.current) {
+            let myVideoObj: MediaStream = myVideoRef.current
+                .srcObject as MediaStream;
+            let myVideoTracks = myVideoObj.getVideoTracks();
+            myVideoTracks.forEach((track) => {
+                track.enabled = !track.enabled;
+            });
+            myVideoRef.current.srcObject = myVideoObj;
+        }
     };
 
     const handleScreen = async () => {
@@ -261,27 +279,45 @@ const Video = () => {
 
     return (
         <div className="w-screen h-screen relative bg-[#202124] overflow-hidden p-8">
-            {mainRef === '' ? (
+            {mainRef === '' && (
                 <div className="w-full h-[calc(100vh-356px)] mb-8 bg-black rounded-md"></div>
-            ) : (
+            )}
+            {mainRef === 'myvideo' && (
                 <video
-                    id="remotevideo"
+                    id="myvideo"
                     className="w-full h-[calc(100vh-356px)] mb-8 bg-black rounded-md"
-                    ref={
-                        mainRef === 'myvideo'
-                            ? myVideoRef
-                            : mainRef === 'opponentvideo'
-                            ? remoteVideoRef
-                            : 'myscreen'
-                            ? testRef
-                            : testRef
-                    }
+                    ref={myVideoRef}
                     autoPlay
                 ></video>
             )}
+            {mainRef === 'opponentvideo' && (
+                <video
+                    id="mainvideo"
+                    className="w-full h-[calc(100vh-356px)] mb-8 bg-black rounded-md"
+                    ref={remoteVideoRef}
+                    autoPlay
+                ></video>
+            )}
+            {mainRef === 'myscreen' && (
+                <video
+                    id="mainvideo"
+                    className="w-full h-[calc(100vh-356px)] mb-8 bg-black rounded-md"
+                    ref={testRef}
+                    autoPlay
+                ></video>
+            )}
+            {mainRef === 'opponentscreen' && (
+                <video
+                    id="mainvideo"
+                    className="w-full h-[calc(100vh-356px)] mb-8 bg-black rounded-md"
+                    ref={testRef}
+                    autoPlay
+                ></video>
+            )}
+
             <div className="w-full flex gap-4">
                 <video
-                    id="remotevideo"
+                    id="myvideo"
                     className="bg-black w-[240px] h-[180px] rounded-md cursor-pointer"
                     ref={myVideoRef}
                     onClick={() => setMainRef('myvideo')}
