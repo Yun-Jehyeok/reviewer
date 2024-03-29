@@ -63,6 +63,7 @@ const io = new Server(httpServer, {
 
 const chatWebSocket = require("./middleware/socket");
 chatWebSocket(io);
+chatWebSocket.ioModule = io;
 
 httpServer.listen(port, () => {
     console.log(`Server started on ${PORT} port`);
