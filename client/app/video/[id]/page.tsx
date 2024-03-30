@@ -205,7 +205,7 @@ const Video = () => {
                 pcRef.current.close();
             }
         };
-    }, []);
+    }, [socketRef]);
 
     const handleAudio = () => {
         setIsAudioOn(!isAudioOn);
