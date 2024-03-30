@@ -37,6 +37,8 @@ const Video = () => {
     const socketRef = useRef<Socket>();
     // 메인 비디오
     const [mainRef, setMainRef] = useState<string>('myvideo');
+    // 메인 비디오
+    const mainVideoRef = useRef<HTMLVideoElement>(null);
     // 자신의 비디오
     const myVideoRef = useRef<HTMLVideoElement>(null);
     // 다른 사람의 비디오
@@ -257,8 +259,8 @@ const Video = () => {
                             );
 
                             console.log('screenStream:::', screenStream);
-                            if (testRef.current) {
-                                testRef.current.srcObject = screenStream;
+                            if (myScreenRef.current) {
+                                myScreenRef.current.srcObject = screenStream;
                             }
                         })
                         .catch(function (e) {
@@ -277,71 +279,68 @@ const Video = () => {
         router.back();
     };
 
+    useEffect(() => {
+        console.log('mainRef:::', mainRef);
+    }, [mainRef]);
+
+    const handleMainVideo = (type: string) => {
+        if (mainVideoRef.current) {
+            if (type === 'myvideo') {
+                if (myVideoRef.current)
+                    mainVideoRef.current.srcObject =
+                        myVideoRef.current.srcObject;
+            } else if (type === 'opponentvideo') {
+                if (remoteVideoRef.current)
+                    mainVideoRef.current.srcObject =
+                        remoteVideoRef.current.srcObject;
+            } else if (type === 'myscreen') {
+                if (myScreenRef.current)
+                    mainVideoRef.current.srcObject =
+                        myScreenRef.current.srcObject;
+            } else if (type === 'opponentscreen') {
+                if (remoteScreenRef.current)
+                    mainVideoRef.current.srcObject =
+                        remoteScreenRef.current.srcObject;
+            }
+        }
+    };
+
     return (
         <div className="w-screen h-screen relative bg-[#202124] overflow-hidden p-8">
-            {mainRef === '' && (
-                <div className="w-full h-[calc(100vh-356px)] mb-8 bg-black rounded-md"></div>
-            )}
-            {mainRef === 'myvideo' && (
-                <video
-                    id="myvideo"
-                    className="w-full h-[calc(100vh-356px)] mb-8 bg-black rounded-md"
-                    ref={myVideoRef}
-                    autoPlay
-                ></video>
-            )}
-            {mainRef === 'opponentvideo' && (
-                <video
-                    id="mainvideo"
-                    className="w-full h-[calc(100vh-356px)] mb-8 bg-black rounded-md"
-                    ref={remoteVideoRef}
-                    autoPlay
-                ></video>
-            )}
-            {mainRef === 'myscreen' && (
-                <video
-                    id="mainvideo"
-                    className="w-full h-[calc(100vh-356px)] mb-8 bg-black rounded-md"
-                    ref={testRef}
-                    autoPlay
-                ></video>
-            )}
-            {mainRef === 'opponentscreen' && (
-                <video
-                    id="mainvideo"
-                    className="w-full h-[calc(100vh-356px)] mb-8 bg-black rounded-md"
-                    ref={testRef}
-                    autoPlay
-                ></video>
-            )}
+            <video
+                id="mainvideo"
+                className="w-full h-[calc(100vh-356px)] mb-8 bg-black rounded-md"
+                ref={mainVideoRef}
+                autoPlay
+            ></video>
 
             <div className="w-full flex gap-4">
                 <video
                     id="myvideo"
-                    className="bg-black w-[240px] h-[180px] rounded-md cursor-pointer"
+                    className="bg-black w-[240px] h-[180px] rounded-md cursor-pointer hover:outline-2 hover:outline hover:outline-blue-500"
                     ref={myVideoRef}
-                    onClick={() => setMainRef('myvideo')}
+                    onClick={() => handleMainVideo('myvideo')}
                     autoPlay
                 />
                 <video
                     id="remotevideo"
-                    className="bg-black w-[240px] rounded-md cursor-pointer"
+                    className="bg-black w-[240px] h-[180px] rounded-md cursor-pointer hover:outline-2 hover:outline hover:outline-blue-500"
                     ref={remoteVideoRef}
-                    onClick={() => setMainRef('opponentvideo')}
+                    onClick={() => handleMainVideo('opponentvideo')}
                     autoPlay
                 />
                 <video
-                    id="testvideo"
-                    className="bg-black w-[240px] rounded-md cursor-pointer"
-                    ref={testRef}
-                    onClick={() => setMainRef('myscreen')}
+                    id="myscreen"
+                    className="bg-black w-[240px] h-[180px] rounded-md cursor-pointer hover:outline-2 hover:outline hover:outline-blue-500"
+                    ref={myScreenRef}
+                    onClick={() => handleMainVideo('myscreen')}
                     autoPlay
                 />
                 <video
-                    id="testvideo"
-                    className="bg-black w-[240px] rounded-md cursor-pointer"
-                    ref={testRef}
-                    onClick={() => setMainRef('opponentscreen')}
+                    id="remotescreen"
+                    className="bg-black w-[240px] h-[180px] rounded-md cursor-pointer hover:outline-2 hover:outline hover:outline-blue-500"
+                    ref={remoteScreenRef}
+                    onClick={() => handleMainVideo('opponentscreen')}
                     autoPlay
                 />
             </div>
