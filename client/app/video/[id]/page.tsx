@@ -36,8 +36,6 @@ const Video = () => {
     // Socket 정보를 담을 Ref
     const socketRef = useRef<Socket>();
     // 메인 비디오
-    const [mainRef, setMainRef] = useState<string>('myvideo');
-    // 메인 비디오
     const mainVideoRef = useRef<HTMLVideoElement>(null);
     // 자신의 비디오
     const myVideoRef = useRef<HTMLVideoElement>(null);
@@ -191,6 +189,10 @@ const Video = () => {
             },
         );
 
+        socketRef.current.on('screenShare', (shareVideo) => {
+            console.log('shareVideo:::', shareVideo);
+        });
+
         // 마운트 시, 해당 방의 roomName을 서버에 전달
         socketRef.current.emit('join_room', {
             room: roomName,
@@ -261,6 +263,7 @@ const Video = () => {
                             console.log('screenStream:::', screenStream);
                             if (myScreenRef.current) {
                                 myScreenRef.current.srcObject = screenStream;
+                                socketRef.current!.emit('screenSharing');
                             }
                         })
                         .catch(function (e) {
@@ -278,10 +281,6 @@ const Video = () => {
     const navigateToMypage = () => {
         router.back();
     };
-
-    useEffect(() => {
-        console.log('mainRef:::', mainRef);
-    }, [mainRef]);
 
     const handleMainVideo = (type: string) => {
         if (mainVideoRef.current) {
