@@ -29,29 +29,30 @@ export default function Navigation() {
     }, [user]);
 
     useEffect(() => {
+        const handleShowPopup = async (e: Event) => {
+            console.log(
+                (e.target as HTMLElement).closest(".nav-mypage"),
+                " : target",
+            );
+            const alarmIconCon =
+                (e.target as HTMLElement).classList.contains("nav-alarm") ||
+                (e.target as HTMLElement).closest(".nav-alarm");
+            const myPageIconCon =
+                (e.target as HTMLElement).classList.contains("nav-mypage") ||
+                (e.target as HTMLElement).closest(".nav-mypage");
+
+            console.log(showDropdown, myPageIconCon, " : alarmIconCon");
+            if (showDropdown && !alarmIconCon)
+                setShowAlarms(() => !showDropdown);
+            if (showDropdown && !myPageIconCon)
+                setShowDropdown(() => !showDropdown);
+        };
+
         window.addEventListener("click", handleShowPopup);
         return () => {
             window.removeEventListener("click", handleShowPopup);
         };
-    }, []);
-
-    const handleShowPopup = async (e: Event) => {
-        console.log(
-            (e.target as HTMLElement).closest(".nav-mypage"),
-            " : target",
-        );
-        const alarmIconCon =
-            (e.target as HTMLElement).classList.contains("nav-alarm") ||
-            (e.target as HTMLElement).closest(".nav-alarm");
-        const myPageIconCon =
-            (e.target as HTMLElement).classList.contains("nav-mypage") ||
-            (e.target as HTMLElement).closest(".nav-mypage");
-
-        console.log(showDropdown, myPageIconCon, " : alarmIconCon");
-        if (showDropdown && !alarmIconCon) setShowAlarms(() => !showDropdown);
-        if (showDropdown && !myPageIconCon)
-            setShowDropdown(() => !showDropdown);
-    };
+    }, [showDropdown, showAlarms]);
 
     const handleSignIn = () => {
         setModalOpen(true);
@@ -60,11 +61,7 @@ export default function Navigation() {
 
     const handleShowMyPage = async () => {
         setShowDropdown((prev) => !prev);
-        console.log("getDropdown >>>> ", showDropdown);
     };
-    // const handleShowMyPage = () => {
-    //     // showDropdown = !showDropdown;
-    // }
 
     const onClickLogout = () => {
         setShowDropdown(false);
@@ -151,9 +148,7 @@ export default function Navigation() {
                                     <div className="p-8 w-full">
                                         <div className="w-full text-center text-xl font-bold mb-4">
                                             {user.name}
-                                            <br />
                                         </div>
-                                        <p>{showDropdown.toString()}</p>
                                         <div className="w-full flex justify-center">
                                             <div className="w-24 h-24 rounded-full bg-gray-500"></div>
                                         </div>

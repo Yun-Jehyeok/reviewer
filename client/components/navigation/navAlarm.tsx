@@ -72,7 +72,7 @@ export default function NavAlarm({
     };
 
     const handleShowAlarm = async () => {
-        setShowAlarms((prev) => !prev);
+        setShowAlarms(!showAlarms);
     };
 
     return (

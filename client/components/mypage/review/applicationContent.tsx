@@ -170,7 +170,7 @@ export default function ApplicationContent({
                         <CButton
                             title="취소"
                             isCancel={true}
-                            onClick={onApplicationCancel}
+                            onClick={onApplicationCancel(false)}
                         />
                     )}
                 </div>
