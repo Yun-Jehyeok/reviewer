@@ -263,8 +263,18 @@ const Video = () => {
                             console.log('screenStream:::', screenStream);
                             if (myScreenRef.current) {
                                 myScreenRef.current.srcObject = screenStream;
-                                socketRef.current!.emit('screenSharing');
+
+                                if (socketRef.current) {
+                                    socketRef.current.emit('screenSharing', {
+                                        roomName,
+                                    });
+                                }
                             }
+
+                            // if (remoteScreenRef.current) {
+                            //     remoteScreenRef.current.srcObject =
+                            //         screenStream;
+                            // }
                         })
                         .catch(function (e) {
                             //error;
