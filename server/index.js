@@ -65,7 +65,6 @@ const chatWebSocket = require('./middleware/socket');
 const videoWebSocket = require('./middleware/video');
 chatWebSocket(io);
 chatWebSocket.ioModule = io;
-// videoWebSocket(httpServer);
 
 httpServer.listen(port, () => {
     console.log(`Server started on ${PORT} port`);
