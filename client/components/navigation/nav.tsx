@@ -5,7 +5,7 @@ import { userState } from "@/states/userStates";
 import { bgFixed } from "@/utils/utils";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useRecoilState } from "recoil";
 import CButton from "../common/CButton";
 import CConfirm from "../common/CConfirm";
@@ -25,22 +25,17 @@ export default function Navigation() {
     const router = useRouter();
 
     useEffect(() => {
+        setIsAuth(user.token !== "");
+    }, [user]);
+
+    useEffect(() => {
         window.addEventListener("click", handleShowPopup);
         return () => {
             window.removeEventListener("click", handleShowPopup);
         };
     }, []);
 
-    useEffect(() => {
-        setIsAuth(user.token !== "");
-    }, [user]);
-
-    const handleSignIn = () => {
-        setModalOpen(true);
-        bgFixed();
-    };
-
-    const handleShowPopup = (e: MouseEvent) => {
+    const handleShowPopup = async (e: Event) => {
         console.log(
             (e.target as HTMLElement).closest(".nav-mypage"),
             " : target",
@@ -53,15 +48,23 @@ export default function Navigation() {
             (e.target as HTMLElement).closest(".nav-mypage");
 
         console.log(showDropdown, myPageIconCon, " : alarmIconCon");
-        if (showAlarms && !alarmIconCon) setShowAlarms(false);
-        if (showDropdown && !myPageIconCon) setShowDropdown(false);
+        if (showDropdown && !alarmIconCon) setShowAlarms(() => !showDropdown);
+        if (showDropdown && !myPageIconCon)
+            setShowDropdown(() => !showDropdown);
     };
 
-    const handleShowMyPage = () => {
-        setTimeout(() => {
-            setShowDropdown(!showDropdown);
-        }, 10);
+    const handleSignIn = () => {
+        setModalOpen(true);
+        bgFixed();
     };
+
+    const handleShowMyPage = async () => {
+        setShowDropdown((prev) => !prev);
+        console.log("getDropdown >>>> ", showDropdown);
+    };
+    // const handleShowMyPage = () => {
+    //     // showDropdown = !showDropdown;
+    // }
 
     const onClickLogout = () => {
         setShowDropdown(false);
@@ -89,6 +92,8 @@ export default function Navigation() {
             introduce: "",
             oneLineIntroduce: "",
         });
+
+        router.push("/");
     };
 
     const navigateToMypage = () => {
@@ -116,11 +121,12 @@ export default function Navigation() {
                     showAlarms={showAlarms}
                     setShowAlarms={setShowAlarms}
                 />
-                <NavMessages />
+                {/* <NavMessages /> */}
                 {isAuth ? (
                     <div className="relative nav-mypage">
                         <div
                             className="w-10 h-10 rounded-full bg-black flex justify-center items-center cursor-pointer hover:bg-gray-800"
+                            // onClick={() => setShowDropdown((prev) => !prev)}
                             onClick={handleShowMyPage}
                         >
                             <svg
@@ -145,7 +151,9 @@ export default function Navigation() {
                                     <div className="p-8 w-full">
                                         <div className="w-full text-center text-xl font-bold mb-4">
                                             {user.name}
+                                            <br />
                                         </div>
+                                        <p>{showDropdown.toString()}</p>
                                         <div className="w-full flex justify-center">
                                             <div className="w-24 h-24 rounded-full bg-gray-500"></div>
                                         </div>

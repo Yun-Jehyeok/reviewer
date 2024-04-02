@@ -71,10 +71,8 @@ export default function NavAlarm({
         if (!isRead) alramReadMutation.mutate(notiId);
     };
 
-    const handleShowAlarm = () => {
-        setTimeout(() => {
-            setShowAlarms(!showAlarms);
-        }, 10);
+    const handleShowAlarm = async () => {
+        setShowAlarms((prev) => !prev);
     };
 
     return (
