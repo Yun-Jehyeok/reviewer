@@ -2,10 +2,11 @@ interface ICButton {
     title: string;
     isFull?: boolean;
     isCancel?: boolean;
+    addClass?: string;
     onClick: (
         e:
             | React.FormEvent<HTMLFormElement>
-            | React.MouseEvent<HTMLButtonElement>
+            | React.MouseEvent<HTMLButtonElement>,
     ) => void;
 }
 
@@ -14,16 +15,18 @@ export default function CButton({
     isFull,
     isCancel,
     onClick,
+    addClass,
 }: ICButton) {
     return (
         <button
             className={`rounded-md px-4 py-2 
         ${
             isCancel
-                ? "bg-slate-50 border-solid border border-slate-200 text-neutral-700 hover:bg-slate-100"
-                : "bg-black text-white hover:bg-gray-800"
+                ? "h-10 rounded-lg border border-gray-300 text-sm hover:shadow-md transition-all bg-red-500 text-white "
+                : "bg-black text-white hover:bg-gray-800 "
         } 
-          ${isFull && "w-full"}`}
+        ${addClass} 
+          ${isFull && "w-full "}`}
             onClick={onClick}
         >
             {title}
