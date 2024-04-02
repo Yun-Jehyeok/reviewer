@@ -41,9 +41,8 @@ export default function Navigation() {
                 (e.target as HTMLElement).classList.contains("nav-mypage") ||
                 (e.target as HTMLElement).closest(".nav-mypage");
 
-            console.log(showDropdown, myPageIconCon, " : alarmIconCon");
-            if (showDropdown && !alarmIconCon)
-                setShowAlarms(() => !showDropdown);
+            console.log(showAlarms, alarmIconCon, " : alarmIconCon");
+            if (showAlarms && !alarmIconCon) setShowAlarms(() => !showAlarms);
             if (showDropdown && !myPageIconCon)
                 setShowDropdown(() => !showDropdown);
         };
