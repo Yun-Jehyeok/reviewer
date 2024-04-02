@@ -26,3 +26,7 @@ export const foramttedNumber = (num: string | number) => {
     let formatValue = num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     return formatValue;
 };
+
+export const insertHTML = (html: string) => {
+    return { __html: html };
+};

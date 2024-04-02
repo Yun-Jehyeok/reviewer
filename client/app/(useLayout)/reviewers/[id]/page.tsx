@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import { applyApi, getPostApi } from '@/apis/postApi';
-import CButton from '@/components/common/CButton';
-import CSpinner from '@/components/common/CSpinner';
-import { postIFC } from '@/interfaces/postIFC';
-import { userState } from '@/states/userStates';
-import { useMutation, useQuery } from '@tanstack/react-query';
-import DOMPurify from 'dompurify';
-import { useParams, useRouter } from 'next/navigation';
-import { useRecoilState } from 'recoil';
+import { applyApi, getPostApi } from "@/apis/postApi";
+import CButton from "@/components/common/CButton";
+import CSpinner from "@/components/common/CSpinner";
+import { postIFC } from "@/interfaces/postIFC";
+import { userState } from "@/states/userStates";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import DOMPurify from "dompurify";
+import { useParams, useRouter } from "next/navigation";
+import { useRecoilState } from "recoil";
 
 export default function ReviewerDetail() {
     const { id } = useParams() as { id: string };
@@ -21,7 +21,7 @@ export default function ReviewerDetail() {
         error,
         isPending,
     } = useQuery<postIFC, Object, postIFC, [_1: string, _2: string]>({
-        queryKey: ['posts', id],
+        queryKey: ["posts", id],
         queryFn: getPostApi,
         staleTime: 60 * 1000,
         gcTime: 300 * 1000,
@@ -30,20 +30,20 @@ export default function ReviewerDetail() {
     const applyMutation = useMutation({
         mutationFn: applyApi,
         onMutate: (variable) => {
-            console.log('onMutate', variable);
+            console.log("onMutate", variable);
         },
         onError: (error, variable, context) => {
-            console.error('applyErr:::', error);
+            console.error("applyErr:::", error);
         },
         onSuccess: (data, variables, context) => {
-            console.log('applySuccess', data, variables, context);
+            console.log("applySuccess", data, variables, context);
             if (data.success) {
-                alert('리뷰가 신청되었습니다.');
-                router.push('/mypage/history/apply');
+                alert("리뷰가 신청되었습니다.");
+                router.push("/mypage/history/apply");
             }
         },
         onSettled: () => {
-            console.log('applyEnd');
+            console.log("applyEnd");
         },
     });
 
@@ -52,17 +52,17 @@ export default function ReviewerDetail() {
             | React.FormEvent<HTMLFormElement>
             | React.MouseEvent<HTMLButtonElement>,
     ) => {
-        if (user._id === '') {
-            alert('로그인이 필요한 서비스입니다.');
+        if (user._id === "") {
+            alert("로그인이 필요한 서비스입니다.");
             return;
         }
 
-        let conf = confirm('해당 리뷰어에게 리뷰를 신청하시겠습니까?');
+        let conf = confirm("해당 리뷰어에게 리뷰를 신청하시겠습니까?");
 
         if (conf) {
             if (user.point < post!.price) {
-                alert('리뷰 신청을 위한 포인트가 부족합니다.');
-                router.push('/payment');
+                alert("리뷰 신청을 위한 포인트가 부족합니다.");
+                router.push("/payment");
                 return;
             }
 
@@ -77,7 +77,7 @@ export default function ReviewerDetail() {
 
     const stars = [1, 2, 3, 4, 5];
 
-    console.log('post:::', post);
+    console.log("post:::", post);
     if (!post) return null;
 
     return (
@@ -95,8 +95,8 @@ export default function ReviewerDetail() {
                         {post.content && (
                             <div
                                 style={{
-                                    width: '100%',
-                                    whiteSpace: 'normal',
+                                    width: "100%",
+                                    whiteSpace: "normal",
                                 }}
                                 dangerouslySetInnerHTML={{
                                     __html: DOMPurify.sanitize(
@@ -215,8 +215,8 @@ export default function ReviewerDetail() {
                             <div className="text-sm text-gray-600">
                                 <div
                                     style={{
-                                        width: '100%',
-                                        whiteSpace: 'normal',
+                                        width: "100%",
+                                        whiteSpace: "normal",
                                     }}
                                     dangerouslySetInnerHTML={{
                                         __html: DOMPurify.sanitize(
