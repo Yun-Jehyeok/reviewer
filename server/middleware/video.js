@@ -63,8 +63,8 @@ module.exports = (server) => {
             socket.to(roomName).emit('getCandidate', candidate);
         });
 
-        socket.on('screenSharing', (roomName) => {
-            socket.to(roomName).emit('screenShare', true);
+        socket.on('screenSharing', (screenId) => {
+            socket.broadcast.emit('screenShare', screenId);
         });
 
         socket.on('disconnect', () => {

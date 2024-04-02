@@ -59,7 +59,7 @@ const Video = () => {
             // 자신의 스트림 정보
             const stream = await navigator.mediaDevices.getUserMedia({
                 video: true,
-                audio: false,
+                audio: true,
             });
 
             if (myVideoRef.current) {
@@ -80,9 +80,8 @@ const Video = () => {
             // iceCandidate 이벤트
             pcRef.current.onicecandidate = (e) => {
                 if (e.candidate) {
-                    if (!socketRef.current) {
-                        return;
-                    }
+                    if (!socketRef.current) return;
+
                     console.log('recv candidate');
                     socketRef.current.emit('candidate', e.candidate, roomName);
                 }
@@ -90,6 +89,7 @@ const Video = () => {
 
             // 구 addStream 현 track 이벤트
             pcRef.current.ontrack = (e) => {
+                console.log('streams:::::', e);
                 if (remoteVideoRef.current) {
                     remoteVideoRef.current.srcObject = e.streams[0];
                 }
@@ -171,9 +171,8 @@ const Video = () => {
         // answer를 전달받아 PeerA의 RemoteDescription에 등록
         socketRef.current.on('getAnswer', (sdp: RTCSessionDescription) => {
             console.log('recv Answer');
-            if (!pcRef.current) {
-                return;
-            }
+            if (!pcRef.current) return;
+
             pcRef.current.setRemoteDescription(sdp);
         });
 
@@ -181,16 +180,27 @@ const Video = () => {
         socketRef.current.on(
             'getCandidate',
             async (candidate: RTCIceCandidate) => {
-                if (!pcRef.current) {
-                    return;
-                }
+                if (!pcRef.current) return;
 
                 await pcRef.current.addIceCandidate(candidate);
             },
         );
 
-        socketRef.current.on('screenShare', (shareVideo) => {
-            console.log('shareVideo:::', shareVideo);
+        // 화면 공유
+        socketRef.current.on('screenShare', async (streamId) => {
+            console.log('screenStream:::', streamId);
+            const test = await navigator.mediaDevices.getUserMedia({
+                audio: true, // or true
+                video: {
+                    deviceId: streamId,
+                },
+            });
+
+            console.log('test:::', test);
+
+            if (remoteScreenRef.current) {
+                remoteScreenRef.current.srcObject = test;
+            }
         });
 
         // 마운트 시, 해당 방의 roomName을 서버에 전달
@@ -260,21 +270,16 @@ const Video = () => {
                                 audioStream.getAudioTracks()[0],
                             );
 
-                            console.log('screenStream:::', screenStream);
+                            console.log('screenStream:::', screenStream.id);
                             if (myScreenRef.current) {
                                 myScreenRef.current.srcObject = screenStream;
 
                                 if (socketRef.current) {
-                                    socketRef.current.emit('screenSharing', {
-                                        roomName,
-                                    });
+                                    // socketRef.current.emit('screenSharing', {
+                                    //     screenStream,
+                                    // });
                                 }
                             }
-
-                            // if (remoteScreenRef.current) {
-                            //     remoteScreenRef.current.srcObject =
-                            //         screenStream;
-                            // }
                         })
                         .catch(function (e) {
                             //error;
