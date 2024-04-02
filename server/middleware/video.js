@@ -63,6 +63,10 @@ module.exports = (server) => {
             socket.to(roomName).emit('getCandidate', candidate);
         });
 
+        socket.on('screenSharing', () => {
+            socket.in(roomId).emit('screenShare', true);
+        });
+
         socket.on('disconnect', () => {
             // 방을 나가게 된다면 socketRoom과 users의 정보에서 해당 유저를 지워줍니다.
             const roomID = socketRoom[socket.id];
