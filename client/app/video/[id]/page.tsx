@@ -47,6 +47,7 @@ const Video = () => {
     const remoteScreenRef = useRef<HTMLVideoElement>(null);
     // peerConnection
     const pcRef = useRef<RTCPeerConnection>();
+    const pcRef2 = useRef<RTCPeerConnection>();
 
     const testRef = useRef<HTMLVideoElement>(null); // 원격 비디오 요소에 대한 참조
     // url 파라미터에 있는 room 정보
@@ -155,6 +156,7 @@ const Video = () => {
         socketRef.current.on(
             'screenShareOffer',
             async (offer: RTCSessionDescriptionInit) => {
+                console.log('here1');
                 await receiveScreenShareOffer(offer);
             },
         );
@@ -163,6 +165,7 @@ const Video = () => {
         socketRef.current.on(
             'screenShareAnswer',
             async (answer: RTCSessionDescriptionInit) => {
+                console.log('here2');
                 await receiveScreenShareAnswer(answer);
             },
         );
@@ -276,25 +279,32 @@ const Video = () => {
     const receiveScreenShareOffer = async (
         offer: RTCSessionDescriptionInit,
     ) => {
-        pcRef.current = new RTCPeerConnection();
+        console.log('offer:::', offer);
+        // pcRef2.current = new RTCPeerConnection();
 
         if (pcRef.current) {
+            console.log('pcRef');
             pcRef.current.ontrack = (event) => {
+                console.log('event:::', event.streams);
+                console.log('testref:::', testRef.current);
+
                 if (event.streams && event.streams[0] && testRef.current) {
+                    console.log('event:::', event.streams[0]);
                     testRef.current.srcObject = event.streams[0];
+                    console.log('testRef:::', testRef.current.srcObject);
                 }
             };
         }
 
-        await pcRef.current?.setRemoteDescription(offer);
+        // await pcRef.current?.setRemoteDescription(offer);
 
-        const answer = await pcRef.current?.createAnswer();
-        await pcRef.current?.setLocalDescription(
-            answer as RTCSessionDescriptionInit,
-        );
+        // const answer = await pcRef.current?.createAnswer();
+        // await pcRef.current?.setLocalDescription(
+        //     answer as RTCSessionDescriptionInit,
+        // );
 
-        if (socketRef.current)
-            socketRef.current.emit('screenShareAnswer', answer);
+        // if (socketRef.current)
+        //     socketRef.current.emit('screenShareAnswer', answer);
     };
 
     // 화면 공유 Answer를 수신하는 함수
