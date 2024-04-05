@@ -3,7 +3,9 @@
 import { useEffect, useRef } from 'react';
 import io from 'socket.io-client';
 
-const socket = io();
+const socket = io(process.env.NEXT_PUBLIC_SERVER_URL as string, {
+    path: '/api/video2',
+});
 
 export default function Home() {
     const localVideoRef = useRef<HTMLVideoElement>(null); // 로컬 비디오 요소에 대한 참조
