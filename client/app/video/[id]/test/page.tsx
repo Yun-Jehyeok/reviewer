@@ -41,10 +41,6 @@ const Test = () => {
     const myVideoRef = useRef<HTMLVideoElement>(null);
     // 다른 사람의 비디오
     const remoteVideoRef = useRef<HTMLVideoElement>(null);
-    // 자신의 스크린
-    const myScreenRef = useRef<HTMLVideoElement>(null);
-    // 다른 사람의 스크린
-    const remoteScreenRef = useRef<HTMLVideoElement>(null);
     // peerConnection
     const peerConnectionRef = useRef<RTCPeerConnection>();
 
@@ -86,7 +82,6 @@ const Test = () => {
 
             // 구 addStream 현 track 이벤트
             peerConnectionRef.current.ontrack = (e) => {
-                console.log('streams:::::', e.streams);
                 if (remoteVideoRef.current) {
                     remoteVideoRef.current.srcObject = e.streams[0];
                 }
@@ -150,25 +145,6 @@ const Test = () => {
             ],
         });
 
-        // 서버로부터 화면 공유에 대한 요청을 수신하는 이벤트 핸들러 등록
-        socketRef.current.on(
-            'screenShareOffer',
-            async (offer: RTCSessionDescriptionInit) => {
-                // 여기서 상대방의 offer를 전달받고 이를 본인의 peerConnection에 등록해야됨
-                console.log('screenShareOffer:::', offer);
-                await receiveScreenShareOffer(offer);
-            },
-        );
-
-        // 서버로부터 화면 공유에 대한 응답을 수신하는 이벤트 핸들러 등록
-        socketRef.current.on(
-            'screenShareAnswer',
-            async (answer: RTCSessionDescriptionInit) => {
-                console.log('here2');
-                await receiveScreenShareAnswer(answer);
-            },
-        );
-
         // 기존 유저가 있고, 새로운 유저가 들어왔다면 오퍼 생성
         socketRef.current.on('all_users', (allUsers: Array<{ id: string }>) => {
             if (allUsers.length > 0) {
@@ -221,7 +197,6 @@ const Test = () => {
     }, [socketRef]);
 
     let screenStream: MediaStream | null = null; // 화면 공유 미디어 스트림
-    const localVideoRef = useRef<HTMLVideoElement>(null); // 로컬 비디오 요소에 대한 참조
 
     // 화면 공유를 시작하는 함수
     const startScreenSharing = async () => {
@@ -230,76 +205,12 @@ const Test = () => {
                 video: true,
             });
             // 공유되는 화면을 내 화면에 출력
-            if (localVideoRef.current) {
-                localVideoRef.current.srcObject = screenStream;
+            if (myVideoRef.current) {
+                myVideoRef.current.srcObject = screenStream;
             }
-            // 상대방에게 보낼 offer를 만들기
-            const offer = await createScreenShareOffer();
-
-            // 그 offer를 받아서 상대방에게 전달
-            if (socketRef.current)
-                socketRef.current.emit('screenShareOffer', offer);
         } catch (error) {
             console.error('Error accessing screen sharing.', error);
         }
-    };
-
-    // 화면 공유 Offer를 생성하는 함수
-    const createScreenShareOffer = async () => {
-        if (!screenStream) return;
-        // 여기서 peerConnection에 내가 공유한 화면의 stream이 track에 등록되고
-        screenStream
-            .getTracks()
-            .forEach((track) =>
-                peerConnectionRef.current?.addTrack(
-                    track,
-                    screenStream as MediaStream,
-                ),
-            );
-
-        // 내 스트림이 등록된 peerConnection에 대해 다시 offer를 만들고 sdp세팅을 해줌
-        if (peerConnectionRef.current) {
-            const offer = await peerConnectionRef.current.createOffer();
-            await peerConnectionRef.current.setLocalDescription(offer);
-
-            return offer;
-        }
-
-        return null;
-    };
-
-    // 화면 공유 Offer를 수신하는 함수
-    const receiveScreenShareOffer = async (
-        offer: RTCSessionDescriptionInit,
-    ) => {
-        console.log('offer:::', offer);
-
-        // 피어 연결에 상대방의 스트림 정보 설정
-        await peerConnectionRef.current!.setRemoteDescription(offer);
-
-        // 피어 연결에서 상대방의 스트림 받기
-        peerConnectionRef.current!.ontrack = (event) => {
-            console.log('eventStreams:::', event.streams);
-            if (
-                event.streams &&
-                event.streams[0] &&
-                remoteScreenTestRef.current
-            ) {
-                remoteScreenTestRef.current.srcObject = event.streams[0];
-            }
-        };
-
-        // Answer 생성 후 상대방에게 전송
-        const answer = await peerConnectionRef.current!.createAnswer();
-        await peerConnectionRef.current!.setLocalDescription(answer);
-        socketRef.current!.emit('screenShareAnswer', answer);
-    };
-
-    // 화면 공유 Answer를 수신하는 함수
-    const receiveScreenShareAnswer = async (
-        answer: RTCSessionDescriptionInit,
-    ) => {
-        await peerConnectionRef.current?.setRemoteDescription(answer);
     };
 
     const handleAudio = () => {
@@ -313,20 +224,6 @@ const Test = () => {
                 track.enabled = !track.enabled;
             });
             myVideoRef.current.srcObject = myAudioObj;
-        }
-    };
-
-    const handleVideo = () => {
-        setIsVideoOn(!isVideoOn);
-
-        if (myVideoRef.current) {
-            let myVideoObj: MediaStream = myVideoRef.current
-                .srcObject as MediaStream;
-            let myVideoTracks = myVideoObj.getVideoTracks();
-            myVideoTracks.forEach((track) => {
-                track.enabled = !track.enabled;
-            });
-            myVideoRef.current.srcObject = myVideoObj;
         }
     };
 
@@ -344,14 +241,6 @@ const Test = () => {
                 if (remoteVideoRef.current)
                     mainVideoRef.current.srcObject =
                         remoteVideoRef.current.srcObject;
-            } else if (type === 'myscreen') {
-                if (myScreenRef.current)
-                    mainVideoRef.current.srcObject =
-                        myScreenRef.current.srcObject;
-            } else if (type === 'opponentscreen') {
-                if (remoteScreenRef.current)
-                    mainVideoRef.current.srcObject =
-                        remoteScreenRef.current.srcObject;
             }
         }
     };
@@ -380,32 +269,6 @@ const Test = () => {
                     onClick={() => handleMainVideo('opponentvideo')}
                     autoPlay
                 />
-                {/* <video
-                    id="myscreen"
-                    className="bg-black w-[240px] h-[180px] rounded-md cursor-pointer hover:outline-2 hover:outline hover:outline-blue-500"
-                    ref={myScreenRef}
-                    onClick={() => handleMainVideo('myscreen')}
-                    autoPlay
-                />
-                <video
-                    id="remotescreen"
-                    className="bg-black w-[240px] h-[180px] rounded-md cursor-pointer hover:outline-2 hover:outline hover:outline-blue-500"
-                    ref={remoteScreenRef}
-                    onClick={() => handleMainVideo('opponentscreen')}
-                    autoPlay
-                /> */}
-                <video
-                    id="localvideo"
-                    className="bg-black w-[240px] h-[180px] rounded-md cursor-pointer hover:outline-2 hover:outline hover:outline-blue-500"
-                    ref={localVideoRef}
-                    autoPlay
-                />
-                <video
-                    id="remoteScreenTestRef"
-                    className="bg-black w-[240px] h-[180px] rounded-md cursor-pointer hover:outline-2 hover:outline hover:outline-blue-500"
-                    ref={remoteScreenTestRef}
-                    autoPlay
-                />
             </div>
 
             <div className="flex justify-center mt-8">
@@ -430,28 +293,6 @@ const Test = () => {
                                 strokeLinecap="round"
                                 strokeLinejoin="round"
                                 d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z"
-                            />
-                        </svg>
-                    </div>
-                    <div
-                        className={`w-12 h-12 rounded-full ${
-                            isVideoOn
-                                ? 'bg-[#3C4043] hover:bg-[#2B3239]'
-                                : 'bg-red-500 hover:bg-red-600'
-                        } transition-all flex justify-center items-center cursor-pointer`}
-                        onClick={handleVideo}
-                    >
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            strokeWidth={1.5}
-                            stroke="white"
-                            className="w-6 h-6"
-                        >
-                            <path
-                                strokeLinecap="round"
-                                d="M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25h-9A2.25 2.25 0 002.25 7.5v9a2.25 2.25 0 002.25 2.25z"
                             />
                         </svg>
                     </div>
