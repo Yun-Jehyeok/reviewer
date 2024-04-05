@@ -53,6 +53,7 @@ const Test = () => {
             // 자신의 스트림 정보
             const stream = await navigator.mediaDevices.getDisplayMedia({
                 video: true,
+                audio: true,
             });
 
             if (myVideoRef.current) {
@@ -203,6 +204,7 @@ const Test = () => {
         try {
             screenStream = await navigator.mediaDevices.getDisplayMedia({
                 video: true,
+                audio: true,
             });
             // 공유되는 화면을 내 화면에 출력
             if (myVideoRef.current) {

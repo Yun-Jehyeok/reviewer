@@ -48,18 +48,6 @@ module.exports = (server) => {
             }
         });
 
-        socket.on('screenShareOffer', (offer) => {
-            socket.broadcast.emit('screenShareOffer', offer);
-        });
-
-        socket.on('screenShareAnswer', (answer) => {
-            socket.broadcast.emit('screenShareAnswer', answer);
-        });
-
-        socket.on('screenShareCandidate', (candidate) => {
-            socket.broadcast.emit('screenShareCandidate', candidate);
-        });
-
         socket.on('offer', (sdp, roomName) => {
             // offer를 전달받고 다른 유저들에게 전달해 줍니다.
             socket.to(roomName).emit('getOffer', sdp);
@@ -73,10 +61,6 @@ module.exports = (server) => {
         socket.on('candidate', (candidate, roomName) => {
             // candidate를 전달받고 방의 다른 유저들에게 전달해 줍니다.
             socket.to(roomName).emit('getCandidate', candidate);
-        });
-
-        socket.on('screenSharing', (screenId) => {
-            socket.broadcast.emit('screenShare', screenId);
         });
 
         socket.on('disconnect', () => {
