@@ -48,6 +48,18 @@ module.exports = (server) => {
             }
         });
 
+        socket.on('screenShareOffer', (offer) => {
+            socket.broadcast.emit('screenShareOffer', offer);
+        });
+
+        socket.on('screenShareAnswer', (answer) => {
+            socket.broadcast.emit('screenShareAnswer', answer);
+        });
+
+        socket.on('screenShareCandidate', (candidate) => {
+            socket.broadcast.emit('screenShareCandidate', candidate);
+        });
+
         socket.on('offer', (sdp, roomName) => {
             // offer를 전달받고 다른 유저들에게 전달해 줍니다.
             socket.to(roomName).emit('getOffer', sdp);

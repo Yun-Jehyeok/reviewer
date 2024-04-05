@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
-import { Socket, io } from 'socket.io-client';
+import io from 'socket.io-client';
 
 // PeerA = 먼저 룸에 들어와있는 상태
 // PeerB = 이후에 룸에 접속을 할 상태
@@ -27,14 +27,17 @@ import { Socket, io } from 'socket.io-client';
 // 1. 요청자에게 candidate륿 보낸다.
 // 2. 연결할 peer에서 받은 정보를 저장하고 자신의 candidate를 보내고(send candidate)
 // 3. 받는 쪽에서 해당 candidate를 저장한다. (addICECandidate)
+
+const socket = io(process.env.NEXT_PUBLIC_SERVER_URL as string, {
+    path: '/api/video',
+});
+
 const Video = () => {
     const [isVideoOn, setIsVideoOn] = useState<boolean>(true);
     const [isAudioOn, setIsAudioOn] = useState<boolean>(true);
 
     const router = useRouter();
 
-    // Socket 정보를 담을 Ref
-    const socketRef = useRef<Socket>();
     // 메인 비디오
     const mainVideoRef = useRef<HTMLVideoElement>(null);
     // 자신의 비디오
@@ -48,9 +51,7 @@ const Video = () => {
     // peerConnection
     const pcRef = useRef<RTCPeerConnection>();
 
-    // 화면 공유
-    const testRef = useRef<HTMLVideoElement>(null);
-
+    const testRef = useRef<HTMLVideoElement>(null); // 원격 비디오 요소에 대한 참조
     // url 파라미터에 있는 room 정보
     const roomName = '1';
 
@@ -65,7 +66,7 @@ const Video = () => {
             if (myVideoRef.current) {
                 myVideoRef.current.srcObject = stream;
             }
-            if (!(pcRef.current && socketRef.current)) {
+            if (!(pcRef.current && socket)) {
                 return;
             }
 
@@ -80,10 +81,10 @@ const Video = () => {
             // iceCandidate 이벤트
             pcRef.current.onicecandidate = (e) => {
                 if (e.candidate) {
-                    if (!socketRef.current) return;
+                    if (!socket) return;
 
                     console.log('recv candidate');
-                    socketRef.current.emit('candidate', e.candidate, roomName);
+                    socket.emit('candidate', e.candidate, roomName);
                 }
             };
 
@@ -101,7 +102,7 @@ const Video = () => {
 
     const createOffer = async () => {
         console.log('create Offer');
-        if (!(pcRef.current && socketRef.current)) {
+        if (!(pcRef.current && socket)) {
             return;
         }
         try {
@@ -112,7 +113,7 @@ const Video = () => {
             console.log('sent the offer');
 
             // offer 전달
-            socketRef.current.emit('offer', sdp, roomName);
+            socket.emit('offer', sdp, roomName);
         } catch (e) {
             console.error(e);
         }
@@ -121,7 +122,7 @@ const Video = () => {
     const createAnswer = async (sdp: RTCSessionDescription) => {
         // sdp인자 : PeerA 에게서 받은 offer
         console.log('createAnswer');
-        if (!(pcRef.current && socketRef.current)) {
+        if (!(pcRef.current && socket)) {
             return;
         }
 
@@ -134,17 +135,13 @@ const Video = () => {
             pcRef.current.setLocalDescription(answerSdp);
 
             console.log('sent the answer');
-            socketRef.current.emit('answer', answerSdp, roomName);
+            socket.emit('answer', answerSdp, roomName);
         } catch (e) {
             console.error(e);
         }
     };
 
     useEffect(() => {
-        socketRef.current = io(process.env.NEXT_PUBLIC_SERVER_URL as string, {
-            path: '/api/video',
-        });
-
         pcRef.current = new RTCPeerConnection({
             iceServers: [
                 {
@@ -153,8 +150,24 @@ const Video = () => {
             ],
         });
 
+        // 서버로부터 화면 공유에 대한 요청을 수신하는 이벤트 핸들러 등록
+        socket.on(
+            'screenShareOffer',
+            async (offer: RTCSessionDescriptionInit) => {
+                await receiveScreenShareOffer(offer);
+            },
+        );
+
+        // 서버로부터 화면 공유에 대한 응답을 수신하는 이벤트 핸들러 등록
+        socket.on(
+            'screenShareAnswer',
+            async (answer: RTCSessionDescriptionInit) => {
+                await receiveScreenShareAnswer(answer);
+            },
+        );
+
         // 기존 유저가 있고, 새로운 유저가 들어왔다면 오퍼 생성
-        socketRef.current.on('all_users', (allUsers: Array<{ id: string }>) => {
+        socket.on('all_users', (allUsers: Array<{ id: string }>) => {
             if (allUsers.length > 0) {
                 createOffer();
             }
@@ -162,14 +175,14 @@ const Video = () => {
 
         // 오퍼를 전달받은 PeerB만 사용할 함수
         // offer를 들고 만들어준 answer 함수 실행
-        socketRef.current.on('getOffer', (sdp: RTCSessionDescription) => {
+        socket.on('getOffer', (sdp: RTCSessionDescription) => {
             console.log('recv Offer');
             createAnswer(sdp);
         });
 
         // answer를 전달받을 PeerA만 사용할 함수
         // answer를 전달받아 PeerA의 RemoteDescription에 등록
-        socketRef.current.on('getAnswer', (sdp: RTCSessionDescription) => {
+        socket.on('getAnswer', (sdp: RTCSessionDescription) => {
             console.log('recv Answer');
             if (!pcRef.current) return;
 
@@ -177,17 +190,14 @@ const Video = () => {
         });
 
         // 서로의 candidate를 전달받아 등록
-        socketRef.current.on(
-            'getCandidate',
-            async (candidate: RTCIceCandidate) => {
-                if (!pcRef.current) return;
+        socket.on('getCandidate', async (candidate: RTCIceCandidate) => {
+            if (!pcRef.current) return;
 
-                await pcRef.current.addIceCandidate(candidate);
-            },
-        );
+            await pcRef.current.addIceCandidate(candidate);
+        });
 
         // 화면 공유
-        socketRef.current.on('screenShare', async (streamId) => {
+        socket.on('screenShare', async (streamId) => {
             console.log('screenStream:::', streamId);
             const test = await navigator.mediaDevices.getUserMedia({
                 audio: true, // or true
@@ -204,7 +214,7 @@ const Video = () => {
         });
 
         // 마운트 시, 해당 방의 roomName을 서버에 전달
-        socketRef.current.emit('join_room', {
+        socket.emit('join_room', {
             room: roomName,
         });
 
@@ -212,14 +222,134 @@ const Video = () => {
 
         return () => {
             // 언마운트 시 socket disconnect
-            if (socketRef.current) {
-                socketRef.current.disconnect();
+            if (socket) {
+                socket.disconnect();
             }
             if (pcRef.current) {
                 pcRef.current.close();
             }
         };
-    }, [socketRef]);
+    }, []);
+
+    let screenStream: MediaStream | null = null; // 화면 공유 미디어 스트림
+    const localVideoRef = useRef<HTMLVideoElement>(null); // 로컬 비디오 요소에 대한 참조
+
+    // 화면 공유를 시작하는 함수
+    const startScreenSharing = async () => {
+        try {
+            screenStream = await navigator.mediaDevices.getDisplayMedia({
+                video: true,
+            });
+            if (localVideoRef.current) {
+                localVideoRef.current.srcObject = screenStream;
+            }
+            const offer = await createScreenShareOffer();
+            socket.emit('screenShareOffer', offer);
+        } catch (error) {
+            console.error('Error accessing screen sharing.', error);
+        }
+    };
+
+    // 화면 공유 Offer를 생성하는 함수
+    const createScreenShareOffer = async () => {
+        if (!screenStream) return;
+        pcRef.current = new RTCPeerConnection();
+        screenStream
+            .getTracks()
+            .forEach((track) =>
+                pcRef.current?.addTrack(track, screenStream as MediaStream),
+            );
+
+        const offer = await pcRef.current.createOffer();
+        await pcRef.current.setLocalDescription(offer);
+
+        return offer;
+    };
+
+    // 화면 공유 Offer를 수신하는 함수
+    const receiveScreenShareOffer = async (
+        offer: RTCSessionDescriptionInit,
+    ) => {
+        pcRef.current = new RTCPeerConnection();
+
+        if (pcRef.current) {
+            pcRef.current.ontrack = (event) => {
+                if (event.streams && event.streams[0] && testRef.current) {
+                    testRef.current.srcObject = event.streams[0];
+                }
+            };
+        }
+
+        await pcRef.current?.setRemoteDescription(offer);
+
+        const answer = await pcRef.current?.createAnswer();
+        await pcRef.current?.setLocalDescription(
+            answer as RTCSessionDescriptionInit,
+        );
+
+        socket.emit('screenShareAnswer', answer);
+    };
+
+    // 화면 공유 Answer를 수신하는 함수
+    const receiveScreenShareAnswer = async (
+        answer: RTCSessionDescriptionInit,
+    ) => {
+        await pcRef.current?.setRemoteDescription(answer);
+    };
+
+    const handleScreen = async () => {
+        try {
+            await navigator.mediaDevices
+                .getUserMedia({
+                    video: true,
+                    audio: true,
+                })
+                .then(function (audioStream) {
+                    //오디오 스트림을 얻어냄
+
+                    navigator.mediaDevices
+                        .getDisplayMedia({
+                            audio: true,
+                            video: true,
+                        })
+                        .then(async function (screenStream) {
+                            //스크린 공유 스트림을 얻어내고 여기에 오디오 스트림을 결합함
+                            screenStream.addTrack(
+                                audioStream.getAudioTracks()[0],
+                            );
+
+                            console.log('screenStream:::', screenStream.id);
+                            if (
+                                myScreenRef.current &&
+                                pcRef.current &&
+                                socket
+                            ) {
+                                myScreenRef.current.srcObject = screenStream;
+
+                                const sdp = await pcRef.current.createOffer();
+                                // 자신의 sdp로 localDescription 설정
+                                pcRef.current.setLocalDescription(sdp);
+                                console.log('sent the offer');
+
+                                if (socket) {
+                                    socket.emit('screenSharing', sdp);
+                                    // socket.emit('screenSharing', {
+                                    //     screenStream,
+                                    // });
+                                }
+                            }
+                        })
+                        .catch(function (e) {
+                            //error;
+                        });
+                })
+                .catch(function (e) {
+                    //error;
+                });
+        } catch (err) {
+            console.error(err);
+        }
+    };
 
     const handleAudio = () => {
         setIsAudioOn(!isAudioOn);
@@ -246,50 +376,6 @@ const Video = () => {
                 track.enabled = !track.enabled;
             });
             myVideoRef.current.srcObject = myVideoObj;
-        }
-    };
-
-    const handleScreen = async () => {
-        try {
-            await navigator.mediaDevices
-                .getUserMedia({
-                    video: true,
-                    audio: true,
-                })
-                .then(function (audioStream) {
-                    //오디오 스트림을 얻어냄
-
-                    navigator.mediaDevices
-                        .getDisplayMedia({
-                            audio: true,
-                            video: true,
-                        })
-                        .then(function (screenStream) {
-                            //스크린 공유 스트림을 얻어내고 여기에 오디오 스트림을 결합함
-                            screenStream.addTrack(
-                                audioStream.getAudioTracks()[0],
-                            );
-
-                            console.log('screenStream:::', screenStream.id);
-                            if (myScreenRef.current) {
-                                myScreenRef.current.srcObject = screenStream;
-
-                                if (socketRef.current) {
-                                    // socketRef.current.emit('screenSharing', {
-                                    //     screenStream,
-                                    // });
-                                }
-                            }
-                        })
-                        .catch(function (e) {
-                            //error;
-                        });
-                })
-                .catch(function (e) {
-                    //error;
-                });
-        } catch (err) {
-            console.error(err);
         }
     };
 
@@ -357,6 +443,18 @@ const Video = () => {
                     onClick={() => handleMainVideo('opponentscreen')}
                     autoPlay
                 />
+                <video
+                    id="testref"
+                    className="bg-black w-[240px] h-[180px] rounded-md cursor-pointer hover:outline-2 hover:outline hover:outline-blue-500"
+                    ref={testRef}
+                    autoPlay
+                />
+                <video
+                    id="localvideo"
+                    className="bg-black w-[240px] h-[180px] rounded-md cursor-pointer hover:outline-2 hover:outline hover:outline-blue-500"
+                    ref={localVideoRef}
+                    autoPlay
+                />
             </div>
 
             <div className="flex justify-center mt-8">
@@ -408,7 +506,7 @@ const Video = () => {
                     </div>
                     <div
                         className="w-12 h-12 rounded-full bg-[#3C4043] hover:bg-[#2B3239] transition-all flex justify-center items-center cursor-pointer"
-                        onClick={handleScreen}
+                        onClick={startScreenSharing}
                     >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
