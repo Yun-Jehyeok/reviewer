@@ -11,6 +11,7 @@ export interface postIFC {
     creator: userIFC;
     reviews: reviewIFC[];
     reputation: number;
+    imgs?: string[];
 }
 
 export interface getAllPostReqIFC {
@@ -30,6 +31,11 @@ export interface registerPostIFC {
     content: string;
     lang: string[];
     price: number;
+    imgs: string[];
+}
+
+export interface uploadImgIFC {
+    imgs: FormData;
 }
 
 export interface applyIFC {
