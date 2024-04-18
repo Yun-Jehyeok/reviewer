@@ -17,6 +17,15 @@ export const registerPostApi = async (post: registerPostIFC) => {
     }
 };
 
+export const uploadImgApi = async (imgs: FormData) => {
+    try {
+        const res = await Apis.post('/post/image', imgs);
+        return res;
+    } catch (err) {
+        console.error(err, ' : Upload Image Error !!!');
+    }
+};
+
 export const getAllPostApi: QueryFunction<
     allPostIFC,
     [_1: string, _2: getAllPostReqIFC]
