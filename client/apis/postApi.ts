@@ -10,10 +10,21 @@ import { QueryFunction } from '@tanstack/react-query';
 
 export const registerPostApi = async (post: registerPostIFC) => {
     try {
+        console.log('postPayload:::', post);
         const res = await Apis.post('/post', post);
         return res;
     } catch (err) {
         console.error(err, ' : Register Post Error !!!');
+    }
+};
+
+export const uploadImgApi = async (image: FormData) => {
+    try {
+        console.log('image:::', image);
+        const res = await Apis.post('/post/image', image);
+        return res;
+    } catch (err) {
+        console.error(err, ' : Upload Image Error !!!');
     }
 };
 

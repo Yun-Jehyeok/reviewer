@@ -1,14 +1,17 @@
-"use client";
+'use client';
 
-import { applyApi, getPostApi } from "@/apis/postApi";
-import CButton from "@/components/common/CButton";
-import CSpinner from "@/components/common/CSpinner";
-import { postIFC } from "@/interfaces/postIFC";
-import { userState } from "@/states/userStates";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import DOMPurify from "dompurify";
-import { useParams, useRouter } from "next/navigation";
-import { useRecoilState } from "recoil";
+import { applyApi, getPostApi } from '@/apis/postApi';
+import CButton from '@/components/common/CButton';
+import CSpinner from '@/components/common/CSpinner';
+import { postIFC } from '@/interfaces/postIFC';
+import { userState } from '@/states/userStates';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import DOMPurify from 'dompurify';
+import Image from 'next/image';
+import { useParams, useRouter } from 'next/navigation';
+import { useRecoilState } from 'recoil';
+import 'swiper/css';
+import { Swiper, SwiperSlide } from 'swiper/react';
 
 export default function ReviewerDetail() {
     const { id } = useParams() as { id: string };
@@ -21,29 +24,31 @@ export default function ReviewerDetail() {
         error,
         isPending,
     } = useQuery<postIFC, Object, postIFC, [_1: string, _2: string]>({
-        queryKey: ["posts", id],
+        queryKey: ['posts', id],
         queryFn: getPostApi,
         staleTime: 60 * 1000,
         gcTime: 300 * 1000,
     });
 
+    console.log('post:::', post);
+
     const applyMutation = useMutation({
         mutationFn: applyApi,
         onMutate: (variable) => {
-            console.log("onMutate", variable);
+            console.log('onMutate', variable);
         },
         onError: (error, variable, context) => {
-            console.error("applyErr:::", error);
+            console.error('applyErr:::', error);
         },
         onSuccess: (data, variables, context) => {
-            console.log("applySuccess", data, variables, context);
+            console.log('applySuccess', data, variables, context);
             if (data.success) {
-                alert("리뷰가 신청되었습니다.");
-                router.push("/mypage/history/apply");
+                alert('리뷰가 신청되었습니다.');
+                router.push('/mypage/history/apply');
             }
         },
         onSettled: () => {
-            console.log("applyEnd");
+            console.log('applyEnd');
         },
     });
 
@@ -52,17 +57,17 @@ export default function ReviewerDetail() {
             | React.FormEvent<HTMLFormElement>
             | React.MouseEvent<HTMLButtonElement>,
     ) => {
-        if (user._id === "") {
-            alert("로그인이 필요한 서비스입니다.");
+        if (user._id === '') {
+            alert('로그인이 필요한 서비스입니다.');
             return;
         }
 
-        let conf = confirm("해당 리뷰어에게 리뷰를 신청하시겠습니까?");
+        let conf = confirm('해당 리뷰어에게 리뷰를 신청하시겠습니까?');
 
         if (conf) {
             if (user.point < post!.price) {
-                alert("리뷰 신청을 위한 포인트가 부족합니다.");
-                router.push("/payment");
+                alert('리뷰 신청을 위한 포인트가 부족합니다.');
+                router.push('/payment');
                 return;
             }
 
@@ -77,7 +82,7 @@ export default function ReviewerDetail() {
 
     const stars = [1, 2, 3, 4, 5];
 
-    console.log("post:::", post);
+    console.log('post:::', post);
     if (!post) return null;
 
     return (
@@ -85,9 +90,30 @@ export default function ReviewerDetail() {
             {(isPending || applyMutation.isPending) && <CSpinner />}
             {/* 왼쪽 */}
             <div className="w-2/3">
-                <div className="w-full h-[540px] bg-[#F4F6F5] rounded-xl text-center flex flex-col justify-center text-[#9b9b9b] text-lg">
-                    추후 이미지 업데이트 예정입니다.
-                </div>
+                {post.imgs && post.imgs.length > 0 ? (
+                    <Swiper spaceBetween={0} slidesPerView={1}>
+                        {post.imgs.map((img) => {
+                            return (
+                                <SwiperSlide
+                                    key={img}
+                                    className="w-full h-[540px] bg-[#F4F6F5] text-center flex flex-col justify-center text-[#9b9b9b] text-lg"
+                                >
+                                    <div className="w-full h-[540px] cursor-pointer">
+                                        <Image
+                                            src={img}
+                                            alt={img}
+                                            layout="fill"
+                                        />
+                                    </div>
+                                </SwiperSlide>
+                            );
+                        })}
+                    </Swiper>
+                ) : (
+                    <div className="w-full h-[540px] bg-[#F4F6F5] rounded-xl text-center flex flex-col justify-center text-[#9b9b9b] text-lg">
+                        REVIEWER
+                    </div>
+                )}
 
                 <div className="w-full mt-24">
                     <div className="text-2xl font-bold mb-6">설명</div>
@@ -95,8 +121,8 @@ export default function ReviewerDetail() {
                         {post.content && (
                             <div
                                 style={{
-                                    width: "100%",
-                                    whiteSpace: "normal",
+                                    width: '100%',
+                                    whiteSpace: 'normal',
                                 }}
                                 dangerouslySetInnerHTML={{
                                     __html: DOMPurify.sanitize(
@@ -215,8 +241,8 @@ export default function ReviewerDetail() {
                             <div className="text-sm text-gray-600">
                                 <div
                                     style={{
-                                        width: "100%",
-                                        whiteSpace: "normal",
+                                        width: '100%',
+                                        whiteSpace: 'normal',
                                     }}
                                     dangerouslySetInnerHTML={{
                                         __html: DOMPurify.sanitize(
