@@ -211,7 +211,10 @@ export default function RegisterReviewer() {
                 body: formData,
             };
 
-            fetch('http://localhost:8080/api/post/image', requestOptions)
+            fetch(
+                `${process.env.NEXT_PUBLIC_SERVER_URL}/api/post/image`,
+                requestOptions,
+            )
                 .then((response) => response.json())
                 .then((data) => {
                     if (data.success) {
