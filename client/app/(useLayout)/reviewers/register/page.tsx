@@ -4,7 +4,7 @@ import CButton from '@/components/common/CButton';
 import CInput from '@/components/common/CInput';
 import { useInput } from '@/hooks/useInput';
 
-import { registerPostApi, uploadImgApi } from '@/apis/postApi';
+import { registerPostApi } from '@/apis/postApi';
 import CSpinner from '@/components/common/CSpinner';
 import { registerPostIFC } from '@/interfaces/postIFC';
 import { userState } from '@/states/userStates';
@@ -157,38 +157,8 @@ export default function RegisterReviewer() {
         },
     });
 
-    const uploadImgMutation = useMutation({
-        mutationFn: uploadImgApi,
-        onMutate: (variable) => {
-            console.log('onMutate', variable);
-        },
-        onError: (error, variable, context) => {
-            console.error('uploadImgErr:::', error);
-        },
-        onSuccess: (data, variables, context) => {
-            console.log('uploadImgSuccess', data, variables, context);
-
-            if (data.success) {
-                let payload: registerPostIFC = {
-                    userId: user._id,
-                    title: title.value,
-                    content: description,
-                    lang: techs,
-                    price: price.value,
-                    imgs,
-                };
-
-                registerPostMutation.mutate(payload);
-            }
-            // if (data.success) router.push(`/reviewers/${data.id}`);
-        },
-        onSettled: () => {
-            console.log('uploadImgEnd');
-        },
-    });
-
     const [imgs, setImgs] = useState<string[]>([]);
-    const [imgFiles, setImgFiles] = useState<File[]>();
+    const [imgFiles, setImgFiles] = useState<File[]>([]);
     const [empties, setEmpties] = useState(3);
     const [isActive, setIsActive] = useState(false);
 
@@ -229,23 +199,45 @@ export default function RegisterReviewer() {
 
             if (errFlag) return;
 
-            // const formData = new FormData()
-            // formData.append('file', file)
-
             const formData = new FormData();
             if (Array.isArray(imgFiles) && imgFiles.length > 0) {
                 imgFiles.map((item) => {
-                    formData.append('image', item);
+                    formData.append('image', item, item.name);
                 });
             }
 
-            for (const value of formData.keys()) {
-                console.log(value);
-            }
+            var requestOptions = {
+                method: 'POST',
+                body: formData,
+            };
 
-            uploadImgMutation.mutate(formData);
+            fetch('http://localhost:8080/api/post/image', requestOptions)
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data.success) {
+                        let payload: registerPostIFC = {
+                            userId: user._id,
+                            title: title.value,
+                            content: description,
+                            lang: techs,
+                            price: price.value,
+                            imgs: data.url,
+                        };
+
+                        registerPostMutation.mutate(payload);
+                    }
+                })
+                .catch((error) => console.log('error', error));
         },
-        [title, description, techs, uploadImgMutation, imgFiles],
+        [
+            title,
+            description,
+            techs,
+            imgFiles,
+            registerPostMutation,
+            price,
+            user,
+        ],
     );
 
     const onDragAddImage = (e: React.DragEvent<HTMLLabelElement>) => {
@@ -284,7 +276,7 @@ export default function RegisterReviewer() {
             alert('이미지는 총 3개까지 업로드 할 수 있습니다.');
         } else {
             setImgs((prev) => prev.concat(selectedFiles));
-            setImgFiles(files);
+            setImgFiles((prev) => prev.concat(files));
             setEmpties(3 - totalLen);
         }
     };
@@ -299,7 +291,7 @@ export default function RegisterReviewer() {
         });
 
         setImgs(imgs.filter((image) => image !== e.currentTarget.currentSrc));
-        setImgFiles(imgFiles?.filter((image, idx) => idx !== deleteIdx));
+        setImgFiles(imgFiles.filter((image, idx) => idx !== deleteIdx));
         setEmpties(4 - imgs.length);
     };
 

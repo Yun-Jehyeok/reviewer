@@ -1,6 +1,14 @@
 const express = require('express');
 const { Post } = require('../../models/post');
 const { User } = require('../../models/user');
+const multer = require('multer');
+const multerS3 = require('multer-s3');
+const AWS = require('aws-sdk');
+const { S3 } = require('@aws-sdk/client-s3');
+
+const config = require('../../config/index');
+
+const { S3_ACCESS_KEY, S3_SECRET_ACCESS_KEY } = config;
 
 const router = express.Router();
 
@@ -51,16 +59,6 @@ router.get('/skip/:page/:filter/:langFilter', async (req, res) => {
     }
 });
 
-const multer = require('multer');
-const multerS3 = require('multer-s3');
-const AWS = require('aws-sdk');
-
-const { S3 } = require('@aws-sdk/client-s3');
-
-const config = require('../../config/index');
-
-const { S3_ACCESS_KEY, S3_SECRET_ACCESS_KEY } = config;
-
 // JS SDK v3 does not support global configuration.
 // Codemod has attempted to pass values to each service client in this file.
 // You may need to update clients outside of this file, if they use global config.
@@ -92,8 +90,6 @@ const upload = multer({
 
 router.post('/image', upload.array('image', 3), async (req, res) => {
     try {
-        console.log('req:::', req.files);
-
         res.json({ success: true, url: req.files.map((v) => v.location) });
     } catch (e) {
         console.error(e);
@@ -102,7 +98,6 @@ router.post('/image', upload.array('image', 3), async (req, res) => {
 });
 
 router.post('/', (req, res) => {
-    console.log('여긴가...?');
     const { userId, title, content, lang, price, imgs } = req.body;
 
     User.findOne({ _id: userId }).then((user) => {

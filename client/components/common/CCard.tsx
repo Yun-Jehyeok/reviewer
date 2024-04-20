@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import Link from 'next/link';
 
 interface ICCard {
@@ -13,7 +14,17 @@ export default function CCard({ data }: ICCard) {
     return (
         <Link href={`/reviewers/${data.id}`} className="cursor-pointer">
             <div className="w-full h-[240px] bg-[#F4F6F5] rounded-xl text-center flex flex-col justify-center text-[#9b9b9b] text-lg">
-                추후 이미지 업데이트
+                {data.image === 'noimage' ? (
+                    'REVIEWER'
+                ) : (
+                    <Image
+                        className="rounded-md w-full h-full"
+                        src={data.image}
+                        width={64}
+                        height={64}
+                        alt={data.image}
+                    />
+                )}
             </div>
 
             <div className="w-full flex justify-between mt-4">

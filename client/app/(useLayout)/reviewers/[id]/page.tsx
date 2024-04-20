@@ -10,6 +10,8 @@ import DOMPurify from 'dompurify';
 import Image from 'next/image';
 import { useParams, useRouter } from 'next/navigation';
 import { useRecoilState } from 'recoil';
+import 'swiper/css';
+import { Swiper, SwiperSlide } from 'swiper/react';
 
 export default function ReviewerDetail() {
     const { id } = useParams() as { id: string };
@@ -88,26 +90,28 @@ export default function ReviewerDetail() {
             {(isPending || applyMutation.isPending) && <CSpinner />}
             {/* 왼쪽 */}
             <div className="w-2/3">
-                {post.imgs ? (
-                    post.imgs.map((img) => {
-                        return (
-                            <div
-                                key={img}
-                                className="w-full h-[540px] bg-[#F4F6F5] rounded-xl text-center flex flex-col justify-center text-[#9b9b9b] text-lg"
-                            >
-                                <Image
-                                    className="rounded-md w-full h-full"
-                                    src={img}
-                                    width={128}
-                                    height={128}
-                                    alt={img}
-                                />
-                            </div>
-                        );
-                    })
+                {post.imgs && post.imgs.length > 0 ? (
+                    <Swiper spaceBetween={0} slidesPerView={1}>
+                        {post.imgs.map((img) => {
+                            return (
+                                <SwiperSlide
+                                    key={img}
+                                    className="w-full h-[540px] bg-[#F4F6F5] text-center flex flex-col justify-center text-[#9b9b9b] text-lg"
+                                >
+                                    <div className="w-full h-[540px] cursor-pointer">
+                                        <Image
+                                            src={img}
+                                            alt={img}
+                                            layout="fill"
+                                        />
+                                    </div>
+                                </SwiperSlide>
+                            );
+                        })}
+                    </Swiper>
                 ) : (
                     <div className="w-full h-[540px] bg-[#F4F6F5] rounded-xl text-center flex flex-col justify-center text-[#9b9b9b] text-lg">
-                        추후 이미지 업데이트 예정입니다.
+                        REVIEWER
                     </div>
                 )}
 
