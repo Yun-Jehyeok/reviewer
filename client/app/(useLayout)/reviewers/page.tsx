@@ -88,6 +88,7 @@ export default function Reviewers() {
         getPosts();
     };
 
+    console.log('posts:::', data);
     return (
         <div className="w-full">
             {isLoading && <CSpinner />}
@@ -117,7 +118,10 @@ export default function Reviewers() {
                             id: post._id,
                             title: post.title,
                             price: Number(post.price),
-                            image: 'https://picsum.photos/id/27/200/300',
+                            image:
+                                post.imgs && post.imgs.length > 0
+                                    ? post.imgs[0]
+                                    : 'noimg',
                         };
                         return <CCard key={data.id} data={data} />;
                     })}

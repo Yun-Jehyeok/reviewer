@@ -22,6 +22,7 @@ app.use(
 
 app.use(morgan('dev'));
 app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 
 const { MONGO_URI, PORT } = config;
 
