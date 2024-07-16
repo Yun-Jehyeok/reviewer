@@ -3,20 +3,11 @@ interface ICButton {
     isFull?: boolean;
     isCancel?: boolean;
     addClass?: string;
-    onClick: (
-        e:
-            | React.FormEvent<HTMLFormElement>
-            | React.MouseEvent<HTMLButtonElement>,
-    ) => void;
+    onClick: (e: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement>) => void;
+    type?: "submit" | "button" | "reset" | undefined;
 }
 
-export default function CButton({
-    title,
-    isFull,
-    isCancel,
-    onClick,
-    addClass,
-}: ICButton) {
+export default function CButton({ title, isFull, isCancel, onClick, addClass, type = "button" }: ICButton) {
     return (
         <button
             className={`rounded-md px-4 py-2 
@@ -28,6 +19,7 @@ export default function CButton({
         ${addClass} 
           ${isFull && "w-full "}`}
             onClick={onClick}
+            type={type}
         >
             {title}
         </button>
