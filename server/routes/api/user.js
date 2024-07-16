@@ -34,10 +34,10 @@ router.post("/login", (req, res) => {
     else if (!password) return res.status(400).json({ success: false, msg: "비밀번호를 작성해주세요." });
 
     User.findOne({ email }).then((user) => {
-        if (!user) return res.status(400).json({ success: false, msg: "이메일을 확인해주세요." });
+        if (!user) return res.status(400).json({ success: false, msg: "이메일 또는 비밀번호를 확인해주세요." });
 
         bcrypt.compare(password, user.password).then((isMatch) => {
-            if (!isMatch) return res.status(400).json({ success: false, msg: "비밀번호를 확인해주세요." });
+            if (!isMatch) return res.status(400).json({ success: false, msg: "이메일 또는 비밀번호를 확인해주세요." });
 
             jwt.sign({ id: user.id }, JWT_SECRET, { expiresIn: 36000000 }, (err, token) => {
                 if (err) return res.status(400).json({ success: false, msg: err });
