@@ -5,13 +5,12 @@ import { userState } from "@/states/userStates";
 import { bgFixed } from "@/utils/utils";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
 import CButton from "../common/CButton";
 import CConfirm from "../common/CConfirm";
 import LoginModal from "../login/loginModal";
 import NavAlarm from "./navAlarm";
-import NavMessages from "./navMessages";
 
 export default function Navigation() {
     const [modalOpen, setModalOpen] = useState<boolean>(false);
@@ -30,21 +29,11 @@ export default function Navigation() {
 
     useEffect(() => {
         const handleShowPopup = async (e: Event) => {
-            console.log(
-                (e.target as HTMLElement).closest(".nav-mypage"),
-                " : target",
-            );
-            const alarmIconCon =
-                (e.target as HTMLElement).classList.contains("nav-alarm") ||
-                (e.target as HTMLElement).closest(".nav-alarm");
-            const myPageIconCon =
-                (e.target as HTMLElement).classList.contains("nav-mypage") ||
-                (e.target as HTMLElement).closest(".nav-mypage");
+            const alarmIconCon = (e.target as HTMLElement).classList.contains("nav-alarm") || (e.target as HTMLElement).closest(".nav-alarm");
+            const myPageIconCon = (e.target as HTMLElement).classList.contains("nav-mypage") || (e.target as HTMLElement).closest(".nav-mypage");
 
-            console.log(showAlarms, alarmIconCon, " : alarmIconCon");
             if (showAlarms && !alarmIconCon) setShowAlarms(() => !showAlarms);
-            if (showDropdown && !myPageIconCon)
-                setShowDropdown(() => !showDropdown);
+            if (showDropdown && !myPageIconCon) setShowDropdown(() => !showDropdown);
         };
 
         window.addEventListener("click", handleShowPopup);
@@ -113,10 +102,7 @@ export default function Navigation() {
             <div className="flex gap-8 items-center">
                 <Link href="/reviewers">리뷰어 목록</Link>
                 <Link href="/reviewers/register">리뷰어 등록</Link>
-                <NavAlarm
-                    showAlarms={showAlarms}
-                    setShowAlarms={setShowAlarms}
-                />
+                <NavAlarm showAlarms={showAlarms} setShowAlarms={setShowAlarms} />
                 {/* <NavMessages /> */}
                 {isAuth ? (
                     <div className="relative nav-mypage">
@@ -125,14 +111,7 @@ export default function Navigation() {
                             // onClick={() => setShowDropdown((prev) => !prev)}
                             onClick={handleShowMyPage}
                         >
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                strokeWidth={1.5}
-                                stroke="white"
-                                className="w-6 h-6"
-                            >
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="white" className="w-6 h-6">
                                 <path
                                     strokeLinecap="round"
                                     strokeLinejoin="round"
@@ -145,33 +124,22 @@ export default function Navigation() {
                             <div className="absolute top-14 -left-[120px]">
                                 <div className="bg-white rounded-md border border-gray-200 z-10 absolute w-[280px] h-fit shadow-md">
                                     <div className="p-8 w-full">
-                                        <div className="w-full text-center text-xl font-bold mb-4">
-                                            {user.name}
-                                        </div>
+                                        <div className="w-full text-center text-xl font-bold mb-4">{user.name}</div>
                                         <div className="w-full flex justify-center">
                                             <div className="w-24 h-24 rounded-full bg-gray-500"></div>
                                         </div>
 
                                         <div className="w-full flex justify-center items-center mt-8">
-                                            <CButton
-                                                title="포인트 충전하기"
-                                                onClick={navigateToPayment}
-                                            />
+                                            <CButton title="포인트 충전하기" onClick={navigateToPayment} />
                                         </div>
                                     </div>
                                     <div className="w-full h-[1px] border border-gray-200"></div>
                                     <div className="p-4 py-2 w-full flex justify-end gap-4">
-                                        <div
-                                            className="text-sm text-blue-600 cursor-pointer"
-                                            onClick={navigateToMypage}
-                                        >
+                                        <div className="text-sm text-blue-600 cursor-pointer" onClick={navigateToMypage}>
                                             Mypage
                                         </div>
 
-                                        <div
-                                            className="text-sm text-blue-600 cursor-pointer"
-                                            onClick={onClickLogout}
-                                        >
+                                        <div className="text-sm text-blue-600 cursor-pointer" onClick={onClickLogout}>
                                             Logout
                                         </div>
                                     </div>
