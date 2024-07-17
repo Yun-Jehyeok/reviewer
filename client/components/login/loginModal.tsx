@@ -116,7 +116,7 @@ export default function LoginModal({ setModalOpen }: ILoginModal) {
     );
 
     return (
-        <div className="w-screen h-screen fixed top-0 left-0 bg-gray-500 flex flex-col justify-center bg-opacity-40 overflow-hidden">
+        <div className="w-screen h-screen fixed top-0 left-0 bg-gray-500 flex flex-col justify-center bg-opacity-40 overflow-hidden z-50">
             {signInMutation.isPending && <CSpinner />}
 
             <div className="relative w-[480px] h-fit py-20 bg-white shadow-xl items-center mx-auto my-0 rounded-xl flex">

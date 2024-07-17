@@ -1,45 +1,39 @@
-const express = require('express');
-const { Post } = require('../../models/post');
-const { User } = require('../../models/user');
-const multer = require('multer');
-const multerS3 = require('multer-s3');
-const AWS = require('aws-sdk');
-const { S3 } = require('@aws-sdk/client-s3');
+const express = require("express");
+const { Post } = require("../../models/post");
+const { User } = require("../../models/user");
+const multer = require("multer");
+const multerS3 = require("multer-s3");
+const AWS = require("aws-sdk");
+const { S3 } = require("@aws-sdk/client-s3");
 
-const config = require('../../config/index');
+const config = require("../../config/index");
 
 const { S3_ACCESS_KEY, S3_SECRET_ACCESS_KEY } = config;
 
 const router = express.Router();
 
-router.get('/skip/:page/:filter/:langFilter', async (req, res) => {
+router.get("/skip/:page/:filter/:langFilter", async (req, res) => {
     try {
         let page = (Number(req.params.page) - 1) * 16;
         let { filter, langFilter } = req.params;
 
         let postFindResult = [];
 
-        if (langFilter === 'all') {
-            if (filter === 'registerDate') {
-                postFindResult = await Post.find()
-                    .skip(page)
-                    .limit(16)
-                    .sort({ register_date: -1 });
-            } else if (filter === 'reputation') {
-                postFindResult = await Post.find()
-                    .skip(page)
-                    .limit(16)
-                    .sort({ reputation: -1 });
+        if (langFilter === "all") {
+            if (filter === "registerDate") {
+                postFindResult = await Post.find().skip(page).limit(16).sort({ register_date: -1 });
+            } else if (filter === "reputation") {
+                postFindResult = await Post.find().skip(page).limit(16).sort({ reputation: -1 });
             }
         } else {
-            if (filter === 'registerDate') {
+            if (filter === "registerDate") {
                 postFindResult = await Post.find({
                     lang: { $in: [langFilter] },
                 })
                     .skip(page)
                     .limit(16)
                     .sort({ register_date: -1 });
-            } else if (filter === 'reputation') {
+            } else if (filter === "reputation") {
                 postFindResult = await Post.find({
                     lang: { $in: [langFilter] },
                 })
@@ -65,7 +59,7 @@ router.get('/skip/:page/:filter/:langFilter', async (req, res) => {
 AWS.config.update({
     accessKeyId: S3_ACCESS_KEY,
     secretAccessKey: S3_SECRET_ACCESS_KEY,
-    region: 'ap-northeast-2',
+    region: "ap-northeast-2",
 });
 
 const upload = multer({
@@ -76,10 +70,10 @@ const upload = multer({
                 secretAccessKey: S3_SECRET_ACCESS_KEY,
             },
 
-            region: 'ap-northeast-2',
+            region: "ap-northeast-2",
         }),
-        bucket: 'fukinfriends',
-        acl: 'public-read',
+        bucket: "fukinfriends",
+        acl: "public-read",
         contentType: multerS3.AUTO_CONTENT_TYPE,
         key: function (req, file, cb) {
             cb(null, `feed/${file.originalname}_${new Date().valueOf()}`);
@@ -88,7 +82,7 @@ const upload = multer({
     limits: { fileSize: 5 * 1024 * 1024 },
 });
 
-router.post('/image', upload.array('image', 3), async (req, res) => {
+router.post("/image", upload.array("image", 3), async (req, res) => {
     try {
         res.json({ success: true, url: req.files.map((v) => v.location) });
     } catch (e) {
@@ -97,8 +91,10 @@ router.post('/image', upload.array('image', 3), async (req, res) => {
     }
 });
 
-router.post('/', (req, res) => {
+router.post("/", (req, res) => {
     const { userId, title, content, lang, price, imgs } = req.body;
+
+    console.log("postRequest:::", userId, title, content, lang, price, imgs);
 
     User.findOne({ _id: userId }).then((user) => {
         if (!user) return res.status(400).json({ success: false });
@@ -128,27 +124,25 @@ router.post('/', (req, res) => {
     });
 });
 
-router.get('/:id', (req, res) => {
+router.get("/:id", (req, res) => {
     const id = req.params.id;
 
     Post.findOne({ _id: id })
-        .populate(['reviews', 'creator'])
+        .populate(["reviews", "creator"])
         .then((post) => {
             if (!post)
                 return res.status(400).json({
                     success: false,
-                    msg: '해당 게시글이 존재하지 않습니다.',
+                    msg: "해당 게시글이 존재하지 않습니다.",
                 });
 
             res.status(200).json({ success: true, post: post });
         });
 });
 
-router.get('/post/best', async (req, res) => {
+router.get("/post/best", async (req, res) => {
     try {
-        const postFindResult = await Post.find()
-            .limit(3)
-            .sort({ reputation: 1 });
+        const postFindResult = await Post.find().limit(3).sort({ reputation: 1 });
 
         res.status(200).json({
             success: true,
@@ -159,11 +153,9 @@ router.get('/post/best', async (req, res) => {
     }
 });
 
-router.get('/post/new', async (req, res) => {
+router.get("/post/new", async (req, res) => {
     try {
-        const postFindResult = await Post.find()
-            .limit(3)
-            .sort({ register_date: -1 });
+        const postFindResult = await Post.find().limit(3).sort({ register_date: -1 });
 
         res.status(200).json({
             success: true,
