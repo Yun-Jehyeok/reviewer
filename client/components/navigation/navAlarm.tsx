@@ -1,41 +1,26 @@
 "use client";
 
-import { getAllAlarmsApi, readAlaramApi } from "@/apis/alarmApi";
-import { allAlarmsIFC } from "@/interfaces/alarmIFC";
-import { userState } from "@/states/userStates";
-import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
-import { useRecoilState } from "recoil";
-import io from "socket.io-client";
+import { readAlaramApi } from "@/apis/alarmApi";
 import { IError } from "@/interfaces/commonIFC";
-import { insertHTML } from "@/utils/utils";
+import { userState } from "@/states/userStates";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
+import { useRecoilState } from "recoil";
 
-export default function NavAlarm({
-    showAlarms,
-    setShowAlarms,
-}: {
-    showAlarms: Boolean;
-    setShowAlarms: (e: boolean) => void;
-}) {
+export default function NavAlarm({ showAlarms, setShowAlarms }: { showAlarms: Boolean; setShowAlarms: (e: boolean) => void }) {
     const router = useRouter();
     const queryClient = useQueryClient();
 
     const [user, setUser] = useRecoilState(userState);
 
-    const socket = io(process.env.NEXT_PUBLIC_SERVER_URL as string);
+    // const socket = io(process.env.NEXT_PUBLIC_SERVER_URL as string);
 
-    const { data, error, isLoading } = useQuery<
-        allAlarmsIFC,
-        Object,
-        allAlarmsIFC,
-        [_1: string, _2: string]
-    >({
-        queryKey: ["alarms", user._id],
-        queryFn: getAllAlarmsApi,
-        staleTime: 60 * 1000,
-        gcTime: 300 * 1000,
-    });
+    // const { data, error, isLoading } = useQuery<allAlarmsIFC, Object, allAlarmsIFC, [_1: string, _2: string]>({
+    //     queryKey: ["alarms", user._id],
+    //     queryFn: getAllAlarmsApi,
+    //     staleTime: 60 * 1000,
+    //     gcTime: 300 * 1000,
+    // });
 
     const alramReadMutation = useMutation({
         mutationFn: readAlaramApi,
@@ -46,7 +31,7 @@ export default function NavAlarm({
             console.error("changeToCloseErr:::", error);
         },
         onSuccess: (mutateData, variables, context) => {
-            console.log("changeToCloseSuccess", data, variables, context);
+            // console.log("changeToCloseSuccess", data, variables, context);
             if (mutateData.success) {
                 queryClient.invalidateQueries({ queryKey: ["alarms"] });
             }
@@ -56,12 +41,12 @@ export default function NavAlarm({
         },
     });
 
-    useEffect(() => {
-        socket?.on("notification", (msg: any) => {
-            if (msg?.status && msg.userId == user._id)
-                queryClient.invalidateQueries({ queryKey: ["alarms"] });
-        });
-    }, [socket, queryClient, user._id]);
+    // useEffect(() => {
+    //     socket?.on("notification", (msg: any) => {
+    //         if (msg?.status && msg.userId == user._id)
+    //             queryClient.invalidateQueries({ queryKey: ["alarms"] });
+    //     });
+    // }, [socket, queryClient, user._id]);
 
     const navigateToReview = () => {
         router.push("/mypage/history/review");
@@ -81,14 +66,7 @@ export default function NavAlarm({
             // onClick={() => setShowAlarms(!showAlarms)}
             onClick={handleShowAlarm}
         >
-            <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={1.5}
-                stroke="currentColor"
-                className="w-6 h-6"
-            >
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
                 <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -97,43 +75,28 @@ export default function NavAlarm({
             </svg>
 
             <div className="absolute -bottom-2 -right-2 w-5 h-5 rounded-full bg-red-500 text-xs text-white flex justify-center items-center">
-                {data?.unreadCount}
+                {/* {data?.unreadCount} */}
             </div>
 
             {showAlarms && (
                 <div className="absolute top-[60px] -left-[136px] w-[320px] h-[200px] bg-white z-10 border border-gray-300 shadow-xl rounded-md flex flex-col ">
                     <div className="overflow-auto scrollbar h-full">
                         <ul className="flex flex-1 flex-col px-5 pt-5">
-                            {data &&
+                            {/* {data &&
                                 data?.alarms.map((noti, i) => {
                                     return (
                                         <li
                                             className={`flex-1 
                                         border-slate-300 border-solid py-2
-                                         ${
-                                             i !== data.alarms.length - 1 &&
-                                             "border-b "
-                                         }`}
+                                         ${i !== data.alarms.length - 1 && "border-b "}`}
                                             key={noti._id}
-                                            onClick={onReadAlram(
-                                                noti.isRead,
-                                                noti._id,
-                                            )}
+                                            onClick={onReadAlram(noti.isRead, noti._id)}
                                         >
-                                            <p
-                                                className={`mb-1 ${
-                                                    !noti.isRead && "underline"
-                                                }`}
-                                                dangerouslySetInnerHTML={insertHTML(
-                                                    noti.content,
-                                                )}
-                                            ></p>
-                                            <p className="text-slate-400 text-right">
-                                                {noti.date}
-                                            </p>
+                                            <p className={`mb-1 ${!noti.isRead && "underline"}`} dangerouslySetInnerHTML={insertHTML(noti.content)}></p>
+                                            <p className="text-slate-400 text-right">{noti.date}</p>
                                         </li>
                                     );
-                                })}
+                                })} */}
                         </ul>
                     </div>
                     <div
