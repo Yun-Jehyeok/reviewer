@@ -1,7 +1,7 @@
 import dynamic from "next/dynamic";
 import { Dispatch, SetStateAction } from "react";
 import "react-quill/dist/quill.snow.css";
-import "../../quillset.css";
+import "./quillset.css";
 
 const QuillWrapper = dynamic(() => import("react-quill"), {
     ssr: false,
@@ -25,18 +25,20 @@ const modules = {
 const formats = ["header", "font", "size", "bold", "italic", "underline", "strike", "blockquote", "list", "bullet", "indent", "link", "image"];
 
 interface IProps {
-    description: string;
-    setDescription: Dispatch<SetStateAction<string>>;
-    descErr: boolean;
-    descErrmsg: string;
+    label: string;
+    placeholder: string;
+    contents: string;
+    setContents: Dispatch<SetStateAction<string>>;
+    err: boolean;
+    errmsg: string;
 }
 
-export default function SetDescription({ description, setDescription, descErr, descErrmsg }: IProps) {
+export default function SetTextareaContents({ label, placeholder, contents, setContents, err, errmsg }: IProps) {
     return (
         <div>
-            <div className="mb-2 font-medium text-sm">설명</div>
-            <QuillWrapper theme="snow" modules={modules} formats={formats} value={description} onChange={setDescription} placeholder="설명을 입력해주세요." />
-            {descErr && <div className="text-[#ea002c] text-xs mt-1 pl-4">{descErrmsg}</div>}
+            <div className="mb-2 font-medium text-sm">{label}</div>
+            <QuillWrapper theme="snow" modules={modules} formats={formats} value={contents} onChange={setContents} placeholder={placeholder} />
+            {err && <div className="text-[#ea002c] text-xs mt-1 pl-4">{errmsg}</div>}
         </div>
     );
 }

@@ -1,23 +1,24 @@
 "use client";
 
-import { userIFC } from "@/interfaces/userIFC";
+// Library
 import { useQuery } from "@tanstack/react-query";
 import DOMPurify from "dompurify";
 import { useRouter } from "next/navigation";
 import { useSetRecoilState } from "recoil";
 
-// API
-import { getUserApi } from "@/apis/userApi";
-
-// Recoil
-import { userState } from "@/states/userStates";
-
-// Component
+// Components
 import CButton from "@/components/common/CButton";
 import CSpinner from "@/components/common/CSpinner";
 
-// Util
+// Hooks & Utils
 import { foramttedNumber } from "@/utils/utils";
+
+// Api
+import { getUserApi } from "@/apis/userApi";
+
+// Interface & States
+import { userIFC } from "@/interfaces/userIFC";
+import { userState } from "@/states/userStates";
 
 export default function Mypage() {
     const setUser = useSetRecoilState(userState);
@@ -39,8 +40,6 @@ export default function Mypage() {
         router.push("/edituser");
     };
 
-    console.log("user:::", user);
-
     if (!user) return;
 
     return (
@@ -56,11 +55,7 @@ export default function Mypage() {
 
                 <div className="w-full flex gap-8 py-4">
                     <div className="w-[120px] font-bold">사용 언어</div>
-                    <div className="flex-1">
-                        {user.lang.length > 0
-                            ? user.lang.map((v) => v + ", ")
-                            : "사용 언어를 설정해주세요."}
-                    </div>
+                    <div className="flex-1">{user.lang.length > 0 ? user.lang.join(", ") : "사용 언어를 설정해주세요."}</div>
                 </div>
 
                 <div className="w-full flex gap-8 py-4">
@@ -81,9 +76,7 @@ export default function Mypage() {
                                     whiteSpace: "normal",
                                 }}
                                 dangerouslySetInnerHTML={{
-                                    __html: DOMPurify.sanitize(
-                                        String(user.introduce),
-                                    ),
+                                    __html: DOMPurify.sanitize(String(user.introduce)),
                                 }}
                             />
                         ) : (

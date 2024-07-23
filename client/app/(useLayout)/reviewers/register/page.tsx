@@ -7,12 +7,12 @@ import { useCallback, useState } from "react";
 import { useRecoilState } from "recoil";
 
 // Components
+import SetTech from "@/components/SetTech";
+import SetTextareaContents from "@/components/SetTextareaContents";
 import CButton from "@/components/common/CButton";
 import CInput from "@/components/common/CInput";
 import CSpinner from "@/components/common/CSpinner";
-import SetDescription from "./_component/SetDescription/page";
-import SetImgs from "./_component/SetImgs/page";
-import SetTech from "./_component/SetTech/page";
+import SetImgs from "./_component/SetImgs";
 
 // Hooks & Utils
 import { useInput } from "@/hooks/useInput";
@@ -136,7 +136,14 @@ export default function RegisterReviewer() {
                 <CInput {...price} type="text" label="시간 당 가격 (원)" placeholder="시간 당 가격을 입력해주세요." />
                 <SetTech techErr={techErr} techErrmsg={techErrmsg} setTechs={setTechs} />
                 <SetImgs setImgFiles={setImgFiles} />
-                <SetDescription description={description} setDescription={setDescription} descErr={descErr} descErrmsg={descErrmsg} />
+                <SetTextareaContents
+                    label="설명"
+                    placeholder="설명을 입력해주세요."
+                    contents={description}
+                    setContents={setDescription}
+                    err={descErr}
+                    errmsg={descErrmsg}
+                />
 
                 <div className="w-full flex justify-end">
                     <CButton title="등록하기" onClick={handleSubmit} />
