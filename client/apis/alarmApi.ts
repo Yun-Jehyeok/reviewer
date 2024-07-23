@@ -1,12 +1,13 @@
-import { allAlarmsIFC } from "@/interfaces/alarmIFC";
-import { Apis } from "@/utils/api";
+// Library
 import { QueryFunction } from "@tanstack/react-query";
-import { AxiosError } from "axios";
 
-export const getAllAlarmsApi: QueryFunction<
-    allAlarmsIFC,
-    [_1: string, _2: string]
-> = async ({ queryKey }) => {
+// Utils
+import { Apis } from "@/utils/api";
+
+// Interface
+import { allAlarmsIFC } from "@/interfaces/alarmIFC";
+
+export const getAllAlarmsApi: QueryFunction<allAlarmsIFC, [_1: string, _2: string]> = async ({ queryKey }) => {
     const [_1, userId] = queryKey;
     const res = await Apis.get(`/alarm/${userId}`);
     console.log("Alram Response >>>> ", res);

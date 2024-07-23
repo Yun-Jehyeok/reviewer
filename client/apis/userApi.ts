@@ -1,15 +1,11 @@
-import {
-    changePwIFC,
-    editUserIFC,
-    emailIFC,
-    paymentIFC,
-    phoneIFC,
-    signinIFC,
-    signupIFC,
-    userIFC,
-} from "@/interfaces/userIFC";
-import { Apis } from "@/utils/api";
+// Library
 import { QueryFunction } from "@tanstack/react-query";
+
+// Utils
+import { Apis } from "@/utils/api";
+
+// Interface
+import { changePwIFC, editUserIFC, emailIFC, paymentIFC, phoneIFC, signinIFC, signupIFC, userIFC } from "@/interfaces/userIFC";
 
 export const signinApi = async (user: signinIFC) => {
     return await Apis.post("/user/login", user);
@@ -43,9 +39,7 @@ export const paymentApi = async (data: paymentIFC) => {
     return await Apis.put(`/user/payment/${data.id}`, data);
 };
 
-export const getUserApi: QueryFunction<userIFC, [_1: string, any]> = async ({
-    queryKey,
-}) => {
+export const getUserApi: QueryFunction<userIFC, [_1: string, any]> = async ({ queryKey }) => {
     try {
         const [_1, setUser] = queryKey;
 

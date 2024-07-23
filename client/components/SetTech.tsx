@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 
 const allTechs = [
     "C",
@@ -33,15 +33,20 @@ const allTechs = [
 ];
 
 interface IProps {
+    defaultTechs?: string[];
     techErr: boolean;
     techErrmsg: string;
     setTechs: Dispatch<SetStateAction<string[]>>; // 부모에게 선택된 Tech들 넘겨줄 함수
 }
 
-export default function SetTech({ techErr, techErrmsg, setTechs }: IProps) {
+export default function SetTech({ defaultTechs = [], techErr, techErrmsg, setTechs }: IProps) {
     const [techVal, setTechVal] = useState<string>(""); // 검색 value
     const [filteredTechs, setFilteredTechs] = useState<string[]>([]); // 검색 필터링된 기술들
     const [selectedTechs, setSelectedTechs] = useState<string[]>([]); // 선택된 기술들
+
+    useEffect(() => {
+        if (defaultTechs.length > 0) setSelectedTechs(defaultTechs);
+    }, [defaultTechs]);
 
     const searchTech = (e: React.ChangeEvent<HTMLInputElement>) => {
         let val = e.currentTarget.value;
@@ -58,7 +63,7 @@ export default function SetTech({ techErr, techErrmsg, setTechs }: IProps) {
     const addTech = (val: string) => {
         if (selectedTechs.includes(val)) return;
 
-        let data = selectedTechs;
+        let data = [...selectedTechs];
         data.push(val);
 
         setSelectedTechs(data);

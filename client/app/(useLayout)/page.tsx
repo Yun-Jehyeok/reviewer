@@ -1,20 +1,29 @@
-'use client';
+"use client";
 
-import { getBestReviewsApi, getNewReviewsApi } from '@/apis/postApi';
-import ReviewerList from '@/components/main/ReviewerList';
-import { useQueries } from '@tanstack/react-query';
+// Library
+import { useQueries } from "@tanstack/react-query";
+
+// Components
+import ReviewerList from "@/components/main/ReviewerList";
+
+// Hooks & Utils
+
+// Api
+import { getBestReviewsApi, getNewReviewsApi } from "@/apis/postApi";
+
+// Interface & States
 
 export default function Home() {
     const results = useQueries({
         queries: [
             {
-                queryKey: ['new'],
+                queryKey: ["new"],
                 queryFn: getNewReviewsApi,
                 staleTime: 60 * 1000,
                 gcTime: 300 * 1000,
             },
             {
-                queryKey: ['best'],
+                queryKey: ["best"],
                 queryFn: getBestReviewsApi,
                 staleTime: 60 * 1000,
                 gcTime: 300 * 1000,
@@ -30,21 +39,11 @@ export default function Home() {
                 </div>
             </div>
 
-            <div className="w-full text-3xl font-extrabold py-16">
-                BEST REVIEWERS
-            </div>
-            <ReviewerList
-                posts={results[1].data}
-                noPostContent="최고의 리뷰어가 없습니다."
-            />
+            <div className="w-full text-3xl font-extrabold py-16">BEST REVIEWERS</div>
+            <ReviewerList posts={results[1].data} noPostContent="최고의 리뷰어가 없습니다." />
 
-            <div className="w-full text-3xl font-extrabold py-16 mt-8">
-                NEW REVIEWERS
-            </div>
-            <ReviewerList
-                posts={results[0].data}
-                noPostContent="새로운 리뷰어가 없습니다."
-            />
+            <div className="w-full text-3xl font-extrabold py-16 mt-8">NEW REVIEWERS</div>
+            <ReviewerList posts={results[0].data} noPostContent="새로운 리뷰어가 없습니다." />
         </div>
     );
 }

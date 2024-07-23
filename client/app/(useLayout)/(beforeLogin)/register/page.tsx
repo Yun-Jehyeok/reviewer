@@ -1,18 +1,27 @@
 "use client";
 
-import { authPhoneApi, signupApi } from "@/apis/userApi";
-import CButton from "@/components/common/CButton";
-import { emailico, nameico, nicknameico, phoneico, pwcheckico, pwico } from "@/components/common/CIcons";
-import CInput from "@/components/common/CInput";
-import CSpinner from "@/components/common/CSpinner";
-import { useInput } from "@/hooks/useInput";
-import { IError } from "@/interfaces/commonIFC";
-import { signupIFC } from "@/interfaces/userIFC";
-import { userState } from "@/states/userStates";
+// Library
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { Dispatch, SetStateAction, useCallback, useState } from "react";
 import { useRecoilState } from "recoil";
+
+// Components
+import CButton from "@/components/common/CButton";
+import { emailico, nameico, nicknameico, phoneico, pwcheckico, pwico } from "@/components/common/CIcons";
+import CInput from "@/components/common/CInput";
+import CSpinner from "@/components/common/CSpinner";
+
+// Hooks & Utils
+import { useInput } from "@/hooks/useInput";
+
+// Api
+import { authPhoneApi, signupApi } from "@/apis/userApi";
+
+// Interface & States
+import { IError } from "@/interfaces/commonIFC";
+import { signupIFC } from "@/interfaces/userIFC";
+import { userState } from "@/states/userStates";
 
 export default function Register() {
     const router = useRouter();
