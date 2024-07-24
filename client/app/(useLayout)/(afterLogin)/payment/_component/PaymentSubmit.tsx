@@ -44,16 +44,17 @@ export default function PaymentSubmit({ user, price }: IProps) {
     });
 
     function callback(response: RequestPayResponse) {
-        const { imp_uid, merchant_uid } = response;
+        const { imp_uid, merchant_uid, error_code, error_msg } = response;
         console.log("response:::", response);
 
-        if (imp_uid !== "") {
+        if (error_code) {
+            // 결제 창 닫음
+            if (error_code !== "F400") alert(`${error_msg}`);
+        } else {
             paymentMutation.mutate({
                 id: user!._id,
                 point: Number(price),
             });
-        } else {
-            alert(`결제 실패에 실패했습니다.`);
         }
     }
 
@@ -71,7 +72,7 @@ export default function PaymentSubmit({ user, price }: IProps) {
             pay_method: "card", // 결제수단
             merchant_uid: `mid_${new Date().getTime()}`, // 주문번호
             amount: Number(price), // 결제금액
-            name: "Reviwer 포인트 결제", // 주문명
+            name: "Reviewer 포인트 결제", // 주문명
             buyer_name: user!.name, // 구매자 이름
             buyer_tel: "01012341234", // 구매자 전화번호
             buyer_email: user!.email, // 구매자 이메일
