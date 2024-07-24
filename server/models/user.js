@@ -45,6 +45,11 @@ const UserSchema = new mongoose.Schema({
         required: true,
         default: "email",
     },
+    isReviewer: {
+        type: Boolean,
+        required: true,
+        default: false,
+    },
     lang: [
         {
             type: String,

@@ -10,6 +10,7 @@ import { useRecoilState } from "recoil";
 import CButton from "../common/CButton";
 import CConfirm from "../common/CConfirm";
 import LoginModal from "../login/loginModal";
+import SearchModal from "./SearchModal";
 import NavAlarm from "./navAlarm";
 
 export default function Navigation() {
@@ -18,6 +19,7 @@ export default function Navigation() {
     const [isAuth, setIsAuth] = useState<boolean>(false);
     const [showDropdown, setShowDropdown] = useState<boolean>(false);
     const [showAlarms, setShowAlarms] = useState<boolean>(false);
+    const [isOpenSearch, setIsOpenSearch] = useState<boolean>(false);
 
     const [user, setUser] = useRecoilState(userState);
 
@@ -76,6 +78,7 @@ export default function Navigation() {
             price: 0,
             introduce: "",
             oneLineIntroduce: "",
+            isReviewer: false,
         });
 
         router.push("/");
@@ -93,6 +96,11 @@ export default function Navigation() {
         router.push("/payment");
     };
 
+    const openSearch = () => {
+        bgFixed();
+        setIsOpenSearch(true);
+    };
+
     return (
         <div className="w-full py-10 flex justify-between items-center">
             <div className="font-extrabold text-2xl">
@@ -101,7 +109,12 @@ export default function Navigation() {
 
             <div className="flex gap-8 items-center">
                 <Link href="/reviewers">리뷰어 목록</Link>
-                <Link href="/reviewers/register">리뷰어 등록</Link>
+                {user.isReviewer ? <Link href="/reviewers/register">게시글 작성</Link> : <Link href="/reviewers/register">리뷰어로 전환</Link>}
+                <div className={`rounded-full w-6 h-6 cursor-pointer transition-all duration-100`} onClick={openSearch}>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="black" className="size-4">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                    </svg>
+                </div>
                 <NavAlarm showAlarms={showAlarms} setShowAlarms={setShowAlarms} />
                 {/* <NavMessages /> */}
                 {isAuth ? (
@@ -154,7 +167,7 @@ export default function Navigation() {
             </div>
 
             {modalOpen ? <LoginModal setModalOpen={setModalOpen} /> : ""}
-
+            {isOpenSearch && <SearchModal handleModal={setIsOpenSearch} />}
             {confirm ? <CConfirm title="Confirm 메세지" /> : ""}
         </div>
     );

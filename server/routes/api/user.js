@@ -255,7 +255,7 @@ router.put("/:id", (req, res) => {
 
 router.put("/payment/:id", (req, res) => {
     const { id, point } = req.body;
-    console.log(req.body, " : req.body");
+    
     User.findByIdAndUpdate(req.params.id, {
         $inc: {
             point,

@@ -54,6 +54,7 @@ export default function Withdrawals() {
                     price: 0,
                     introduce: "",
                     oneLineIntroduce: "",
+                    isReviewer: false,
                 });
                 localStorage.removeItem("token");
                 router.push("/");
