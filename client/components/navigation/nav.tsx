@@ -1,17 +1,17 @@
-"use client";
+'use client';
 
-import { confirmState } from "@/states/clientStates";
-import { userState } from "@/states/userStates";
-import { bgFixed } from "@/utils/utils";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { useRecoilState } from "recoil";
-import CButton from "../common/CButton";
-import CConfirm from "../common/CConfirm";
-import LoginModal from "../login/loginModal";
-import SearchModal from "./SearchModal";
-import NavAlarm from "./navAlarm";
+import { confirmState } from '@/states/clientStates';
+import { userState } from '@/states/userStates';
+import { bgFixed } from '@/utils/utils';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { useRecoilState } from 'recoil';
+import CButton from '../common/CButton';
+import CConfirm from '../common/CConfirm';
+import LoginModal from '../login/loginModal';
+import SearchModal from './SearchModal';
+import NavAlarm from './navAlarm';
 
 export default function Navigation() {
     const [modalOpen, setModalOpen] = useState<boolean>(false);
@@ -26,21 +26,26 @@ export default function Navigation() {
     const router = useRouter();
 
     useEffect(() => {
-        setIsAuth(user.token !== "");
+        setIsAuth(user.token !== '');
     }, [user]);
 
     useEffect(() => {
         const handleShowPopup = async (e: Event) => {
-            const alarmIconCon = (e.target as HTMLElement).classList.contains("nav-alarm") || (e.target as HTMLElement).closest(".nav-alarm");
-            const myPageIconCon = (e.target as HTMLElement).classList.contains("nav-mypage") || (e.target as HTMLElement).closest(".nav-mypage");
+            const alarmIconCon =
+                (e.target as HTMLElement).classList.contains('nav-alarm') ||
+                (e.target as HTMLElement).closest('.nav-alarm');
+            const myPageIconCon =
+                (e.target as HTMLElement).classList.contains('nav-mypage') ||
+                (e.target as HTMLElement).closest('.nav-mypage');
 
             if (showAlarms && !alarmIconCon) setShowAlarms(() => !showAlarms);
-            if (showDropdown && !myPageIconCon) setShowDropdown(() => !showDropdown);
+            if (showDropdown && !myPageIconCon)
+                setShowDropdown(() => !showDropdown);
         };
 
-        window.addEventListener("click", handleShowPopup);
+        window.addEventListener('click', handleShowPopup);
         return () => {
-            window.removeEventListener("click", handleShowPopup);
+            window.removeEventListener('click', handleShowPopup);
         };
     }, [showDropdown, showAlarms]);
 
@@ -55,45 +60,45 @@ export default function Navigation() {
 
     const onClickLogout = () => {
         setShowDropdown(false);
-        localStorage.removeItem("token");
+        localStorage.removeItem('token');
 
         setUser({
-            _id: "",
+            _id: '',
             reputation: 0,
-            register_date: "",
-            profile_img: "",
+            register_date: '',
+            profile_img: '',
             posts: [],
             point: 0,
-            phone: "",
-            nickname: "",
-            name: "",
-            login_way: "",
+            phone: '',
+            nickname: '',
+            name: '',
+            login_way: '',
             lang: [],
             isSubmit: false,
-            grade: "",
+            grade: '',
             getApplications: [],
-            email: "",
+            email: '',
             applications: [],
-            token: "",
+            token: '',
             price: 0,
-            introduce: "",
-            oneLineIntroduce: "",
+            introduce: '',
+            oneLineIntroduce: '',
             isReviewer: false,
         });
 
-        router.push("/");
+        router.push('/');
     };
 
     const navigateToMypage = () => {
         setShowDropdown(false);
 
-        router.push("/mypage");
+        router.push('/mypage');
     };
 
     const navigateToPayment = () => {
         setShowDropdown(false);
 
-        router.push("/payment");
+        router.push('/payment');
     };
 
     const openSearch = () => {
@@ -109,13 +114,35 @@ export default function Navigation() {
 
             <div className="flex gap-8 items-center">
                 <Link href="/reviewers">리뷰어 목록</Link>
-                {user.isReviewer ? <Link href="/reviewers/register">게시글 작성</Link> : <Link href="/reviewers/register">리뷰어로 전환</Link>}
-                <div className={`rounded-full w-6 h-6 cursor-pointer transition-all duration-100`} onClick={openSearch}>
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="black" className="size-4">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                {isAuth &&
+                    (user.isReviewer ? (
+                        <Link href="/reviewers/register">게시글 작성</Link>
+                    ) : (
+                        <Link href="/reviewers/convert">리뷰어 전환</Link>
+                    ))}
+                <div
+                    className={`rounded-full w-6 h-6 cursor-pointer transition-all duration-100`}
+                    onClick={openSearch}
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth={1.5}
+                        stroke="black"
+                        className="size-4"
+                    >
+                        <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
+                        />
                     </svg>
                 </div>
-                <NavAlarm showAlarms={showAlarms} setShowAlarms={setShowAlarms} />
+                <NavAlarm
+                    showAlarms={showAlarms}
+                    setShowAlarms={setShowAlarms}
+                />
                 {/* <NavMessages /> */}
                 {isAuth ? (
                     <div className="relative nav-mypage">
@@ -124,7 +151,14 @@ export default function Navigation() {
                             // onClick={() => setShowDropdown((prev) => !prev)}
                             onClick={handleShowMyPage}
                         >
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="white" className="w-6 h-6">
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                strokeWidth={1.5}
+                                stroke="white"
+                                className="w-6 h-6"
+                            >
                                 <path
                                     strokeLinecap="round"
                                     strokeLinejoin="round"
@@ -137,22 +171,33 @@ export default function Navigation() {
                             <div className="absolute top-14 -left-[120px]">
                                 <div className="bg-white rounded-md border border-gray-200 z-10 absolute w-[280px] h-fit shadow-md">
                                     <div className="p-8 w-full">
-                                        <div className="w-full text-center text-xl font-bold mb-4">{user.name}</div>
+                                        <div className="w-full text-center text-xl font-bold mb-4">
+                                            {user.name}
+                                        </div>
                                         <div className="w-full flex justify-center">
                                             <div className="w-24 h-24 rounded-full bg-gray-500"></div>
                                         </div>
 
                                         <div className="w-full flex justify-center items-center mt-8">
-                                            <CButton title="포인트 충전하기" onClick={navigateToPayment} />
+                                            <CButton
+                                                title="포인트 충전하기"
+                                                onClick={navigateToPayment}
+                                            />
                                         </div>
                                     </div>
                                     <div className="w-full h-[1px] border border-gray-200"></div>
                                     <div className="p-4 py-2 w-full flex justify-end gap-4">
-                                        <div className="text-sm text-blue-600 cursor-pointer" onClick={navigateToMypage}>
+                                        <div
+                                            className="text-sm text-blue-600 cursor-pointer"
+                                            onClick={navigateToMypage}
+                                        >
                                             Mypage
                                         </div>
 
-                                        <div className="text-sm text-blue-600 cursor-pointer" onClick={onClickLogout}>
+                                        <div
+                                            className="text-sm text-blue-600 cursor-pointer"
+                                            onClick={onClickLogout}
+                                        >
                                             Logout
                                         </div>
                                     </div>
@@ -166,9 +211,9 @@ export default function Navigation() {
                 )}
             </div>
 
-            {modalOpen ? <LoginModal setModalOpen={setModalOpen} /> : ""}
+            {modalOpen ? <LoginModal setModalOpen={setModalOpen} /> : ''}
             {isOpenSearch && <SearchModal handleModal={setIsOpenSearch} />}
-            {confirm ? <CConfirm title="Confirm 메세지" /> : ""}
+            {confirm ? <CConfirm title="Confirm 메세지" /> : ''}
         </div>
     );
 }
