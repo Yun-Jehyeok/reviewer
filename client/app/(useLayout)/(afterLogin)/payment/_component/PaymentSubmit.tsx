@@ -45,7 +45,6 @@ export default function PaymentSubmit({ user, price }: IProps) {
 
     function callback(response: RequestPayResponse) {
         const { imp_uid, merchant_uid, error_code, error_msg } = response;
-        console.log("response:::", response);
 
         if (error_code) {
             // 결제 창 닫음
@@ -58,7 +57,19 @@ export default function PaymentSubmit({ user, price }: IProps) {
         }
     }
 
-    const handlePayment = (e: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement>) => {
+    const handlePayment = (
+        e:
+            | React.FormEvent<HTMLFormElement>
+            | React.MouseEvent<HTMLButtonElement>
+    ) => {
+        if (isNaN(Number(price))) {
+            alert("결제 금액은 숫자만 입력 가능합니다.");
+            return;
+        }
+        if (Number(price) < 1000) {
+            alert("결제 금액은 1000원 이상이어야 합니다.");
+            return;
+        }
         if (!window.IMP) return;
         bgFixed();
 
@@ -85,7 +96,10 @@ export default function PaymentSubmit({ user, price }: IProps) {
     };
 
     return (
-        <button className="w-full bg-black text-white rounded-md px-4 py-2 hover:bg-gray-800 mt-12" onClick={handlePayment}>
+        <button
+            className="w-full bg-black text-white rounded-md px-4 py-2 hover:bg-gray-800 mt-12"
+            onClick={handlePayment}
+        >
             충전하기
         </button>
     );

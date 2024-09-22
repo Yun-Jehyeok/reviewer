@@ -39,11 +39,21 @@ export default function Home() {
                 </div>
             </div>
 
-            <div className="w-full text-3xl font-extrabold py-16">BEST REVIEWERS</div>
-            <ReviewerList posts={results[1].data} noPostContent="최고의 리뷰어가 없습니다." />
+            <div className="w-full text-3xl font-extrabold pt-16 pb-8">
+                BEST REVIEWERS
+            </div>
+            <ReviewerList
+                posts={results[1].data}
+                noPostContent="최고의 리뷰어가 없습니다."
+            />
 
-            <div className="w-full text-3xl font-extrabold py-16 mt-8">NEW REVIEWERS</div>
-            <ReviewerList posts={results[0].data} noPostContent="새로운 리뷰어가 없습니다." />
+            <div className="w-full text-3xl font-extrabold pt-16 pb-8 mt-8">
+                NEW REVIEWERS
+            </div>
+            <ReviewerList
+                posts={results[0].data}
+                noPostContent="새로운 리뷰어가 없습니다."
+            />
         </div>
     );
 }
