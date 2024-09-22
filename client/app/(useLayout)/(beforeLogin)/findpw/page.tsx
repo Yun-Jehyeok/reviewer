@@ -16,16 +16,14 @@ import { useInput } from "@/hooks/useInput";
 
 export default function FindPw() {
     const email = useInput("");
-
-    const [showAuth, setShowAuth] = useState(false);
-    const [authNumResponse, setAuthNumResponse] = useState("00000000");
+    const [isAuth, setIsAuth] = useState<boolean>(false);
 
     return (
         <div className="w-full h-[540px] rounded-lg flex justify-center items-center bg-gray-50 mt-32 mb-24">
-            {showAuth ? (
-                <EditPassword authNumResponse={authNumResponse} email={email.value} />
+            {isAuth ? (
+                <EditPassword email={email.value} />
             ) : (
-                <SendAuthEmail email={email} setShowAuth={setShowAuth} setAuthNumResponse={setAuthNumResponse} />
+                <SendAuthEmail email={email} setIsAuth={setIsAuth} />
             )}
         </div>
     );
