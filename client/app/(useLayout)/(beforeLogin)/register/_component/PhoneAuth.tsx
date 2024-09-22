@@ -18,7 +18,9 @@ import { IError } from "@/interfaces/commonIFC";
 interface IProps {
     phone: {
         value: any;
-        onChange: (e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>) => void;
+        onChange: (
+            e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>
+        ) => void;
     };
     setAuthNumResponse: Dispatch<SetStateAction<string>>;
     setPhoneErr: Dispatch<SetStateAction<boolean>>;
@@ -29,7 +31,16 @@ interface IProps {
     phoneErrMsg: string;
 }
 
-export default function PhoneAuth({ setAuthNumResponse, phone, setPhoneErr, setPhoneErrMsg, setAuthCheckErr, setShowAuth, phoneErr, phoneErrMsg }: IProps) {
+export default function PhoneAuth({
+    setAuthNumResponse,
+    phone,
+    setPhoneErr,
+    setPhoneErrMsg,
+    setAuthCheckErr,
+    setShowAuth,
+    phoneErr,
+    phoneErrMsg,
+}: IProps) {
     const phoneMutation = useMutation({
         mutationFn: authPhoneApi,
         onMutate: (variable) => {
@@ -47,7 +58,11 @@ export default function PhoneAuth({ setAuthNumResponse, phone, setPhoneErr, setP
         },
     });
 
-    const handleAuth = (e: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement>) => {
+    const handleAuth = (
+        e:
+            | React.FormEvent<HTMLFormElement>
+            | React.MouseEvent<HTMLButtonElement>
+    ) => {
         e.preventDefault();
         e.stopPropagation();
 
@@ -69,17 +84,32 @@ export default function PhoneAuth({ setAuthNumResponse, phone, setPhoneErr, setP
         <div>
             <div className="w-full flex gap-4">
                 <div className="flex-1">
-                    <CInput {...phone} type="text" placeholder="휴대폰 번호를 입력해주세요." label="Phone" isErr={phoneErr}>
+                    <CInput
+                        {...phone}
+                        type="text"
+                        placeholder="휴대폰 번호를 입력해주세요."
+                        label="Phone"
+                        isErr={phoneErr}
+                        isRequired={true}
+                    >
                         {phoneico}
                     </CInput>
                 </div>
 
-                <div className={`w-fit flex flex-col justify-end ${phoneErr && "relative -top-1"}`}>
+                <div
+                    className={`w-fit flex flex-col justify-end ${
+                        phoneErr && "relative -top-1"
+                    }`}
+                >
                     <CButton title="인증하기" onClick={handleAuth} />
                 </div>
             </div>
 
-            {phoneErr && <div className="text-[#ea002c] text-xs mt-1 pl-4">{phoneErrMsg}</div>}
+            {phoneErr && (
+                <div className="text-[#ea002c] text-xs mt-1 pl-4">
+                    {phoneErrMsg}
+                </div>
+            )}
         </div>
     );
 }
