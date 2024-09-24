@@ -5,13 +5,13 @@ import { userState } from "@/states/userStates";
 import { bgFixed } from "@/utils/utils";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
 import CButton from "../common/CButton";
 import CConfirm from "../common/CConfirm";
 import LoginModal from "../login/loginModal";
+import SearchModal from "./SearchModal";
 import NavAlarm from "./navAlarm";
-import NavMessages from "./navMessages";
 
 export default function Navigation() {
     const [modalOpen, setModalOpen] = useState<boolean>(false);
@@ -19,6 +19,7 @@ export default function Navigation() {
     const [isAuth, setIsAuth] = useState<boolean>(false);
     const [showDropdown, setShowDropdown] = useState<boolean>(false);
     const [showAlarms, setShowAlarms] = useState<boolean>(false);
+    const [isOpenSearch, setIsOpenSearch] = useState<boolean>(false);
 
     const [user, setUser] = useRecoilState(userState);
 
@@ -30,10 +31,6 @@ export default function Navigation() {
 
     useEffect(() => {
         const handleShowPopup = async (e: Event) => {
-            console.log(
-                (e.target as HTMLElement).closest(".nav-mypage"),
-                " : target",
-            );
             const alarmIconCon =
                 (e.target as HTMLElement).classList.contains("nav-alarm") ||
                 (e.target as HTMLElement).closest(".nav-alarm");
@@ -41,7 +38,6 @@ export default function Navigation() {
                 (e.target as HTMLElement).classList.contains("nav-mypage") ||
                 (e.target as HTMLElement).closest(".nav-mypage");
 
-            console.log(showAlarms, alarmIconCon, " : alarmIconCon");
             if (showAlarms && !alarmIconCon) setShowAlarms(() => !showAlarms);
             if (showDropdown && !myPageIconCon)
                 setShowDropdown(() => !showDropdown);
@@ -87,6 +83,7 @@ export default function Navigation() {
             price: 0,
             introduce: "",
             oneLineIntroduce: "",
+            isReviewer: false,
         });
 
         router.push("/");
@@ -104,6 +101,11 @@ export default function Navigation() {
         router.push("/payment");
     };
 
+    const openSearch = () => {
+        bgFixed();
+        setIsOpenSearch(true);
+    };
+
     return (
         <div className="w-full py-10 flex justify-between items-center">
             <div className="font-extrabold text-2xl">
@@ -112,7 +114,31 @@ export default function Navigation() {
 
             <div className="flex gap-8 items-center">
                 <Link href="/reviewers">리뷰어 목록</Link>
-                <Link href="/reviewers/register">리뷰어 등록</Link>
+                {isAuth &&
+                    (user.isReviewer ? (
+                        <Link href="/reviewers/register">게시글 작성</Link>
+                    ) : (
+                        <Link href="/reviewers/convert">리뷰어 전환</Link>
+                    ))}
+                <div
+                    className={`rounded-full w-6 h-6 cursor-pointer transition-all duration-100`}
+                    onClick={openSearch}
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth={1.5}
+                        stroke="black"
+                        className="size-4"
+                    >
+                        <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
+                        />
+                    </svg>
+                </div>
                 <NavAlarm
                     showAlarms={showAlarms}
                     setShowAlarms={setShowAlarms}
@@ -122,7 +148,6 @@ export default function Navigation() {
                     <div className="relative nav-mypage">
                         <div
                             className="w-10 h-10 rounded-full bg-black flex justify-center items-center cursor-pointer hover:bg-gray-800"
-                            // onClick={() => setShowDropdown((prev) => !prev)}
                             onClick={handleShowMyPage}
                         >
                             <svg
@@ -142,7 +167,7 @@ export default function Navigation() {
                         </div>
 
                         {showDropdown && (
-                            <div className="absolute top-14 -left-[120px]">
+                            <div className="absolute top-14 right-[280px]">
                                 <div className="bg-white rounded-md border border-gray-200 z-10 absolute w-[280px] h-fit shadow-md">
                                     <div className="p-8 w-full">
                                         <div className="w-full text-center text-xl font-bold mb-4">
@@ -176,7 +201,6 @@ export default function Navigation() {
                                         </div>
                                     </div>
                                 </div>
-                                <div className="w-3 h-3 rotate-45 bg-white border border-gray-200 absolute -top-1 left-[135px]"></div>
                             </div>
                         )}
                     </div>
@@ -186,7 +210,7 @@ export default function Navigation() {
             </div>
 
             {modalOpen ? <LoginModal setModalOpen={setModalOpen} /> : ""}
-
+            {isOpenSearch && <SearchModal handleModal={setIsOpenSearch} />}
             {confirm ? <CConfirm title="Confirm 메세지" /> : ""}
         </div>
     );

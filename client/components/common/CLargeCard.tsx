@@ -15,7 +15,7 @@ export default function CLargeCard({ data }: ICLargeCard) {
       <img
         src={data.image}
         alt="dummy"
-        className="w-full h-[540px] bg-[#9C9C9C] rounded-xl"
+        className="w-full h-[320px] bg-[#9C9C9C] rounded-xl"
       />
       <div className="w-full flex justify-between mt-4">
         <div>

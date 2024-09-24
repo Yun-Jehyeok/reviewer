@@ -1,11 +1,16 @@
-import Footer from '@/components/Footer/footer';
-import Navigation from '@/components/navigation/nav';
+// Library
 
-export default function RootLayout({
-    children,
-}: {
-    children: React.ReactNode;
-}) {
+// Components
+import Footer from "@/components/Footer/footer";
+import Navigation from "@/components/navigation/nav";
+
+// Hooks & Utils
+
+// Api
+
+// Interface & States
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
     return (
         <div className="w-full h-full">
             <div className="w-full flex justify-center content">
