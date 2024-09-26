@@ -14,7 +14,13 @@ import { applyApi } from "@/apis/postApi";
 import { postIFC } from "@/interfaces/postIFC";
 import { userIFC } from "@/interfaces/userIFC";
 
-export default function Apply({ user, post }: { user: userIFC; post: postIFC }) {
+export default function Apply({
+    user,
+    post,
+}: {
+    user?: userIFC;
+    post: postIFC;
+}) {
     const router = useRouter();
 
     const applyMutation = useMutation({
@@ -38,7 +44,7 @@ export default function Apply({ user, post }: { user: userIFC; post: postIFC }) 
     });
 
     const onClick = () => {
-        if (user._id === "") {
+        if (!user) {
             alert("로그인이 필요한 서비스입니다.");
             return;
         }
@@ -61,11 +67,28 @@ export default function Apply({ user, post }: { user: userIFC; post: postIFC }) 
         }
     };
 
+    if (!user) {
+        return (
+            <div className="w-full h-fit px-8 py-4 border border-gray-200 rounded-md flex justify-between items-center mb-8">
+                <div className="text-lg font-bold">
+                    {String(post.price)}원
+                    <span className="text-sm text-gray-400 font-medium">
+                        &nbsp;/&nbsp;시간당
+                    </span>
+                </div>
+                <CButton title="신청하기" onClick={onClick} />
+            </div>
+        );
+    }
+
     return (
         user._id !== post.creator._id && (
             <div className="w-full h-fit px-8 py-4 border border-gray-200 rounded-md flex justify-between items-center mb-8">
                 <div className="text-lg font-bold">
-                    {String(post.price)}원<span className="text-sm text-gray-400 font-medium">&nbsp;/&nbsp;시간당</span>
+                    {String(post.price)}원
+                    <span className="text-sm text-gray-400 font-medium">
+                        &nbsp;/&nbsp;시간당
+                    </span>
                 </div>
                 <CButton title="신청하기" onClick={onClick} />
             </div>

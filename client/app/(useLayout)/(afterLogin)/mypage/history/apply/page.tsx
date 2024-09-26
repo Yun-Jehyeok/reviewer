@@ -1,7 +1,7 @@
 "use client";
 
 // Library
-import { useQuery } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useRecoilState } from "recoil";
 
@@ -15,28 +15,24 @@ import ReviewModal from "@/components/mypage/review/reviewModal";
 import { bgFixed } from "@/utils/utils";
 
 // Api
-import { getApplicationsApi } from "@/apis/applicationApi";
 
 // Interface & States
 import { applicationIFC } from "@/interfaces/applicationIFC";
+import { userIFC } from "@/interfaces/userIFC";
+import { useGetApplicationsQuery } from "@/queries/application/application";
 import { applicationState } from "@/states/applicationStates";
-import { userState } from "@/states/userStates";
 
 export default function ApplyHistory() {
     const [showModal, setShowModal] = useState<boolean>(false);
 
     const [application, setApplication] = useRecoilState(applicationState);
-    const [user, setUser] = useRecoilState(userState);
+    const queryClient = useQueryClient();
+    const user = queryClient.getQueryData<userIFC>(["user"]);
 
-    const {
-        data: reviews,
-        error,
-        isPending,
-    } = useQuery<applicationIFC[], Object, applicationIFC[], [_1: string, _2: string]>({
-        queryKey: ["applications", user._id],
-        queryFn: getApplicationsApi,
-        staleTime: 60 * 1000,
-        gcTime: 300 * 1000,
+    if (!user) return null;
+
+    const { reviews, error, isPending } = useGetApplicationsQuery({
+        userId: user._id,
     });
 
     const openDetail = (application: applicationIFC) => {
@@ -54,7 +50,13 @@ export default function ApplyHistory() {
             <div className="w-full flex flex-col">
                 {reviews && reviews.length > 0 ? (
                     reviews.map((v, i) => {
-                        return <ReviewItem key={i} review={v} openDetail={openDetail} />;
+                        return (
+                            <ReviewItem
+                                key={i}
+                                review={v}
+                                openDetail={openDetail}
+                            />
+                        );
                     })
                 ) : (
                     <CNoItem title="신청한 리뷰가 없습니다." />

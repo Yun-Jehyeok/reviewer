@@ -1,11 +1,9 @@
 "use client";
 
 // Library
-import { userState } from "@/states/userStates";
-import { useQuery } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useRecoilState } from "recoil";
 
 // Components
 import CButton from "@/components/common/CButton";
@@ -14,25 +12,28 @@ import CButton from "@/components/common/CButton";
 import { foramttedNumber } from "@/utils/utils";
 
 // Api
-import { getPaymentsApi } from "@/apis/paymentApi";
 
 // Interface & States
 import CNoItem from "@/components/common/CNoItem";
-import { HistoryPaymentIFC } from "@/interfaces/paymentIFC";
+import { userIFC } from "@/interfaces/userIFC";
+import { useGetPayments } from "@/queries/payment/payment";
 
 export default function PayHistory() {
+    const queryClient = useQueryClient();
+    const user = queryClient.getQueryData<userIFC>(["user"]);
+
+    if (!user) return null;
+
     const router = useRouter();
 
     const [page, setPage] = useState<number>(1);
     const [purpose, setPurpose] = useState<string>("");
-    const [user, setUser] = useRecoilState(userState);
     const [point, setPoint] = useState<number>(0);
 
-    const { data, error, isPending } = useQuery<HistoryPaymentIFC, Object, HistoryPaymentIFC, [_1: string, _2: number, _3: string, _4: string]>({
-        queryKey: ["payments", page, user._id, purpose],
-        queryFn: getPaymentsApi,
-        staleTime: 60 * 1000,
-        gcTime: 300 * 1000,
+    const { data, error, isPending } = useGetPayments({
+        page,
+        userId: user._id,
+        purpose,
     });
 
     const navigateToPayment = () => {
@@ -40,7 +41,7 @@ export default function PayHistory() {
     };
 
     useEffect(() => {
-        setPoint(user.point);
+        setPoint(user ? user.point : 0);
     }, [user]);
 
     return (
@@ -63,11 +64,25 @@ export default function PayHistory() {
                 {data ? (
                     data?.payments?.map((v, i) => {
                         return (
-                            <div key={v._id} className={`w-full flex pt-4 ${i < data.payments?.length && "border-b border-gray-200 pb-4"}`}>
-                                <div className="w-[300px] text-center">{v.date}</div>
-                                <div className="w-[300px] text-center">{foramttedNumber(v.point)}</div>
-                                <div className="w-[300px] text-center">{v.purpose}</div>
-                                <div className="flex-1 text-center">{v.etc}</div>
+                            <div
+                                key={v._id}
+                                className={`w-full flex pt-4 ${
+                                    i < data.payments?.length &&
+                                    "border-b border-gray-200 pb-4"
+                                }`}
+                            >
+                                <div className="w-[300px] text-center">
+                                    {v.date}
+                                </div>
+                                <div className="w-[300px] text-center">
+                                    {foramttedNumber(v.point)}
+                                </div>
+                                <div className="w-[300px] text-center">
+                                    {v.purpose}
+                                </div>
+                                <div className="flex-1 text-center">
+                                    {v.etc}
+                                </div>
                             </div>
                         );
                     })

@@ -4,12 +4,11 @@ import {
 } from "@/apis/applicationApi";
 import { applicationIFC } from "@/interfaces/applicationIFC";
 import { IError } from "@/interfaces/commonIFC";
-import { userState } from "@/states/userStates";
+import { userIFC } from "@/interfaces/userIFC";
 import { cancelBgFixed } from "@/utils/utils";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useState, useRef } from "react";
-import { useRecoilState } from "recoil";
+import { useCallback, useEffect, useRef, useState } from "react";
 import io from "socket.io-client";
 
 type Message = {
@@ -30,7 +29,10 @@ export default function ProceedingContent({
 }) {
     const socket = io(process.env.NEXT_PUBLIC_SERVER_URL as string);
 
-    const [user, setUser] = useRecoilState(userState);
+    const queryClient = useQueryClient();
+    const user = queryClient.getQueryData<userIFC>(["user"]);
+
+    if (!user) return null;
 
     const [username, setUsername] = useState(""); //이름 지정
     const [chosenUsername, setChosenUsername] = useState("윤제혁"); //선택된 유저 이름 지정
@@ -62,7 +64,7 @@ export default function ProceedingContent({
                     setMessages(res.msg.chats);
                     scrollBottom();
                 }
-            },
+            }
         );
     };
 
@@ -87,7 +89,7 @@ export default function ProceedingContent({
                     //     content: message,
                     // });
                 }
-            },
+            }
         ); //메시지를 서버에 보낸다. 이후 newIncoming
     };
 
@@ -159,7 +161,7 @@ export default function ProceedingContent({
                 else reviewerCloseMutation.mutate(item._id);
             }
         },
-        [reviewerCloseMutation, applicantCloseMutation, user, item],
+        [reviewerCloseMutation, applicantCloseMutation, user, item]
     );
 
     const router = useRouter();

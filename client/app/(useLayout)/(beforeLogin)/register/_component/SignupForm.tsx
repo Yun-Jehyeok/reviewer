@@ -2,7 +2,6 @@
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { Dispatch, SetStateAction, useCallback, useState } from "react";
-import { useRecoilState } from "recoil";
 
 // Components
 import CButton from "@/components/common/CButton";
@@ -25,12 +24,9 @@ import { signupApi } from "@/apis/userApi";
 // Interface & States
 import { IError } from "@/interfaces/commonIFC";
 import { signupIFC } from "@/interfaces/userIFC";
-import { userState } from "@/states/userStates";
 
 export default function SignupForm() {
     const router = useRouter();
-
-    const [user, setUser] = useRecoilState(userState);
 
     const email = useInput("");
     const password = useInput("");
@@ -98,7 +94,6 @@ export default function SignupForm() {
         onSuccess: (data, variables, context) => {
             console.log("signupSuccess", data, variables, context);
             if (data.success) {
-                setUser({ ...data.user, token: data.token });
                 localStorage.setItem("token", data.token);
                 router.push("/");
             }

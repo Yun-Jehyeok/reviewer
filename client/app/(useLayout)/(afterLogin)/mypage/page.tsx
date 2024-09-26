@@ -1,38 +1,24 @@
 "use client";
 
 // Library
-import { useQuery } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import DOMPurify from "dompurify";
 import { useRouter } from "next/navigation";
-import { useSetRecoilState } from "recoil";
 
 // Components
 import CButton from "@/components/common/CButton";
-import CSpinner from "@/components/common/CSpinner";
 
 // Hooks & Utils
 import { foramttedNumber } from "@/utils/utils";
 
 // Api
-import { getUserApi } from "@/apis/userApi";
 
 // Interface & States
 import { userIFC } from "@/interfaces/userIFC";
-import { userState } from "@/states/userStates";
 
 export default function Mypage() {
-    const setUser = useSetRecoilState(userState);
-
-    const {
-        data: user,
-        error,
-        isPending,
-    } = useQuery<userIFC, Object, userIFC, [_1: string, any]>({
-        queryKey: ["user", setUser],
-        queryFn: getUserApi,
-        staleTime: 60 * 1000,
-        gcTime: 300 * 1000,
-    });
+    const queryClient = useQueryClient();
+    const user = queryClient.getQueryData<userIFC>(["user"]);
 
     const router = useRouter();
 
@@ -44,7 +30,6 @@ export default function Mypage() {
 
     return (
         <div className="w-full">
-            {isPending && <CSpinner />}
             <div className="text-2xl font-bold mb-8">프로필</div>
 
             <div className="w-full text-lg">
@@ -55,7 +40,11 @@ export default function Mypage() {
 
                 <div className="w-full flex gap-8 py-4">
                     <div className="w-[120px] font-bold">사용 언어</div>
-                    <div className="flex-1">{user.lang.length > 0 ? user.lang.join(", ") : "사용 언어를 설정해주세요."}</div>
+                    <div className="flex-1">
+                        {user.lang.length > 0
+                            ? user.lang.join(", ")
+                            : "사용 언어를 설정해주세요."}
+                    </div>
                 </div>
 
                 <div className="w-full flex gap-8 py-4">
@@ -76,7 +65,9 @@ export default function Mypage() {
                                     whiteSpace: "normal",
                                 }}
                                 dangerouslySetInnerHTML={{
-                                    __html: DOMPurify.sanitize(String(user.introduce)),
+                                    __html: DOMPurify.sanitize(
+                                        String(user.introduce)
+                                    ),
                                 }}
                             />
                         ) : (
