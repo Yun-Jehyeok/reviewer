@@ -2,10 +2,8 @@
 
 import { readAlaramApi } from "@/apis/alarmApi";
 import { IError } from "@/interfaces/commonIFC";
-import { userState } from "@/states/userStates";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import { useRecoilState } from "recoil";
 
 export default function NavAlarm({
     showAlarms,
@@ -16,8 +14,6 @@ export default function NavAlarm({
 }) {
     const router = useRouter();
     const queryClient = useQueryClient();
-
-    const [user, setUser] = useRecoilState(userState);
 
     const alramReadMutation = useMutation({
         mutationFn: readAlaramApi,

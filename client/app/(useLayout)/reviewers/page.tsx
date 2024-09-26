@@ -1,7 +1,7 @@
 "use client";
 
 // Library
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { Pagination } from "antd";
 import { useState } from "react";
 
@@ -13,10 +13,9 @@ import CSpinner from "@/components/common/CSpinner";
 // Hooks & Utils
 
 // Api
-import { getAllPostApi } from "@/apis/postApi";
 
 // Interface & States
-import { allPostIFC, getAllPostReqIFC } from "@/interfaces/postIFC";
+import { useGetAllPost } from "@/queries/post/post";
 
 const filter = [
     { id: "0", value: "registerDate", label: "최신 순" },
@@ -61,16 +60,10 @@ export default function Reviewers() {
     const [val, setVal] = useState<string>("registerDate");
     const [langVal, setLangVal] = useState<string>("all");
 
-    const { data, error, isLoading } = useQuery<
-        allPostIFC,
-        Object,
-        allPostIFC,
-        [_1: string, _2: getAllPostReqIFC]
-    >({
-        queryKey: ["posts", { page, filter: val, langFilter: langVal }],
-        queryFn: getAllPostApi,
-        staleTime: 60 * 1000,
-        gcTime: 300 * 1000,
+    const { data, error, isLoading } = useGetAllPost({
+        page,
+        filter: val,
+        langFilter: langVal,
     });
 
     const queryClient = useQueryClient();

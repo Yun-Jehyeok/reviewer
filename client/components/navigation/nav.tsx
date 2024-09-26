@@ -1,7 +1,7 @@
 "use client";
 
+import { useGetUserQuery } from "@/queries/user/user";
 import { confirmState } from "@/states/clientStates";
-import { userState } from "@/states/userStates";
 import { bgFixed } from "@/utils/utils";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -21,12 +21,13 @@ export default function Navigation() {
     const [showAlarms, setShowAlarms] = useState<boolean>(false);
     const [isOpenSearch, setIsOpenSearch] = useState<boolean>(false);
 
-    const [user, setUser] = useRecoilState(userState);
+    const { user, error, isPending } = useGetUserQuery();
 
     const router = useRouter();
 
     useEffect(() => {
-        setIsAuth(user.token !== "");
+        if (user) setIsAuth(true);
+        else setIsAuth(false);
     }, [user]);
 
     useEffect(() => {
@@ -62,30 +63,6 @@ export default function Navigation() {
         setShowDropdown(false);
         localStorage.removeItem("token");
 
-        setUser({
-            _id: "",
-            reputation: 0,
-            register_date: "",
-            profile_img: "",
-            posts: [],
-            point: 0,
-            phone: "",
-            nickname: "",
-            name: "",
-            login_way: "",
-            lang: [],
-            isSubmit: false,
-            grade: "",
-            getApplications: [],
-            email: "",
-            applications: [],
-            token: "",
-            price: 0,
-            introduce: "",
-            oneLineIntroduce: "",
-            isReviewer: false,
-        });
-
         router.push("/");
     };
 
@@ -115,7 +92,7 @@ export default function Navigation() {
             <div className="flex gap-8 items-center">
                 <Link href="/reviewers">리뷰어 목록</Link>
                 {isAuth &&
-                    (user.isReviewer ? (
+                    (user?.isReviewer ? (
                         <Link href="/reviewers/register">게시글 작성</Link>
                     ) : (
                         <Link href="/reviewers/convert">리뷰어 전환</Link>
@@ -171,7 +148,7 @@ export default function Navigation() {
                                 <div className="bg-white rounded-md border border-gray-200 z-10 absolute w-[280px] h-fit shadow-md">
                                     <div className="p-8 w-full">
                                         <div className="w-full text-center text-xl font-bold mb-4">
-                                            {user.name}
+                                            {user?.name}
                                         </div>
                                         <div className="w-full flex justify-center">
                                             <div className="w-24 h-24 rounded-full bg-gray-500"></div>
