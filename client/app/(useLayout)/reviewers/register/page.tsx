@@ -1,10 +1,9 @@
 "use client";
 
 // Library
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
-import { useRecoilState } from "recoil";
 
 // Components
 import SetTech from "@/components/SetTech";
@@ -23,12 +22,13 @@ import { registerPostApi } from "@/apis/postApi";
 
 // Interface & States
 import { registerPostIFC } from "@/interfaces/postIFC";
-import { userState } from "@/states/userStates";
+import { userIFC } from "@/interfaces/userIFC";
 
 export default function RegisterReviewer() {
     const router = useRouter();
 
-    const [user, setUser] = useRecoilState(userState);
+    const queryClient = useQueryClient();
+    const user = queryClient.getQueryData<userIFC>(["user"]);
 
     // Value - [S] -
     const [description, setDescription] = useState<string>("");
@@ -49,6 +49,8 @@ export default function RegisterReviewer() {
     const [descErrmsg, setDescErrmsg] = useState<string>("");
     // Error - [E] -
 
+    if (!user) return null;
+
     const registerPostMutation = useMutation({
         mutationFn: registerPostApi,
         onMutate: (variable) => {
@@ -68,8 +70,24 @@ export default function RegisterReviewer() {
 
     const checkErrs = useCallback(() => {
         let errFlag = false;
-        if (checkBlank(title.value, setTitleErr, "제목을 입력해주세요.", setTitleErrmsg)) errFlag = true;
-        if (checkBlank(description, setDescErr, "설명을 입력해주세요.", setDescErrmsg)) errFlag = true;
+        if (
+            checkBlank(
+                title.value,
+                setTitleErr,
+                "제목을 입력해주세요.",
+                setTitleErrmsg
+            )
+        )
+            errFlag = true;
+        if (
+            checkBlank(
+                description,
+                setDescErr,
+                "설명을 입력해주세요.",
+                setDescErrmsg
+            )
+        )
+            errFlag = true;
 
         if (techs.length < 1) {
             setTechErr(true);
@@ -97,13 +115,20 @@ export default function RegisterReviewer() {
     }, [imgFiles]);
 
     const handleSubmit = useCallback(
-        (e: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement>) => {
+        (
+            e:
+                | React.FormEvent<HTMLFormElement>
+                | React.MouseEvent<HTMLButtonElement>
+        ) => {
             e.preventDefault();
 
             if (checkErrs()) return;
 
             // Save Imgs to s3
-            fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/post/image`, setUploadImgRequest())
+            fetch(
+                `${process.env.NEXT_PUBLIC_SERVER_URL}/api/post/image`,
+                setUploadImgRequest()
+            )
                 .then((response) => response.json())
                 .then((data) => {
                     if (data.success) {
@@ -124,17 +149,44 @@ export default function RegisterReviewer() {
                 })
                 .catch((error) => console.log("error", error));
         },
-        [title, description, techs, registerPostMutation, price, user, checkErrs, setUploadImgRequest]
+        [
+            title,
+            description,
+            techs,
+            registerPostMutation,
+            price,
+            user,
+            checkErrs,
+            setUploadImgRequest,
+        ]
     );
 
     return (
         <div className="py-12">
             {registerPostMutation.isPending && <CSpinner />}
-            <h1 className="text-center w-full text-3xl font-bold mb-12">Reviewer 등록</h1>
+            <h1 className="text-center w-full text-3xl font-bold mb-12">
+                Reviewer 등록
+            </h1>
             <div className="flex flex-col gap-6">
-                <CInput {...title} type="text" label="제목" placeholder="제목을 입력해주세요." isErr={titleErr} errMsg={titleErrmsg} />
-                <CInput {...price} type="text" label="시간 당 가격 (원)" placeholder="시간 당 가격을 입력해주세요." />
-                <SetTech techErr={techErr} techErrmsg={techErrmsg} setTechs={setTechs} />
+                <CInput
+                    {...title}
+                    type="text"
+                    label="제목"
+                    placeholder="제목을 입력해주세요."
+                    isErr={titleErr}
+                    errMsg={titleErrmsg}
+                />
+                <CInput
+                    {...price}
+                    type="text"
+                    label="시간 당 가격 (원)"
+                    placeholder="시간 당 가격을 입력해주세요."
+                />
+                <SetTech
+                    techErr={techErr}
+                    techErrmsg={techErrmsg}
+                    setTechs={setTechs}
+                />
                 <SetImgs setImgFiles={setImgFiles} />
                 <SetTextareaContents
                     label="설명"

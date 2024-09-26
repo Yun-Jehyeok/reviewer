@@ -4,7 +4,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
-import { useRecoilState } from "recoil";
 
 // Components
 import CButton from "@/components/common/CButton";
@@ -21,20 +20,20 @@ import { checkBlank } from "@/utils/utils";
 import { editUserApi } from "@/apis/userApi";
 
 // Interface & States
-import { editUserIFC } from "@/interfaces/userIFC";
-import { userState } from "@/states/userStates";
+import { editUserIFC, userIFC } from "@/interfaces/userIFC";
 
 export default function EditUser() {
     const router = useRouter();
 
-    const [user, setUser] = useRecoilState(userState);
+    const queryClient = useQueryClient();
+    const user = queryClient.getQueryData<userIFC>(["user"]);
 
-    const [introduce, setIntroduce] = useState<string>(user.introduce);
+    const [introduce, setIntroduce] = useState<string>(user?.introduce || "");
     const [techs, setTechs] = useState<string[]>([]);
 
-    const nickname = useInput(user.nickname);
-    const price = useInput(user.price);
-    const oneLineIntroduce = useInput(user.oneLineIntroduce);
+    const nickname = useInput(user ? user.nickname : "");
+    const price = useInput(user ? user?.price : "");
+    const oneLineIntroduce = useInput(user ? user?.oneLineIntroduce : "");
 
     const [nicknameErr, setNicknameErr] = useState<boolean>(false);
     const [techErr, setTechErr] = useState<boolean>(false);
@@ -43,8 +42,6 @@ export default function EditUser() {
     const [nicknameErrmsg, setNicknameErrmsg] = useState<string>("");
     const [techErrmsg, setTechErrmsg] = useState<string>("");
     const [introErrmsg, setIntroErrmsg] = useState<string>("");
-
-    const queryClient = useQueryClient();
 
     const editUserMutation = useMutation({
         mutationFn: editUserApi,
@@ -58,8 +55,8 @@ export default function EditUser() {
             console.log("editUserSuccess", data, variables, context);
             if (data.success) {
                 console.log("Edit Success Data >>>> ", data);
-                setUser(data.msg);
-                queryClient.invalidateQueries({ queryKey: ["user"] });
+                queryClient.setQueryData(["user"], data.user);
+
                 router.push(`/mypage`);
             }
         },
@@ -96,7 +93,7 @@ export default function EditUser() {
             if (errFlag) return;
 
             let payload: editUserIFC = {
-                id: user._id,
+                id: user!._id,
                 nickname: nickname.value,
                 introduce: introduce,
                 techs: techs,
@@ -149,7 +146,7 @@ export default function EditUser() {
                     placeholder="시간 당 가격을 입력해주세요."
                 />
                 <SetTech
-                    defaultTechs={user.lang}
+                    defaultTechs={user!.lang}
                     techErr={techErr}
                     techErrmsg={techErrmsg}
                     setTechs={setTechs}

@@ -1,9 +1,8 @@
 "use client";
 
 // Library
-import { useQuery } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
-import { useRecoilState } from "recoil";
 
 // Components
 import CSpinner from "@/components/common/CSpinner";
@@ -16,26 +15,17 @@ import Reviews from "./_component/Reviews";
 // Hooks & Utils
 
 // Api
-import { getPostApi } from "@/apis/postApi";
 
 // Interface & States
-import { postIFC } from "@/interfaces/postIFC";
-import { userState } from "@/states/userStates";
+import { userIFC } from "@/interfaces/userIFC";
+import { useGetPost } from "@/queries/post/post";
 
 export default function ReviewerDetail() {
     const { id } = useParams() as { id: string };
-    const [user, setUser] = useRecoilState(userState);
+    const queryClient = useQueryClient();
+    const user = queryClient.getQueryData<userIFC>(["user"]);
 
-    const {
-        data: post,
-        error,
-        isPending,
-    } = useQuery<postIFC, Object, postIFC, [_1: string, _2: string]>({
-        queryKey: ["posts", id],
-        queryFn: getPostApi,
-        staleTime: 60 * 1000,
-        gcTime: 300 * 1000,
-    });
+    const { post, error, isPending } = useGetPost(id);
 
     console.log("post:::", post);
     if (!post) return null;

@@ -1,9 +1,22 @@
-import { ReactNode } from 'react';
+"use client";
+
+import { useGetUserQuery } from "@/queries/user/user";
+import { useQueryClient } from "@tanstack/react-query";
+import { redirect } from "next/navigation";
+import { ReactNode } from "react";
 
 interface Props {
-  children: ReactNode;
+    children: ReactNode;
 }
 
 export default function BeforeLoginLayout({ children }: Props) {
-  return <div>{children}</div>;
+    const queryClient = useQueryClient();
+    const { user, error, isPending } = useGetUserQuery();
+
+    if (user) {
+        redirect("/");
+        return null;
+    }
+
+    return <div>{children}</div>;
 }
