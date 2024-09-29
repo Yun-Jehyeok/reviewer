@@ -4,6 +4,7 @@ import { useSigninMutation } from "@/hooks/mutations/user";
 import { useInput } from "@/hooks/useInput";
 import { IError } from "@/interfaces/commonIFC";
 import { cancelBgFixed } from "@/utils/utils";
+import { useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
@@ -30,6 +31,8 @@ export default function LoginModal({ setModalOpen }: ILoginModal) {
     const email = useInput("");
     const password = useInput("");
 
+    const queryClient = useQueryClient();
+
     const signInMutation = useSigninMutation({
         onError: (error: IError, variable, context) => {
             console.error("signinErr:::", error);
@@ -50,6 +53,7 @@ export default function LoginModal({ setModalOpen }: ILoginModal) {
             if (data.success) {
                 setModalOpen(false);
                 localStorage.setItem("token", data.token);
+                queryClient.setQueryData(["user"], data.user);
 
                 router.push("/");
             }
