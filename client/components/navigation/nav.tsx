@@ -3,6 +3,7 @@
 import { useGetUserQuery } from "@/hooks/queries/user";
 import { confirmState } from "@/states/clientStates";
 import { bgFixed } from "@/utils/utils";
+import { useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -22,12 +23,12 @@ export default function Navigation() {
     const [isOpenSearch, setIsOpenSearch] = useState<boolean>(false);
 
     const { user, error, isPending } = useGetUserQuery();
+    const queryClient = useQueryClient();
 
     const router = useRouter();
 
     useEffect(() => {
-        if (user) setIsAuth(true);
-        else setIsAuth(false);
+        setIsAuth(!!user);
     }, [user]);
 
     useEffect(() => {
@@ -57,6 +58,7 @@ export default function Navigation() {
     const onClickLogout = () => {
         setShowDropdown(false);
         localStorage.removeItem("token");
+        queryClient.invalidateQueries({ queryKey: ["user"] });
 
         router.push("/");
     };
