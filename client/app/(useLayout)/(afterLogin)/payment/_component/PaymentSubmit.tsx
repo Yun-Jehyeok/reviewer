@@ -1,17 +1,14 @@
 // Library
-import { useMutation } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
 
 // Components
 
 // Hooks & Utils
-import { bgFixed, cancelBgFixed } from "@/utils/utils";
+import { bgFixed } from "@/utils/utils";
 
 // Api
-import { paymentApi } from "@/apis/userApi";
 
 // Interface & States
-import { IError } from "@/interfaces/commonIFC";
+import { usePaymentMutation } from "@/hooks/mutations/payment";
 import { RequestPayParams, RequestPayResponse } from "@/interfaces/portone";
 import { userIFC } from "@/interfaces/userIFC";
 
@@ -21,27 +18,7 @@ interface IProps {
 }
 
 export default function PaymentSubmit({ user, price }: IProps) {
-    const router = useRouter();
-
-    const paymentMutation = useMutation({
-        mutationFn: paymentApi,
-        onMutate: (variable) => {
-            console.log("onMutate", variable);
-        },
-        onError: (error: IError, variable, context) => {
-            console.error("paymentErr:::", error);
-        },
-        onSuccess: (data, variables, context) => {
-            console.log("paymentSuccess", data, variables, context);
-            if (data.success) {
-                router.push("/");
-            }
-        },
-        onSettled: () => {
-            cancelBgFixed();
-            console.log("paymentEnd");
-        },
-    });
+    const paymentMutation = usePaymentMutation();
 
     function callback(response: RequestPayResponse) {
         const { imp_uid, merchant_uid, error_code, error_msg } = response;
@@ -57,11 +34,7 @@ export default function PaymentSubmit({ user, price }: IProps) {
         }
     }
 
-    const handlePayment = (
-        e:
-            | React.FormEvent<HTMLFormElement>
-            | React.MouseEvent<HTMLButtonElement>
-    ) => {
+    const handlePayment = (e: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement>) => {
         if (isNaN(Number(price))) {
             alert("결제 금액은 숫자만 입력 가능합니다.");
             return;
@@ -96,10 +69,7 @@ export default function PaymentSubmit({ user, price }: IProps) {
     };
 
     return (
-        <button
-            className="w-full bg-black text-white rounded-md px-4 py-2 hover:bg-gray-800 mt-12"
-            onClick={handlePayment}
-        >
+        <button className="w-full bg-black text-white rounded-md px-4 py-2 hover:bg-gray-800 mt-12" onClick={handlePayment}>
             충전하기
         </button>
     );

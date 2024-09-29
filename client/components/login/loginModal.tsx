@@ -1,10 +1,9 @@
 "use client";
 
-import { signinApi } from "@/apis/userApi";
+import { useSigninMutation } from "@/hooks/mutations/user";
 import { useInput } from "@/hooks/useInput";
 import { IError } from "@/interfaces/commonIFC";
 import { cancelBgFixed } from "@/utils/utils";
-import { useMutation } from "@tanstack/react-query";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
@@ -24,20 +23,14 @@ export default function LoginModal({ setModalOpen }: ILoginModal) {
     const [pwErrMsg, setPwErrMsg] = useState("비밀번호를 입력해주세요.");
 
     const [err, setErr] = useState(false);
-    const [errMsg, setErrMsg] = useState(
-        "이메일 또는 비밀번호를 확인해주세요."
-    );
+    const [errMsg, setErrMsg] = useState("이메일 또는 비밀번호를 확인해주세요.");
 
     const router = useRouter();
 
     const email = useInput("");
     const password = useInput("");
 
-    const signInMutation = useMutation({
-        mutationFn: signinApi,
-        onMutate: (variable) => {
-            console.log("onMutate", variable);
-        },
+    const signInMutation = useSigninMutation({
         onError: (error: IError, variable, context) => {
             console.error("signinErr:::", error);
             let { msg } = error.response.data;
@@ -60,10 +53,6 @@ export default function LoginModal({ setModalOpen }: ILoginModal) {
 
                 router.push("/");
             }
-        },
-        onSettled: () => {
-            cancelBgFixed();
-            console.log("signinEnd");
         },
     });
 
@@ -91,11 +80,7 @@ export default function LoginModal({ setModalOpen }: ILoginModal) {
     }, []);
 
     const handleSubmit = useCallback(
-        (
-            e:
-                | React.FormEvent<HTMLFormElement>
-                | React.MouseEvent<HTMLButtonElement>
-        ) => {
+        (e: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement>) => {
             e.preventDefault();
 
             setEmailErr(false);
@@ -122,55 +107,26 @@ export default function LoginModal({ setModalOpen }: ILoginModal) {
 
             <div className="relative w-[480px] h-fit py-20 bg-white shadow-xl items-center mx-auto my-0 rounded-xl flex">
                 <div className="w-full h-full px-12 flex justify-center flex-col">
-                    <div className="mb-12 text-2xl font-bold">
-                        Log In To REVIEWERS
-                    </div>
+                    <div className="mb-12 text-2xl font-bold">Log In To REVIEWERS</div>
 
-                    <form
-                        onSubmit={handleSubmit}
-                        className="flex flex-col gap-4"
-                    >
+                    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
                         <div>
-                            <div className="mb-2 font-medium text-sm">
-                                E-Mail
-                            </div>
-                            <CInput
-                                {...email}
-                                type="email"
-                                placeholder="이메일을 입력해주세요."
-                                isErr={emailErr}
-                                errMsg={emailErrMsg}
-                            >
+                            <div className="mb-2 font-medium text-sm">E-Mail</div>
+                            <CInput {...email} type="email" placeholder="이메일을 입력해주세요." isErr={emailErr} errMsg={emailErrMsg}>
                                 {emailico}
                             </CInput>
                         </div>
 
                         <div>
-                            <div className="mb-2 font-medium text-sm">
-                                Password
-                            </div>
-                            <CInput
-                                {...password}
-                                type="password"
-                                placeholder="비밀번호를 입력해주세요."
-                                isErr={pwErr}
-                                errMsg={pwErrMsg}
-                            >
+                            <div className="mb-2 font-medium text-sm">Password</div>
+                            <CInput {...password} type="password" placeholder="비밀번호를 입력해주세요." isErr={pwErr} errMsg={pwErrMsg}>
                                 {pwico}
                             </CInput>
                         </div>
 
-                        {err && (
-                            <div className="text-[#ea002c] text-[0.625vw] pl-[0.4167vw] -mt-[0.8vh]">
-                                이메일 혹은 비밀번호를 확인해주세요.
-                            </div>
-                        )}
+                        {err && <div className="text-[#ea002c] text-[0.625vw] pl-[0.4167vw] -mt-[0.8vh]">이메일 혹은 비밀번호를 확인해주세요.</div>}
 
-                        <CButton
-                            title="SIGN IN"
-                            onClick={handleSubmit}
-                            type="submit"
-                        />
+                        <CButton title="SIGN IN" onClick={handleSubmit} type="submit" />
                     </form>
 
                     <div className="text-center mt-8 text-sm text-gray-400">
@@ -194,9 +150,7 @@ export default function LoginModal({ setModalOpen }: ILoginModal) {
                                 cancelBgFixed();
                             }}
                         >
-                            <span className="text-sm text-gray-400 hover:underline cursor-pointer">
-                                Forgot your password?
-                            </span>
+                            <span className="text-sm text-gray-400 hover:underline cursor-pointer">Forgot your password?</span>
                         </Link>
                     </div>
                 </div>
@@ -208,19 +162,8 @@ export default function LoginModal({ setModalOpen }: ILoginModal) {
                         cancelBgFixed();
                     }}
                 >
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        strokeWidth="3"
-                        stroke="currentColor"
-                        className="w-6 h-6"
-                    >
-                        <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="M6 18L18 6M6 6l12 12"
-                        />
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="3" stroke="currentColor" className="w-6 h-6">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </div>
             </div>

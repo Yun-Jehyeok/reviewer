@@ -1,5 +1,4 @@
 // Library
-import { useMutation } from "@tanstack/react-query";
 import { ChangeEvent, Dispatch, SetStateAction } from "react";
 
 // Components
@@ -10,17 +9,14 @@ import CInput from "@/components/common/CInput";
 // Hooks & Utils
 
 // Api
-import { authPhoneApi } from "@/apis/userApi";
 
 // Interface & States
-import { IError } from "@/interfaces/commonIFC";
+import { useAuthPhoneMutation } from "@/hooks/mutations/user";
 
 interface IProps {
     phone: {
         value: any;
-        onChange: (
-            e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>
-        ) => void;
+        onChange: (e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>) => void;
     };
     setAuthNumResponse: Dispatch<SetStateAction<string>>;
     setPhoneErr: Dispatch<SetStateAction<boolean>>;
@@ -31,38 +27,10 @@ interface IProps {
     phoneErrMsg: string;
 }
 
-export default function PhoneAuth({
-    setAuthNumResponse,
-    phone,
-    setPhoneErr,
-    setPhoneErrMsg,
-    setAuthCheckErr,
-    setShowAuth,
-    phoneErr,
-    phoneErrMsg,
-}: IProps) {
-    const phoneMutation = useMutation({
-        mutationFn: authPhoneApi,
-        onMutate: (variable) => {
-            console.log("onMutate", variable);
-        },
-        onError: (error: IError, variable, context) => {
-            console.error("phoneAuthErr:::", error);
-        },
-        onSuccess: (data, variables, context) => {
-            console.log("phoneAuthSuccess", data, variables, context);
-            if (data.success) setAuthNumResponse(data.msg);
-        },
-        onSettled: () => {
-            console.log("phoneAuthEnd");
-        },
-    });
+export default function PhoneAuth({ setAuthNumResponse, phone, setPhoneErr, setPhoneErrMsg, setAuthCheckErr, setShowAuth, phoneErr, phoneErrMsg }: IProps) {
+    const phoneMutation = useAuthPhoneMutation(setAuthNumResponse);
 
-    const handleAuth = (
-        e:
-            | React.FormEvent<HTMLFormElement>
-            | React.MouseEvent<HTMLButtonElement>
-    ) => {
+    const handleAuth = (e: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
         e.stopPropagation();
 
@@ -84,32 +52,17 @@ export default function PhoneAuth({
         <div>
             <div className="w-full flex gap-4">
                 <div className="flex-1">
-                    <CInput
-                        {...phone}
-                        type="text"
-                        placeholder="휴대폰 번호를 입력해주세요."
-                        label="Phone"
-                        isErr={phoneErr}
-                        isRequired={true}
-                    >
+                    <CInput {...phone} type="text" placeholder="휴대폰 번호를 입력해주세요." label="Phone" isErr={phoneErr} isRequired={true}>
                         {phoneico}
                     </CInput>
                 </div>
 
-                <div
-                    className={`w-fit flex flex-col justify-end ${
-                        phoneErr && "relative -top-1"
-                    }`}
-                >
+                <div className={`w-fit flex flex-col justify-end ${phoneErr && "relative -top-1"}`}>
                     <CButton title="인증하기" onClick={handleAuth} />
                 </div>
             </div>
 
-            {phoneErr && (
-                <div className="text-[#ea002c] text-xs mt-1 pl-4">
-                    {phoneErrMsg}
-                </div>
-            )}
+            {phoneErr && <div className="text-[#ea002c] text-xs mt-1 pl-4">{phoneErrMsg}</div>}
         </div>
     );
 }

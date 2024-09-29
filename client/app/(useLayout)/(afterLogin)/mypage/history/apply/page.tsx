@@ -17,9 +17,9 @@ import { bgFixed } from "@/utils/utils";
 // Api
 
 // Interface & States
+import { useGetApplicationsQuery } from "@/hooks/queries/application";
 import { applicationIFC } from "@/interfaces/applicationIFC";
 import { userIFC } from "@/interfaces/userIFC";
-import { useGetApplicationsQuery } from "@/queries/application/application";
 import { applicationState } from "@/states/applicationStates";
 
 export default function ApplyHistory() {
@@ -50,13 +50,7 @@ export default function ApplyHistory() {
             <div className="w-full flex flex-col">
                 {reviews && reviews.length > 0 ? (
                     reviews.map((v, i) => {
-                        return (
-                            <ReviewItem
-                                key={i}
-                                review={v}
-                                openDetail={openDetail}
-                            />
-                        );
+                        return <ReviewItem key={i} review={v} openDetail={openDetail} />;
                     })
                 ) : (
                     <CNoItem title="신청한 리뷰가 없습니다." />
