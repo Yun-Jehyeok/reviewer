@@ -18,8 +18,6 @@ export default function CompleteContent({ item, setModalOpen }: IProps) {
     const queryClient = useQueryClient();
     const user = queryClient.getQueryData<userIFC>(["user"]);
 
-    if (!user) return null;
-
     const { chatRoom, error, isPending } = useGetChatRoom(item.chatRoom);
 
     const review = useInput("");
@@ -52,6 +50,7 @@ export default function CompleteContent({ item, setModalOpen }: IProps) {
             }
 
             if (errFlag) return;
+            if (!user) return;
 
             createReviewMutation.mutate({
                 creator: user._id,
@@ -67,6 +66,7 @@ export default function CompleteContent({ item, setModalOpen }: IProps) {
 
     const stars = [1, 2, 3, 4, 5];
 
+    if (!user) return null;
     return (
         <div className="w-full">
             <div className="w-full grid grid-cols-2">

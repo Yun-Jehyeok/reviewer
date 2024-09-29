@@ -1,6 +1,6 @@
 import { useApplicationCloseMutation } from "@/hooks/mutations/application";
 import { useGetChatRoom } from "@/hooks/queries/chatroom";
-import { applicationIFC, chatIFC, chatRoomIFC } from "@/interfaces/applicationIFC";
+import { applicationIFC, chatIFC } from "@/interfaces/applicationIFC";
 import { userIFC } from "@/interfaces/userIFC";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
@@ -29,26 +29,26 @@ export default function ProceedingContent({ item, setModalOpen }: { item: applic
 
     const router = useRouter();
 
-    const [room, setRoom] = useState<chatRoomIFC | null>(null); // 현재 채팅방 정보
     const [message, setMessage] = useState(""); // 메시지 (채팅창에 치는 중인 글)
     const [messages, setMessages] = useState<chatIFC[]>([]); //매세지들 (채팅창에 전부 다 쳐서 쌓인 글들)
 
     const msgBoxEl = useRef<null | HTMLDivElement>(null);
+    const { chatRoom, error, isPending } = useGetChatRoom(item.chatRoom);
 
     // 첫 렌더링 후, 채팅방의 모든채팅을 가져와 messages에 담고,
     // 해당 chatroom에 접속한다.
+    const [isRendered, setIsRendered] = useState<boolean>(false);
     useEffect(() => {
-        const { chatRoom, error, isPending } = useGetChatRoom(item.chatRoom);
+        if (chatRoom && !isRendered) {
+            setIsRendered(true);
 
-        if (chatRoom) {
-            setRoom(chatRoom);
             setMessages(chatRoom.chats);
             scrollBottom();
 
             // 특정 채팅룸에 Join
             socket.emit("join room", item.chatRoom);
         }
-    }, []);
+    }, [chatRoom]);
 
     useEffect(() => {
         // 서버로부터 메시지 수신
@@ -139,7 +139,7 @@ export default function ProceedingContent({ item, setModalOpen }: { item: applic
     };
 
     // 로그인 되지 않은 사용자거나, 채팅 룸이 없으면 X
-    if (!user || !room) return null;
+    if (!user || !chatRoom) return null;
 
     return (
         <div className="w-full">

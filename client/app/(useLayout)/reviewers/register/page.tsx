@@ -49,8 +49,6 @@ export default function RegisterReviewer() {
     const [descErrmsg, setDescErrmsg] = useState<string>("");
     // Error - [E] -
 
-    if (!user) return null;
-
     const registerPostMutation = useRegisterPostMutation();
 
     const checkErrs = useCallback(() => {
@@ -95,7 +93,7 @@ export default function RegisterReviewer() {
                 .then((data) => {
                     if (data.success) {
                         let payload: registerPostIFC = {
-                            userId: user._id,
+                            userId: user!._id,
                             title: title.value,
                             content: description,
                             lang: techs,
@@ -114,6 +112,7 @@ export default function RegisterReviewer() {
         [title, description, techs, registerPostMutation, price, user, checkErrs, setUploadImgRequest]
     );
 
+    if (!user) return null;
     return (
         <div className="py-12">
             {registerPostMutation.isPending && <CSpinner />}
