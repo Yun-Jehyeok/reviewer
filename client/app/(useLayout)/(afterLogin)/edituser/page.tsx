@@ -78,6 +78,7 @@ export default function EditUser() {
         router.push("/mypage");
     };
 
+    if (!user) return null;
     return (
         <div className="py-12">
             {editUserMutation.isPending && <CSpinner />}
@@ -86,7 +87,7 @@ export default function EditUser() {
                 <CInput {...nickname} type="text" label="닉네임" placeholder="닉네임을 입력해주세요." isErr={nicknameErr} errMsg={nicknameErrmsg} />
                 <CInput {...oneLineIntroduce} type="text" label="한 줄 소개" placeholder="한 줄 소개를 입력해주세요." />
                 <CInput {...price} type="text" label="시간 당 가격 (원)" placeholder="시간 당 가격을 입력해주세요." />
-                <SetTech defaultTechs={user!.lang} techErr={techErr} techErrmsg={techErrmsg} setTechs={setTechs} />
+                <SetTech defaultTechs={user.lang} techErr={techErr} techErrmsg={techErrmsg} setTechs={setTechs} />
                 <SetTextareaContents label="소개" placeholder="소개를 입력해주세요." contents={introduce} setContents={setIntroduce} err={introErr} errmsg={introErrmsg} />
 
                 <div className="w-full flex justify-end gap-x-2">

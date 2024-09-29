@@ -21,6 +21,7 @@ import { useGetApplicationsQuery } from "@/hooks/queries/application";
 import { applicationIFC } from "@/interfaces/applicationIFC";
 import { userIFC } from "@/interfaces/userIFC";
 import { applicationState } from "@/states/applicationStates";
+import { redirect } from "next/navigation";
 
 export default function ApplyHistory() {
     const [showModal, setShowModal] = useState<boolean>(false);
@@ -29,8 +30,12 @@ export default function ApplyHistory() {
     const queryClient = useQueryClient();
     const user = queryClient.getQueryData<userIFC>(["user"]);
 
+    if (!user) {
+        redirect("/");
+    }
+
     const { reviews, error, isPending } = useGetApplicationsQuery({
-        userId: user!._id,
+        userId: user._id,
     });
 
     const openDetail = (application: applicationIFC) => {
