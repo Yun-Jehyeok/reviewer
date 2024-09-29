@@ -15,8 +15,8 @@ import { foramttedNumber } from "@/utils/utils";
 
 // Interface & States
 import CNoItem from "@/components/common/CNoItem";
+import { useGetPayments } from "@/hooks/queries/payment";
 import { userIFC } from "@/interfaces/userIFC";
-import { useGetPayments } from "@/queries/payment/payment";
 
 export default function PayHistory() {
     const queryClient = useQueryClient();
@@ -64,25 +64,11 @@ export default function PayHistory() {
                 {data ? (
                     data?.payments?.map((v, i) => {
                         return (
-                            <div
-                                key={v._id}
-                                className={`w-full flex pt-4 ${
-                                    i < data.payments?.length &&
-                                    "border-b border-gray-200 pb-4"
-                                }`}
-                            >
-                                <div className="w-[300px] text-center">
-                                    {v.date}
-                                </div>
-                                <div className="w-[300px] text-center">
-                                    {foramttedNumber(v.point)}
-                                </div>
-                                <div className="w-[300px] text-center">
-                                    {v.purpose}
-                                </div>
-                                <div className="flex-1 text-center">
-                                    {v.etc}
-                                </div>
+                            <div key={v._id} className={`w-full flex pt-4 ${i < data.payments?.length && "border-b border-gray-200 pb-4"}`}>
+                                <div className="w-[300px] text-center">{v.date}</div>
+                                <div className="w-[300px] text-center">{foramttedNumber(v.point)}</div>
+                                <div className="w-[300px] text-center">{v.purpose}</div>
+                                <div className="flex-1 text-center">{v.etc}</div>
                             </div>
                         );
                     })

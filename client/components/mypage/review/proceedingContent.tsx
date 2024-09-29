@@ -1,10 +1,8 @@
-import { completeApplicantAppApi, completeReviwerAppApi } from "@/apis/applicationApi";
+import { useApplicationCloseMutation } from "@/hooks/mutations/application";
+import { useGetChatRoom } from "@/hooks/queries/chatroom";
 import { applicationIFC, chatIFC, chatRoomIFC } from "@/interfaces/applicationIFC";
-import { IError } from "@/interfaces/commonIFC";
 import { userIFC } from "@/interfaces/userIFC";
-import { useGetChatRoom } from "@/queries/chatroom/chatroom";
-import { cancelBgFixed } from "@/utils/utils";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import io from "socket.io-client";
@@ -19,7 +17,7 @@ const socket = io(process.env.NEXT_PUBLIC_SERVER_URL as string);
  * 1. 해당 chatroom 의 ID가 필요하고, 해당 ID를 가지고 채팅 내역을 쓸어온다.
  * 2. 현재 유저를 해당 chatroom에 접속시킨다.
  * 3. 이전 채팅 내역을 모두 출력하고, 채팅을 시작한다.
- * 4. 채팅 시, chatroom ID, user Id, message를 서버에 보낸다.
+ * 4. 채팅 시, chatroom ID, use.r Id, message를 서버에 보낸다.
  * 5. 서버에서 데이터를 적재한다.
  *
  * 끝
@@ -109,43 +107,9 @@ export default function ProceedingContent({ item, setModalOpen }: { item: applic
         }
     };
 
-    // applicantCloseMutation, reviewerCloseMutation은 1개 함수로 바꾸고,
-    // parameter에 따라 변동되게 작업
-    const applicantCloseMutation = useMutation({
-        mutationFn: completeApplicantAppApi,
-        onMutate: (variable) => {
-            console.log("onMutate", variable);
-        },
-        onError: (error: IError, variable, context) => {
-            console.error("changeToCloseErr:::", error);
-        },
-        onSuccess: (data, variables, context) => {
-            console.log("changeToCloseSuccess", data, variables, context);
-            if (data.success) setModalOpen(false);
-        },
-        onSettled: () => {
-            cancelBgFixed();
-            console.log("changeToCloseEnd");
-        },
-    });
-
-    const reviewerCloseMutation = useMutation({
-        mutationFn: completeReviwerAppApi,
-        onMutate: (variable) => {
-            console.log("onMutate", variable);
-        },
-        onError: (error: IError, variable, context) => {
-            console.error("changeToCloseErr:::", error);
-        },
-        onSuccess: (data, variables, context) => {
-            console.log("changeToCloseSuccess", data, variables, context);
-            if (data.success) setModalOpen(false);
-        },
-        onSettled: () => {
-            cancelBgFixed();
-            console.log("changeToCloseEnd");
-        },
-    });
+    // 지원자의 close 요청인지, reviewer 의 close 요청인지
+    const [isApplicantReq, setIsApplicantReq] = useState<boolean>(false);
+    const applicationCloseMutation = useApplicationCloseMutation(isApplicantReq, setModalOpen);
 
     // 리뷰 종료 Evt
     const closeApplication = useCallback(
@@ -160,11 +124,13 @@ export default function ProceedingContent({ item, setModalOpen }: { item: applic
             let confirm = window.confirm("리뷰를 종료하시겠습니까?");
 
             if (confirm) {
-                if (item.applicantId._id === user._id) applicantCloseMutation.mutate(item._id);
-                else reviewerCloseMutation.mutate(item._id);
+                if (item.applicantId._id === user._id) setIsApplicantReq(true);
+                else setIsApplicantReq(false);
+
+                applicationCloseMutation.mutate(item._id);
             }
         },
-        [reviewerCloseMutation, applicantCloseMutation, user, item]
+        [applicationCloseMutation, applicationCloseMutation, user, item]
     );
 
     // 화상 채팅 방으로 이동

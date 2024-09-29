@@ -1,5 +1,4 @@
 // Library
-import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 
 // Components
@@ -8,40 +7,16 @@ import CButton from "@/components/common/CButton";
 // Hooks & Utils
 
 // Api
-import { applyApi } from "@/apis/postApi";
 
 // Interface & States
+import { useApplyMutation } from "@/hooks/mutations/application";
 import { postIFC } from "@/interfaces/postIFC";
 import { userIFC } from "@/interfaces/userIFC";
 
-export default function Apply({
-    user,
-    post,
-}: {
-    user?: userIFC;
-    post: postIFC;
-}) {
+export default function Apply({ user, post }: { user?: userIFC; post: postIFC }) {
     const router = useRouter();
 
-    const applyMutation = useMutation({
-        mutationFn: applyApi,
-        onMutate: (variable) => {
-            console.log("onMutate", variable);
-        },
-        onError: (error, variable, context) => {
-            console.error("applyErr:::", error);
-        },
-        onSuccess: (data, variables, context) => {
-            console.log("applySuccess", data, variables, context);
-            if (data.success) {
-                alert("리뷰가 신청되었습니다.");
-                router.push("/mypage/history/apply");
-            }
-        },
-        onSettled: () => {
-            console.log("applyEnd");
-        },
-    });
+    const applyMutation = useApplyMutation();
 
     const onClick = () => {
         if (!user) {
@@ -71,10 +46,7 @@ export default function Apply({
         return (
             <div className="w-full h-fit px-8 py-4 border border-gray-200 rounded-md flex justify-between items-center mb-8">
                 <div className="text-lg font-bold">
-                    {String(post.price)}원
-                    <span className="text-sm text-gray-400 font-medium">
-                        &nbsp;/&nbsp;시간당
-                    </span>
+                    {String(post.price)}원<span className="text-sm text-gray-400 font-medium">&nbsp;/&nbsp;시간당</span>
                 </div>
                 <CButton title="신청하기" onClick={onClick} />
             </div>
@@ -85,10 +57,7 @@ export default function Apply({
         user._id !== post.creator._id && (
             <div className="w-full h-fit px-8 py-4 border border-gray-200 rounded-md flex justify-between items-center mb-8">
                 <div className="text-lg font-bold">
-                    {String(post.price)}원
-                    <span className="text-sm text-gray-400 font-medium">
-                        &nbsp;/&nbsp;시간당
-                    </span>
+                    {String(post.price)}원<span className="text-sm text-gray-400 font-medium">&nbsp;/&nbsp;시간당</span>
                 </div>
                 <CButton title="신청하기" onClick={onClick} />
             </div>

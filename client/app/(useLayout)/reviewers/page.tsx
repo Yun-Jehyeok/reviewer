@@ -15,7 +15,7 @@ import CSpinner from "@/components/common/CSpinner";
 // Api
 
 // Interface & States
-import { useGetAllPost } from "@/queries/post/post";
+import { useGetAllPost } from "@/hooks/queries/post";
 
 const filter = [
     { id: "0", value: "registerDate", label: "최신 순" },
@@ -96,18 +96,12 @@ export default function Reviewers() {
             <div className="w-full flex justify-between items-center">
                 <div className="">
                     총&nbsp;
-                    <span className="font-bold">
-                        {data ? data.allPostsCnt : 0}
-                    </span>
-                    개
+                    <span className="font-bold">{data ? data.allPostsCnt : 0}</span>개
                 </div>
                 {/* 필터링 */}
                 <div className="w-fit flex gap-4">
                     <CSelectBox items={filter} onChange={handleValFilter} />
-                    <CSelectBox
-                        items={langFilter}
-                        onChange={handleLangFilter}
-                    />
+                    <CSelectBox items={langFilter} onChange={handleLangFilter} />
                 </div>
             </div>
 
@@ -119,10 +113,7 @@ export default function Reviewers() {
                             id: post._id,
                             title: post.title,
                             price: Number(post.price),
-                            image:
-                                post.imgs && post.imgs.length > 0
-                                    ? post.imgs[0]
-                                    : "noimg",
+                            image: post.imgs && post.imgs.length > 0 ? post.imgs[0] : "noimg",
                         };
                         return <CCard key={data.id} data={data} />;
                     })}
@@ -130,21 +121,13 @@ export default function Reviewers() {
             ) : (
                 <div className="w-full h-[540px] bg-[#F4F6F5] rounded-3xl flex justify-center flex-col mt-6">
                     <div className="h-fit w-full flex flex-col gap-4">
-                        <div className="text-[#9b9b9b] text-lg text-center">
-                            조건에 맞는 리뷰어가 없습니다.
-                        </div>
+                        <div className="text-[#9b9b9b] text-lg text-center">조건에 맞는 리뷰어가 없습니다.</div>
                     </div>
                 </div>
             )}
 
             <div className="w-full flex justify-center mt-12">
-                <Pagination
-                    defaultCurrent={page}
-                    total={data ? data.allPostsCnt : 0}
-                    defaultPageSize={16}
-                    current={page}
-                    onChange={handlePagination}
-                />
+                <Pagination defaultCurrent={page} total={data ? data.allPostsCnt : 0} defaultPageSize={16} current={page} onChange={handlePagination} />
             </div>
         </div>
     );

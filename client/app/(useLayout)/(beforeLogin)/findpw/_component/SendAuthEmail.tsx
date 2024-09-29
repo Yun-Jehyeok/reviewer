@@ -1,12 +1,5 @@
 // Library
-import { useMutation } from "@tanstack/react-query";
-import {
-    ChangeEvent,
-    Dispatch,
-    SetStateAction,
-    useCallback,
-    useState,
-} from "react";
+import { ChangeEvent, Dispatch, SetStateAction, useCallback, useState } from "react";
 
 // Components
 import CButton from "@/components/common/CButton";
@@ -17,11 +10,11 @@ import CSpinner from "@/components/common/CSpinner";
 import { checkBlank } from "@/utils/utils";
 
 // Api
-import { authEmailApi } from "@/apis/userApi";
 
 // Interface & States
-import { IError } from "@/interfaces/commonIFC";
+import { useAuthEmailMutation } from "@/hooks/mutations/user";
 import { useInput } from "@/hooks/useInput";
+import { IError } from "@/interfaces/commonIFC";
 
 /**
  * Props
@@ -32,9 +25,7 @@ import { useInput } from "@/hooks/useInput";
 interface IProps {
     email: {
         value: any;
-        onChange: (
-            e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>
-        ) => void;
+        onChange: (e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>) => void;
     };
     setIsAuth: Dispatch<SetStateAction<boolean>>;
 }
@@ -49,11 +40,7 @@ export default function SendAuthEmail({ email, setIsAuth }: IProps) {
     const [authErr, setAuthErr] = useState(false);
     const [authErrMsg, setAuthErrMsg] = useState("인증번호를 입력해주세요.");
 
-    const emailMutation = useMutation({
-        mutationFn: authEmailApi,
-        onMutate: (variable) => {
-            console.log("onMutate", variable);
-        },
+    const authEmailMutation = useAuthEmailMutation({
         onError: (error: IError, variable, context) => {
             console.error("emailAuthErr:::", error.response.data.msg);
             setIsErr(true);
@@ -67,31 +54,17 @@ export default function SendAuthEmail({ email, setIsAuth }: IProps) {
                 setAuthNumResponse(data.msg);
             }
         },
-        onSettled: () => {
-            console.log("emailAuthEnd");
-        },
     });
 
     const sendEmail = useCallback(
-        (
-            e:
-                | React.FormEvent<HTMLFormElement>
-                | React.MouseEvent<HTMLButtonElement>
-        ) => {
+        (e: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement>) => {
             e.preventDefault();
 
             setIsErr(false);
 
             let emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/i;
 
-            if (
-                checkBlank(
-                    email.value,
-                    setIsErr,
-                    "이메일을 입력해주세요.",
-                    setErrMsg
-                )
-            ) {
+            if (checkBlank(email.value, setIsErr, "이메일을 입력해주세요.", setErrMsg)) {
                 return;
             }
             if (!emailRegex.test(email.value)) {
@@ -100,9 +73,9 @@ export default function SendAuthEmail({ email, setIsAuth }: IProps) {
                 return;
             }
 
-            emailMutation.mutate({ email: email.value });
+            authEmailMutation.mutate({ email: email.value });
         },
-        [email, emailMutation]
+        [email, authEmailMutation]
     );
 
     const checkAuth = () => {
@@ -125,47 +98,25 @@ export default function SendAuthEmail({ email, setIsAuth }: IProps) {
 
     return (
         <div>
-            {emailMutation.isPending && <CSpinner />}
+            {authEmailMutation.isPending && <CSpinner />}
 
-            <div className="text-lg font-bold mb-4 text-center">
-                비밀번호를 찾을 이메일을 입력해주세요
-            </div>
+            <div className="text-lg font-bold mb-4 text-center">비밀번호를 찾을 이메일을 입력해주세요</div>
             <form
                 className="flex gap-2"
                 onSubmit={(e) => {
                     e.preventDefault();
                 }}
             >
-                <CInput
-                    {...email}
-                    placeholder="이메일을 입력해주세요."
-                    type="email"
-                    isErr={isErr}
-                    errMsg={errMsg}
-                />
+                <CInput {...email} placeholder="이메일을 입력해주세요." type="email" isErr={isErr} errMsg={errMsg} />
                 <div className="h-10 w-52">
-                    <CButton
-                        title="인증번호 전송"
-                        isFull={true}
-                        onClick={sendEmail}
-                    />
+                    <CButton title="인증번호 전송" isFull={true} onClick={sendEmail} />
                 </div>
             </form>
 
             {showAuth && (
                 <div className="flex flex-col gap-2 mt-4">
-                    <CInput
-                        {...authNum}
-                        placeholder="인증번호를 입력해주세요."
-                        type="text"
-                        isErr={authErr}
-                        errMsg={authErrMsg}
-                    />
-                    <CButton
-                        title="인증하기"
-                        isFull={true}
-                        onClick={checkAuth}
-                    />
+                    <CInput {...authNum} placeholder="인증번호를 입력해주세요." type="text" isErr={authErr} errMsg={authErrMsg} />
+                    <CButton title="인증하기" isFull={true} onClick={checkAuth} />
                 </div>
             )}
         </div>

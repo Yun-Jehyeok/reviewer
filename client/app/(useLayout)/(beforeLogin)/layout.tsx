@@ -1,6 +1,6 @@
 "use client";
 
-import { useGetUserQuery } from "@/queries/user/user";
+import { useGetUserQuery } from "@/hooks/queries/user";
 import { useQueryClient } from "@tanstack/react-query";
 import { redirect } from "next/navigation";
 import { ReactNode } from "react";

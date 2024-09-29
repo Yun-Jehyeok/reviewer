@@ -1,14 +1,12 @@
 "use client";
 
-import { createReviewApi } from "@/apis/reviewApi";
 import CButton from "@/components/common/CButton";
+import { useCreateReviewMutation } from "@/hooks/mutations/application";
+import { useGetChatRoom } from "@/hooks/queries/chatroom";
 import { useInput } from "@/hooks/useInput";
 import { applicationIFC } from "@/interfaces/applicationIFC";
-import { IError } from "@/interfaces/commonIFC";
 import { userIFC } from "@/interfaces/userIFC";
-import { useGetChatRoom } from "@/queries/chatroom/chatroom";
-import { cancelBgFixed } from "@/utils/utils";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { useCallback, useState } from "react";
 
 interface IProps {
@@ -34,32 +32,10 @@ export default function CompleteContent({ item, setModalOpen }: IProps) {
         setCurrent(e);
     };
 
-    const createReviewMutation = useMutation({
-        mutationFn: createReviewApi,
-        onMutate: (variable) => {
-            console.log("onMutate", variable);
-        },
-        onError: (error: IError, variable, context) => {
-            console.error("createReviewErr:::", error);
-        },
-        onSuccess: (data, variables, context) => {
-            console.log("createReviewSuccess", data, variables, context);
-            if (data.success) {
-                cancelBgFixed();
-                setModalOpen(false);
-            }
-        },
-        onSettled: () => {
-            console.log("createReviewEnd");
-        },
-    });
+    const createReviewMutation = useCreateReviewMutation(setModalOpen);
 
     const handleSubmit = useCallback(
-        (
-            e:
-                | React.FormEvent<HTMLFormElement>
-                | React.MouseEvent<HTMLButtonElement>
-        ) => {
+        (e: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement>) => {
             e.preventDefault();
 
             let errFlag = false;
@@ -112,23 +88,11 @@ export default function CompleteContent({ item, setModalOpen }: IProps) {
                             chatRoom.chats.length > 0 &&
                             chatRoom.chats.map((msg, i) => {
                                 return (
-                                    <div
-                                        className={`w-full flex py-1 px-2 border-gray-200 ${
-                                            msg.user === user._id &&
-                                            "justify-end"
-                                        }`}
-                                        key={i}
-                                    >
+                                    <div className={`w-full flex py-1 px-2 border-gray-200 ${msg.user === user._id && "justify-end"}`} key={i}>
                                         <div className="text-sm">
-                                            {msg.user !== user._id && (
-                                                <div className="mb-1">
-                                                    {msg.userName}
-                                                </div>
-                                            )}
+                                            {msg.user !== user._id && <div className="mb-1">{msg.userName}</div>}
 
-                                            <div className="p-1 bg-sky-50 rounded-sm px-2">
-                                                {msg.message}
-                                            </div>
+                                            <div className="p-1 bg-sky-50 rounded-sm px-2">{msg.message}</div>
                                         </div>
                                     </div>
                                 );
@@ -139,9 +103,7 @@ export default function CompleteContent({ item, setModalOpen }: IProps) {
 
             {item.review ? (
                 <div className="mt-8">
-                    <div className="text-lg font-bold mb-2 text-center">
-                        리뷰 작성을 완료했습니다.
-                    </div>
+                    <div className="text-lg font-bold mb-2 text-center">리뷰 작성을 완료했습니다.</div>
                 </div>
             ) : (
                 <div className="mt-8">
@@ -225,23 +187,13 @@ export default function CompleteContent({ item, setModalOpen }: IProps) {
                     </div>
                     <form onSubmit={handleSubmit}>
                         <textarea
-                            className={`w-full h-20 border ${
-                                isErr ? "border-[#ea002c]" : "border-gray-400"
-                            } rounded-md resize-none focus:outline-none p-3 text-sm`}
+                            className={`w-full h-20 border ${isErr ? "border-[#ea002c]" : "border-gray-400"} rounded-md resize-none focus:outline-none p-3 text-sm`}
                             {...review}
                             placeholder="리뷰를 300자 이내로 작성해주세요."
                             maxLength={300}
                         ></textarea>
-                        {isErr && (
-                            <div className="text-[#ea002c] text-xs pl-2 mb-4">
-                                {errMsg}
-                            </div>
-                        )}
-                        <CButton
-                            title="리뷰 작성하기"
-                            onClick={handleSubmit}
-                            isFull={true}
-                        />
+                        {isErr && <div className="text-[#ea002c] text-xs pl-2 mb-4">{errMsg}</div>}
+                        <CButton title="리뷰 작성하기" onClick={handleSubmit} isFull={true} />
                     </form>
                 </div>
             )}
