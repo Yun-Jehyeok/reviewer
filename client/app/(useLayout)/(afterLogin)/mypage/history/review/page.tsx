@@ -21,6 +21,7 @@ import { useGetReviews } from "@/hooks/queries/review";
 import { applicationIFC } from "@/interfaces/applicationIFC";
 import { userIFC } from "@/interfaces/userIFC";
 import { applicationState } from "@/states/applicationStates";
+import { redirect } from "next/navigation";
 
 export default function ReviweHistory() {
     const queryClient = useQueryClient();
@@ -30,15 +31,15 @@ export default function ReviweHistory() {
 
     const [application, setApplication] = useRecoilState(applicationState);
 
-    const { reviews, error, isPending } = useGetReviews(user!._id);
+    if (!user) redirect("/");
+
+    const { reviews, error, isPending } = useGetReviews(user._id);
 
     const openDetail = (application: applicationIFC) => {
         setShowModal(true);
         bgFixed();
         setApplication(application);
     };
-
-    if (!user) return null;
 
     return (
         <div className="w-full">

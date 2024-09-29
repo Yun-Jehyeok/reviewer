@@ -2,7 +2,7 @@
 
 // Library
 import { useQueryClient } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 // Components
@@ -28,9 +28,13 @@ export default function PayHistory() {
     const [purpose, setPurpose] = useState<string>("");
     const [point, setPoint] = useState<number>(0);
 
+    if (!user) {
+        redirect("/");
+    }
+
     const { data, error, isPending } = useGetPayments({
         page,
-        userId: user!._id,
+        userId: user._id,
         purpose,
     });
 
@@ -39,7 +43,7 @@ export default function PayHistory() {
     };
 
     useEffect(() => {
-        setPoint(user ? user.point : 0);
+        setPoint(user.point);
     }, [user]);
 
     if (!user) return null;
