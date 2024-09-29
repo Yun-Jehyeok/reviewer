@@ -1,5 +1,5 @@
-import Image from 'next/image';
-import Link from 'next/link';
+import Image from "next/image";
+import Link from "next/link";
 
 interface ICCard {
     data: {
@@ -12,13 +12,13 @@ interface ICCard {
 
 export default function CCard({ data }: ICCard) {
     return (
-        <Link href={`/reviewers/${data.id}`} className="cursor-pointer">
-            <div className="w-full h-[240px] bg-[#F4F6F5] rounded-xl text-center flex flex-col justify-center text-[#9b9b9b] text-lg">
-                {data.image === 'noimage' ? (
-                    'REVIEWER'
+        <Link href={`/reviewers/${data.id}`} className="cursor-pointer group">
+            <div className="w-full h-[200px] bg-[#F4F6F5] rounded-xl text-center flex flex-col justify-center text-[#9b9b9b] text-lg  relative transition-all top-0 group-hover:-top-1 group-hover:shadow-md">
+                {data.image === "noimg" ? (
+                    "REVIEWER"
                 ) : (
                     <Image
-                        className="rounded-md w-full h-full"
+                        className="rounded-md w-full h-full object-contain overflow-hidden"
                         src={data.image}
                         width={64}
                         height={64}
@@ -27,10 +27,12 @@ export default function CCard({ data }: ICCard) {
                 )}
             </div>
 
-            <div className="w-full flex justify-between mt-4">
-                <div>
-                    <div className="text-lg font-bold">{data.title}</div>
-                    <div className="text-[#7F7F7F] text-sm">
+            <div className="w-full flex mt-4 gap-2">
+                <div className="flex-1 overflow-hidden">
+                    <div className="text-base font-bold overflow-hidden overflow-ellipsis whitespace-nowrap mb-1">
+                        {data.title}
+                    </div>
+                    <div className="text-[#7F7F7F] text-xs overflow-hidden overflow-ellipsis whitespace-nowrap">
                         {data.price}원/시간
                     </div>
                 </div>

@@ -1,15 +1,11 @@
-import {
-    changePwIFC,
-    editUserIFC,
-    emailIFC,
-    paymentIFC,
-    phoneIFC,
-    signinIFC,
-    signupIFC,
-    userIFC,
-} from "@/interfaces/userIFC";
-import { Apis } from "@/utils/api";
+// Library
 import { QueryFunction } from "@tanstack/react-query";
+
+// Utils
+import { Apis } from "@/utils/api";
+
+// Interface
+import { changePwIFC, editUserIFC, emailIFC, paymentIFC, phoneIFC, signinIFC, signupIFC, userIFC } from "@/interfaces/userIFC";
 
 export const signinApi = async (user: signinIFC) => {
     return await Apis.post("/user/login", user);
@@ -43,24 +39,17 @@ export const paymentApi = async (data: paymentIFC) => {
     return await Apis.put(`/user/payment/${data.id}`, data);
 };
 
-export const getUserApi: QueryFunction<userIFC, [_1: string, any]> = async ({
-    queryKey,
-}) => {
+export const getUserApi: QueryFunction<userIFC, [string]> = async ({ queryKey }) => {
     try {
-        const [_1, setUser] = queryKey;
-
         const token = localStorage.getItem("token");
-        const res = await Apis.get(`/user/${token}`, {
-            next: {
-                tags: ["user"],
-            },
-        });
+        const res = await Apis.get(`/user/${token}`);
 
-        if (res.success) setUser(res.user);
-        else throw new Error("Failed to fetch data");
+        if (!res.success) throw new Error("Failed to fetch data");
 
         return res.user;
     } catch (err) {
         console.error("get User APi Error >>>> ", err);
+
+        return null;
     }
 };

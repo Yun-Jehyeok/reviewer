@@ -1,11 +1,13 @@
-import { applicationIFC, chatRoomIFC } from "@/interfaces/applicationIFC";
-import { Apis } from "@/utils/api";
+// Library
 import { QueryFunction } from "@tanstack/react-query";
 
-export const getReviewsApi: QueryFunction<
-    applicationIFC[],
-    [_1: string, _2: string]
-> = async ({ queryKey }) => {
+// Utils
+import { Apis } from "@/utils/api";
+
+// Interface
+import { applicationIFC, chatRoomIFC } from "@/interfaces/applicationIFC";
+
+export const getReviewsApi: QueryFunction<applicationIFC[], [_1: string, _2: string]> = async ({ queryKey }) => {
     const [_1, id] = queryKey;
     const res = await Apis.get(`/application/reviews/${id}`);
 
@@ -16,10 +18,7 @@ export const getReviewsApi: QueryFunction<
     return res.reviews;
 };
 
-export const getApplicationsApi: QueryFunction<
-    applicationIFC[],
-    [_1: string, _2: string]
-> = async ({ queryKey }) => {
+export const getApplicationsApi: QueryFunction<applicationIFC[], [_1: string, _2: string]> = async ({ queryKey }) => {
     const [_1, id] = queryKey;
     const res = await Apis.get(`/application/applications/${id}`);
 
@@ -50,10 +49,7 @@ export const completeApplicantAppApi = async (id: string) => {
     return await Apis.put("/application/status/complete/applicant", payload);
 };
 
-export const getChatRoomApi: QueryFunction<
-    chatRoomIFC,
-    [_1: string, _2: string]
-> = async ({ queryKey }) => {
+export const getChatRoomApi: QueryFunction<chatRoomIFC, [_1: string, _2: string]> = async ({ queryKey }) => {
     const [_1, roomId] = queryKey;
     const res = await Apis.get(`/application/chats/${roomId}`);
 

@@ -1,9 +1,18 @@
-'use client';
+"use client";
 
-import { useRouter } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
-import { Socket, io } from 'socket.io-client';
+// Library
+import { useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
+import io from "socket.io-client";
+// Components
 
+// Hooks & Utils
+
+// Api
+
+// Interface & States
+
+//////////////////////////////////////////////////////////////////////////////
 // PeerA = 먼저 룸에 들어와있는 상태
 // PeerB = 이후에 룸에 접속을 할 상태
 
@@ -27,13 +36,14 @@ import { Socket, io } from 'socket.io-client';
 // 1. 요청자에게 candidate륿 보낸다.
 // 2. 연결할 peer에서 받은 정보를 저장하고 자신의 candidate를 보내고(send candidate)
 // 3. 받는 쪽에서 해당 candidate를 저장한다. (addICECandidate)
+//////////////////////////////////////////////////////////////////////////////
 
 const Video = () => {
     const [isAudioOn, setIsAudioOn] = useState<boolean>(true);
 
     const router = useRouter();
 
-    const socketRef = useRef<Socket>();
+    const socketRef = useRef<any>();
     // 메인 비디오
     const mainVideoRef = useRef<HTMLVideoElement>(null);
     // 자신의 비디오
@@ -44,7 +54,7 @@ const Video = () => {
     const peerConnectionRef = useRef<RTCPeerConnection>();
 
     // url 파라미터에 있는 room 정보
-    const roomName = '1';
+    const roomName = "1";
 
     const getMedia = async () => {
         try {
@@ -74,8 +84,8 @@ const Video = () => {
                 if (e.candidate) {
                     if (!socketRef.current) return;
 
-                    console.log('recv candidate');
-                    socketRef.current.emit('candidate', e.candidate, roomName);
+                    console.log("recv candidate");
+                    socketRef.current.emit("candidate", e.candidate, roomName);
                 }
             };
 
@@ -91,7 +101,7 @@ const Video = () => {
     };
 
     const createOffer = async () => {
-        console.log('create Offer');
+        console.log("create Offer");
         if (!(peerConnectionRef.current && socketRef.current)) {
             return;
         }
@@ -100,10 +110,10 @@ const Video = () => {
             const sdp = await peerConnectionRef.current.createOffer();
             // 자신의 sdp로 localDescription 설정
             peerConnectionRef.current.setLocalDescription(sdp);
-            console.log('sent the offer');
+            console.log("sent the offer");
 
             // offer 전달
-            socketRef.current.emit('offer', sdp, roomName);
+            socketRef.current.emit("offer", sdp, roomName);
         } catch (e) {
             console.error(e);
         }
@@ -111,7 +121,7 @@ const Video = () => {
 
     const createAnswer = async (sdp: RTCSessionDescription) => {
         // sdp인자 : PeerA 에게서 받은 offer
-        console.log('createAnswer');
+        console.log("createAnswer");
         if (!(peerConnectionRef.current && socketRef.current)) {
             return;
         }
@@ -124,8 +134,8 @@ const Video = () => {
             // answer를 localDescription에 등록 (PeerB 기준)
             peerConnectionRef.current.setLocalDescription(answerSdp);
 
-            console.log('sent the answer');
-            socketRef.current.emit('answer', answerSdp, roomName);
+            console.log("sent the answer");
+            socketRef.current.emit("answer", answerSdp, roomName);
         } catch (e) {
             console.error(e);
         }
@@ -133,19 +143,19 @@ const Video = () => {
 
     useEffect(() => {
         socketRef.current = io(process.env.NEXT_PUBLIC_SERVER_URL as string, {
-            path: '/api/video',
+            path: "/api/video",
         });
 
         peerConnectionRef.current = new RTCPeerConnection({
             iceServers: [
                 {
-                    urls: 'stun:stun.l.google.com:19302',
+                    urls: "stun:stun.l.google.com:19302",
                 },
             ],
         });
 
         // 기존 유저가 있고, 새로운 유저가 들어왔다면 오퍼 생성
-        socketRef.current.on('all_users', (allUsers: Array<{ id: string }>) => {
+        socketRef.current.on("all_users", (allUsers: Array<{ id: string }>) => {
             if (allUsers.length > 0) {
                 createOffer();
             }
@@ -153,32 +163,29 @@ const Video = () => {
 
         // 오퍼를 전달받은 PeerB만 사용할 함수
         // offer를 들고 만들어준 answer 함수 실행
-        socketRef.current.on('getOffer', (sdp: RTCSessionDescription) => {
-            console.log('recv Offer');
+        socketRef.current.on("getOffer", (sdp: RTCSessionDescription) => {
+            console.log("recv Offer");
             createAnswer(sdp);
         });
 
         // answer를 전달받을 PeerA만 사용할 함수
         // answer를 전달받아 PeerA의 RemoteDescription에 등록
-        socketRef.current.on('getAnswer', (sdp: RTCSessionDescription) => {
-            console.log('recv Answer');
+        socketRef.current.on("getAnswer", (sdp: RTCSessionDescription) => {
+            console.log("recv Answer");
             if (!peerConnectionRef.current) return;
 
             peerConnectionRef.current.setRemoteDescription(sdp);
         });
 
         // 서로의 candidate를 전달받아 등록
-        socketRef.current.on(
-            'getCandidate',
-            async (candidate: RTCIceCandidate) => {
-                if (!peerConnectionRef.current) return;
+        socketRef.current.on("getCandidate", async (candidate: RTCIceCandidate) => {
+            if (!peerConnectionRef.current) return;
 
-                await peerConnectionRef.current.addIceCandidate(candidate);
-            },
-        );
+            await peerConnectionRef.current.addIceCandidate(candidate);
+        });
 
         // 마운트 시, 해당 방의 roomName을 서버에 전달
-        socketRef.current.emit('join_room', {
+        socketRef.current.emit("join_room", {
             room: roomName,
         });
 
@@ -209,7 +216,7 @@ const Video = () => {
                 myVideoRef.current.srcObject = screenStream;
             }
         } catch (error) {
-            console.error('Error accessing screen sharing.', error);
+            console.error("Error accessing screen sharing.", error);
         }
     };
 
@@ -217,8 +224,7 @@ const Video = () => {
         setIsAudioOn(!isAudioOn);
 
         if (myVideoRef.current) {
-            let myAudioObj: MediaStream = myVideoRef.current
-                .srcObject as MediaStream;
+            let myAudioObj: MediaStream = myVideoRef.current.srcObject as MediaStream;
             let myAudioTracks = myAudioObj.getAudioTracks();
             myAudioTracks.forEach((track) => {
                 track.enabled = !track.enabled;
@@ -233,40 +239,31 @@ const Video = () => {
 
     const handleMainVideo = (type: string) => {
         if (mainVideoRef.current) {
-            if (type === 'myvideo') {
-                if (myVideoRef.current)
-                    mainVideoRef.current.srcObject =
-                        myVideoRef.current.srcObject;
-            } else if (type === 'opponentvideo') {
-                if (remoteVideoRef.current)
-                    mainVideoRef.current.srcObject =
-                        remoteVideoRef.current.srcObject;
+            if (type === "myvideo") {
+                if (myVideoRef.current) mainVideoRef.current.srcObject = myVideoRef.current.srcObject;
+            } else if (type === "opponentvideo") {
+                if (remoteVideoRef.current) mainVideoRef.current.srcObject = remoteVideoRef.current.srcObject;
             }
         }
     };
 
     return (
         <div className="w-screen h-screen relative bg-[#202124] overflow-hidden p-8">
-            <video
-                id="mainvideo"
-                className="w-full h-[calc(100vh-356px)] mb-8 bg-black rounded-md"
-                ref={mainVideoRef}
-                autoPlay
-            ></video>
+            <video id="mainvideo" className="w-full h-[calc(100vh-356px)] mb-8 bg-black rounded-md" ref={mainVideoRef} autoPlay></video>
 
             <div className="w-full flex gap-4">
                 <video
                     id="myvideo"
                     className="bg-black w-[240px] h-[180px] rounded-md cursor-pointer hover:outline-2 hover:outline hover:outline-blue-500"
                     ref={myVideoRef}
-                    onClick={() => handleMainVideo('myvideo')}
+                    onClick={() => handleMainVideo("myvideo")}
                     autoPlay
                 />
                 <video
                     id="remotevideo"
                     className="bg-black w-[240px] h-[180px] rounded-md cursor-pointer hover:outline-2 hover:outline hover:outline-blue-500"
                     ref={remoteVideoRef}
-                    onClick={() => handleMainVideo('opponentvideo')}
+                    onClick={() => handleMainVideo("opponentvideo")}
                     autoPlay
                 />
             </div>
@@ -275,20 +272,11 @@ const Video = () => {
                 <div className="flex gap-6">
                     <div
                         className={`w-12 h-12 rounded-full ${
-                            isAudioOn
-                                ? 'bg-[#3C4043] hover:bg-[#2B3239]'
-                                : 'bg-red-500 hover:bg-red-600'
+                            isAudioOn ? "bg-[#3C4043] hover:bg-[#2B3239]" : "bg-red-500 hover:bg-red-600"
                         } transition-all flex justify-center items-center cursor-pointer`}
                         onClick={handleAudio}
                     >
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            strokeWidth={1.5}
-                            stroke="white"
-                            className="w-6 h-6"
-                        >
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="white" className="w-6 h-6">
                             <path
                                 strokeLinecap="round"
                                 strokeLinejoin="round"
@@ -296,18 +284,8 @@ const Video = () => {
                             />
                         </svg>
                     </div>
-                    <div
-                        className="w-12 h-12 rounded-full bg-[#3C4043] hover:bg-[#2B3239] transition-all flex justify-center items-center cursor-pointer"
-                        onClick={startScreenSharing}
-                    >
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            strokeWidth={1.5}
-                            stroke="white"
-                            className="w-6 h-6"
-                        >
+                    <div className="w-12 h-12 rounded-full bg-[#3C4043] hover:bg-[#2B3239] transition-all flex justify-center items-center cursor-pointer" onClick={startScreenSharing}>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="white" className="w-6 h-6">
                             <path
                                 strokeLinecap="round"
                                 strokeLinejoin="round"
@@ -315,18 +293,8 @@ const Video = () => {
                             />
                         </svg>
                     </div>
-                    <div
-                        className="w-12 h-12 rounded-full bg-red-500 hover:bg-red-600 transition-all flex justify-center items-center cursor-pointer"
-                        onClick={navigateToMypage}
-                    >
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            strokeWidth={1.5}
-                            stroke="white"
-                            className="w-6 h-6"
-                        >
+                    <div className="w-12 h-12 rounded-full bg-red-500 hover:bg-red-600 transition-all flex justify-center items-center cursor-pointer" onClick={navigateToMypage}>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="white" className="w-6 h-6">
                             <path
                                 strokeLinecap="round"
                                 strokeLinejoin="round"

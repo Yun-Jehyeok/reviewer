@@ -11,25 +11,14 @@ module.exports = (io) => {
     io.on("connection", (socket) => {
         console.log("a user connected");
 
-        socket.on("init", (roomId, cb) => {
-            ChatRoom.findById(roomId)
-                .populate("chats")
-                .then((room) => {
-                    if (!room) {
-                        cb({
-                            success: false,
-                            msg: "채팅방을 찾을 수 없습니다.",
-                        });
-                    } else {
-                        cb({ success: true, msg: room });
-                    }
-                })
-                .catch((err) => {
-                    cb({ success: true, msg: e.msg });
-                });
+        socket.on("join room", (roomId) => {
+            socket.join(roomId);
+            console.log(`방 ${roomId}에 입장했습니다.`);
         });
-        socket.on("chat message", (msg, cb) => {
+
+        socket.on("message", (msg) => {
             const { roomId, author, message, userName } = msg;
+            console.log("get message:::", roomId, author, message, userName);
 
             const newChat = new Chat({
                 roomId,
@@ -46,39 +35,39 @@ module.exports = (io) => {
                             chats: newChat._id,
                         },
                     })
-                        .populate("chats")
-                        .then((room) => {
-                            ChatRoom.findById(roomId)
-                                .populate("chats")
-                                .populate("users")
-                                .then(async (findRes) => {
-                                    const receiveUser = findRes["users"].filter(
-                                        (user) => !user._id.equals(author),
-                                    );
-
-                                    const authorUser = await getUser(author);
-                                    let content = AlarmText["chat"](
-                                        authorUser.nickname,
-                                        message,
-                                    );
-
-                                    notificationSave(
-                                        io,
-                                        cb,
-                                        receiveUser[0]._id,
-                                        content,
-                                    );
-
-                                    io.emit("chat message", findRes.chats);
-                                    cb({ success: true, msg: findRes.chats });
-                                });
+                        .then(() => {
+                            io.emit("message", newChat);
                         })
                         .catch((e) => {
-                            cb({ success: false, msg: e.msg });
+                            console.error(e.msg);
                         });
+                    // ChatRoom.findByIdAndUpdate(roomId, {
+                    //     $push: {
+                    //         chats: newChat._id,
+                    //     },
+                    // })
+                    //     .populate("chats")
+                    //     .then((room) => {
+                    //         ChatRoom.findById(roomId)
+                    //             .populate("chats")
+                    //             .populate("users")
+                    //             .then(async (findRes) => {
+                    //                 const receiveUser = findRes["users"].filter((user) => !user._id.equals(author));
+
+                    //                 const authorUser = await getUser(author);
+                    //                 let content = AlarmText["chat"](authorUser.nickname, message);
+
+                    //                 // notificationSave(io, cb, receiveUser[0]._id, content);
+
+                    //                 // io.emit("message", findRes.chats);
+                    //             });
+                    //     })
+                    //     .catch((e) => {
+                    //         console.error(e.msg);
+                    //     });
                 })
                 .catch((e) => {
-                    cb({ success: false, msg: e.msg });
+                    console.error(e.msg);
                 });
         });
         socket.on("notification", (msg, cb) => {

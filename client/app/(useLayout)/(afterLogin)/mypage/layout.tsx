@@ -1,18 +1,31 @@
 "use client";
 
-import CButton from "@/components/common/CButton";
-import { userState } from "@/states/userStates";
+// Library
 import { usePathname, useRouter } from "next/navigation";
-
 import { ReactNode, useEffect, useState } from "react";
-import { useRecoilState } from "recoil";
+
+// Components
+import CButton from "@/components/common/CButton";
+
+// Hooks & Utils
+
+// Api
+
+// Interface & States
+import { userIFC } from "@/interfaces/userIFC";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface Props {
     children: ReactNode;
 }
 
 export default function Layout({ children }: Props) {
-    const [user, setUser] = useRecoilState(userState);
+    const router = useRouter();
+    const path = usePathname();
+
+    const queryClient = useQueryClient();
+    const user = queryClient.getQueryData<userIFC>(["user"]);
+
     const [nickname, setNickname] = useState("");
     const [oneLineIntroduce, setOneLineIntroduce] = useState("");
     const [isTabRender, setIsTabRender] = useState(false);
@@ -63,23 +76,14 @@ export default function Layout({ children }: Props) {
                 setIsTabRender(true);
             }
         });
-    }, []);
+    }, [path, tabs]);
 
     useEffect(() => {
-        setNickname(user.nickname);
-        setOneLineIntroduce(user.oneLineIntroduce);
+        if (user) {
+            setNickname(user.nickname);
+            setOneLineIntroduce(user.oneLineIntroduce);
+        }
     }, [user]);
-
-    const router = useRouter();
-    const path = usePathname();
-
-    // useEffect(() => {
-    //   let tmpTabs = tabs;
-    //   tmpTabs = tmpTabs.map((v) => {
-    //     return { ...v, checked: v.url === path };
-    //   });
-    //   setTabs(tmpTabs);
-    // }, [tabs, path]);
 
     const navigateToUpdateUser = () => {
         router.push("/edituser");

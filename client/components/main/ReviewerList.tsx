@@ -1,6 +1,6 @@
-import { postIFC } from '@/interfaces/postIFC';
-import Image from 'next/image';
-import Link from 'next/link';
+import { postIFC } from "@/interfaces/postIFC";
+import Image from "next/image";
+import Link from "next/link";
 
 export default function ReviewerList({
     posts,
@@ -9,47 +9,43 @@ export default function ReviewerList({
     posts: postIFC[] | undefined;
     noPostContent: string;
 }) {
-    console.log('posts:::', posts);
     return (
-        <div className="w-full flex justify-between gap-12">
+        <div className="w-full grid grid-cols-5 gap-8">
+            <title>List</title>
             {posts && posts.length > 0 ? (
                 posts.map((v, i) => {
                     return (
                         <Link
                             href={`/reviewers/${v._id}`}
                             key={v._id}
-                            className="w-1/3 cursor-pointer"
+                            className="w-full cursor-pointer group"
                         >
                             <div>
                                 <div
-                                    className={`w-full h-[540px] ${
-                                        i === 0 && 'bg-[#9C9C9C]'
-                                    } ${i === 1 && 'bg-[#B29BC7]'} ${
-                                        i === 2 && 'bg-[#B1DAD8]'
-                                    } rounded-xl text-center flex flex-col justify-center text-black text-lg`}
+                                    className={`w-full h-[200px] bg-[#F5F6F5] rounded-xl text-center flex flex-col justify-center text-black text-lg relative transition-all top-0 group-hover:-top-1 group-hover:shadow-md`}
                                 >
                                     {v.imgs && v.imgs.length > 0 ? (
                                         <Image
-                                            className="rounded-md w-full h-full"
+                                            className="rounded-md w-full h-full object-contain overflow-hidden"
                                             src={v.imgs[0]}
                                             width={128}
                                             height={128}
                                             alt={v.imgs[0]}
                                         />
                                     ) : (
-                                        'REVIEWERS'
+                                        "REVIEWERS"
                                     )}
                                 </div>
-                                <div className="w-full flex justify-between mt-4">
-                                    <div>
-                                        <div className="text-lg font-bold">
+                                <div className="w-full flex mt-4 gap-2">
+                                    <div className="flex-1 overflow-hidden">
+                                        <div className="text-base font-bold overflow-hidden overflow-ellipsis whitespace-nowrap mb-1">
                                             {v.title}
                                         </div>
-                                        <div className="text-[#7F7F7F] text-sm">
+                                        <div className="text-[#7F7F7F] text-xs overflow-hidden overflow-ellipsis whitespace-nowrap">
                                             {v.lang.map((l, i) =>
                                                 i === v.lang.length - 1
                                                     ? l
-                                                    : `${l}, `,
+                                                    : `${l}, `
                                             )}
                                         </div>
                                     </div>
@@ -58,9 +54,9 @@ export default function ReviewerList({
                                             xmlns="http://www.w3.org/2000/svg"
                                             fill="none"
                                             viewBox="0 0 24 24"
-                                            strokeWidth="1.5"
+                                            strokeWidth="2"
                                             stroke="currentColor"
-                                            className="w-6 h-6"
+                                            className="w-4 h-4"
                                         >
                                             <path
                                                 strokeLinecap="round"

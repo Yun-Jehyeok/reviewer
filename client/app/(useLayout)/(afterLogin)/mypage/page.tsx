@@ -1,37 +1,24 @@
 "use client";
 
-import { userIFC } from "@/interfaces/userIFC";
-import { useQuery } from "@tanstack/react-query";
+// Library
+import { useQueryClient } from "@tanstack/react-query";
 import DOMPurify from "dompurify";
 import { useRouter } from "next/navigation";
-import { useSetRecoilState } from "recoil";
 
-// API
-import { getUserApi } from "@/apis/userApi";
-
-// Recoil
-import { userState } from "@/states/userStates";
-
-// Component
+// Components
 import CButton from "@/components/common/CButton";
-import CSpinner from "@/components/common/CSpinner";
 
-// Util
+// Hooks & Utils
 import { foramttedNumber } from "@/utils/utils";
 
-export default function Mypage() {
-    const setUser = useSetRecoilState(userState);
+// Api
 
-    const {
-        data: user,
-        error,
-        isPending,
-    } = useQuery<userIFC, Object, userIFC, [_1: string, any]>({
-        queryKey: ["user", setUser],
-        queryFn: getUserApi,
-        staleTime: 60 * 1000,
-        gcTime: 300 * 1000,
-    });
+// Interface & States
+import { userIFC } from "@/interfaces/userIFC";
+
+export default function Mypage() {
+    const queryClient = useQueryClient();
+    const user = queryClient.getQueryData<userIFC>(["user"]);
 
     const router = useRouter();
 
@@ -39,13 +26,10 @@ export default function Mypage() {
         router.push("/edituser");
     };
 
-    console.log("user:::", user);
-
     if (!user) return;
 
     return (
         <div className="w-full">
-            {isPending && <CSpinner />}
             <div className="text-2xl font-bold mb-8">프로필</div>
 
             <div className="w-full text-lg">
@@ -58,7 +42,7 @@ export default function Mypage() {
                     <div className="w-[120px] font-bold">사용 언어</div>
                     <div className="flex-1">
                         {user.lang.length > 0
-                            ? user.lang.map((v) => v + ", ")
+                            ? user.lang.join(", ")
                             : "사용 언어를 설정해주세요."}
                     </div>
                 </div>
@@ -82,7 +66,7 @@ export default function Mypage() {
                                 }}
                                 dangerouslySetInnerHTML={{
                                     __html: DOMPurify.sanitize(
-                                        String(user.introduce),
+                                        String(user.introduce)
                                     ),
                                 }}
                             />
