@@ -17,8 +17,8 @@ import Reviews from "./_component/Reviews";
 // Api
 
 // Interface & States
+import { useGetPost } from "@/hooks/queries/post";
 import { userIFC } from "@/interfaces/userIFC";
-import { useGetPost } from "@/queries/post/post";
 
 export default function ReviewerDetail() {
     const { id } = useParams() as { id: string };

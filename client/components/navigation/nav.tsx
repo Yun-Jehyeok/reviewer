@@ -1,8 +1,9 @@
 "use client";
 
-import { useGetUserQuery } from "@/queries/user/user";
+import { useGetUserQuery } from "@/hooks/queries/user";
 import { confirmState } from "@/states/clientStates";
 import { bgFixed } from "@/utils/utils";
+import { useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -22,26 +23,21 @@ export default function Navigation() {
     const [isOpenSearch, setIsOpenSearch] = useState<boolean>(false);
 
     const { user, error, isPending } = useGetUserQuery();
+    const queryClient = useQueryClient();
 
     const router = useRouter();
 
     useEffect(() => {
-        if (user) setIsAuth(true);
-        else setIsAuth(false);
+        setIsAuth(!!user);
     }, [user]);
 
     useEffect(() => {
         const handleShowPopup = async (e: Event) => {
-            const alarmIconCon =
-                (e.target as HTMLElement).classList.contains("nav-alarm") ||
-                (e.target as HTMLElement).closest(".nav-alarm");
-            const myPageIconCon =
-                (e.target as HTMLElement).classList.contains("nav-mypage") ||
-                (e.target as HTMLElement).closest(".nav-mypage");
+            const alarmIconCon = (e.target as HTMLElement).classList.contains("nav-alarm") || (e.target as HTMLElement).closest(".nav-alarm");
+            const myPageIconCon = (e.target as HTMLElement).classList.contains("nav-mypage") || (e.target as HTMLElement).closest(".nav-mypage");
 
             if (showAlarms && !alarmIconCon) setShowAlarms(() => !showAlarms);
-            if (showDropdown && !myPageIconCon)
-                setShowDropdown(() => !showDropdown);
+            if (showDropdown && !myPageIconCon) setShowDropdown(() => !showDropdown);
         };
 
         window.addEventListener("click", handleShowPopup);
@@ -62,6 +58,7 @@ export default function Navigation() {
     const onClickLogout = () => {
         setShowDropdown(false);
         localStorage.removeItem("token");
+        queryClient.invalidateQueries({ queryKey: ["user"] });
 
         router.push("/");
     };
@@ -91,50 +88,18 @@ export default function Navigation() {
 
             <div className="flex gap-8 items-center">
                 <Link href="/reviewers">리뷰어 목록</Link>
-                {isAuth &&
-                    (user?.isReviewer ? (
-                        <Link href="/reviewers/register">게시글 작성</Link>
-                    ) : (
-                        <Link href="/reviewers/convert">리뷰어 전환</Link>
-                    ))}
-                <div
-                    className={`rounded-full w-6 h-6 cursor-pointer transition-all duration-100`}
-                    onClick={openSearch}
-                >
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        strokeWidth={1.5}
-                        stroke="black"
-                        className="size-4"
-                    >
-                        <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
-                        />
+                {isAuth && (user?.isReviewer ? <Link href="/reviewers/register">게시글 작성</Link> : <Link href="/reviewers/convert">리뷰어 전환</Link>)}
+                <div className={`rounded-full w-6 h-6 cursor-pointer transition-all duration-100`} onClick={openSearch}>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="black" className="size-4">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
                     </svg>
                 </div>
-                <NavAlarm
-                    showAlarms={showAlarms}
-                    setShowAlarms={setShowAlarms}
-                />
+                <NavAlarm showAlarms={showAlarms} setShowAlarms={setShowAlarms} />
                 {/* <NavMessages /> */}
                 {isAuth ? (
                     <div className="relative nav-mypage">
-                        <div
-                            className="w-10 h-10 rounded-full bg-black flex justify-center items-center cursor-pointer hover:bg-gray-800"
-                            onClick={handleShowMyPage}
-                        >
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                strokeWidth={1.5}
-                                stroke="white"
-                                className="w-6 h-6"
-                            >
+                        <div className="w-10 h-10 rounded-full bg-black flex justify-center items-center cursor-pointer hover:bg-gray-800" onClick={handleShowMyPage}>
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="white" className="w-6 h-6">
                                 <path
                                     strokeLinecap="round"
                                     strokeLinejoin="round"
@@ -147,33 +112,22 @@ export default function Navigation() {
                             <div className="absolute top-14 right-[280px]">
                                 <div className="bg-white rounded-md border border-gray-200 z-10 absolute w-[280px] h-fit shadow-md">
                                     <div className="p-8 w-full">
-                                        <div className="w-full text-center text-xl font-bold mb-4">
-                                            {user?.name}
-                                        </div>
+                                        <div className="w-full text-center text-xl font-bold mb-4">{user?.name}</div>
                                         <div className="w-full flex justify-center">
                                             <div className="w-24 h-24 rounded-full bg-gray-500"></div>
                                         </div>
 
                                         <div className="w-full flex justify-center items-center mt-8">
-                                            <CButton
-                                                title="포인트 충전하기"
-                                                onClick={navigateToPayment}
-                                            />
+                                            <CButton title="포인트 충전하기" onClick={navigateToPayment} />
                                         </div>
                                     </div>
                                     <div className="w-full h-[1px] border border-gray-200"></div>
                                     <div className="p-4 py-2 w-full flex justify-end gap-4">
-                                        <div
-                                            className="text-sm text-blue-600 cursor-pointer"
-                                            onClick={navigateToMypage}
-                                        >
+                                        <div className="text-sm text-blue-600 cursor-pointer" onClick={navigateToMypage}>
                                             Mypage
                                         </div>
 
-                                        <div
-                                            className="text-sm text-blue-600 cursor-pointer"
-                                            onClick={onClickLogout}
-                                        >
+                                        <div className="text-sm text-blue-600 cursor-pointer" onClick={onClickLogout}>
                                             Logout
                                         </div>
                                     </div>

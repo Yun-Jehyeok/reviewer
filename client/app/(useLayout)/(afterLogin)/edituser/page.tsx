@@ -1,7 +1,7 @@
 "use client";
 
 // Library
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
 
@@ -17,9 +17,9 @@ import { useInput } from "@/hooks/useInput";
 import { checkBlank } from "@/utils/utils";
 
 // Api
-import { editUserApi } from "@/apis/userApi";
 
 // Interface & States
+import { useEditUserMutation } from "@/hooks/mutations/user";
 import { editUserIFC, userIFC } from "@/interfaces/userIFC";
 
 export default function EditUser() {
@@ -43,46 +43,14 @@ export default function EditUser() {
     const [techErrmsg, setTechErrmsg] = useState<string>("");
     const [introErrmsg, setIntroErrmsg] = useState<string>("");
 
-    const editUserMutation = useMutation({
-        mutationFn: editUserApi,
-        onMutate: (variable) => {
-            console.log("onMutate", variable);
-        },
-        onError: (error, variable, context) => {
-            console.error("editUserErr:::", error);
-        },
-        onSuccess: (data, variables, context) => {
-            console.log("editUserSuccess", data, variables, context);
-            if (data.success) {
-                console.log("Edit Success Data >>>> ", data);
-                queryClient.setQueryData(["user"], data.user);
-
-                router.push(`/mypage`);
-            }
-        },
-        onSettled: () => {
-            console.log("editUserEnd");
-        },
-    });
+    const editUserMutation = useEditUserMutation();
 
     const handleSubmit = useCallback(
-        (
-            e:
-                | React.FormEvent<HTMLFormElement>
-                | React.MouseEvent<HTMLButtonElement>
-        ) => {
+        (e: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement>) => {
             e.preventDefault();
 
             let errFlag = false;
-            if (
-                checkBlank(
-                    nickname.value,
-                    setNicknameErr,
-                    "닉네임을 입력해주세요.",
-                    setNicknameErrmsg
-                )
-            )
-                errFlag = true;
+            if (checkBlank(nickname.value, setNicknameErr, "닉네임을 입력해주세요.", setNicknameErrmsg)) errFlag = true;
 
             if (techs.length < 1) {
                 setTechErr(true);
@@ -103,15 +71,7 @@ export default function EditUser() {
 
             editUserMutation.mutate(payload);
         },
-        [
-            user,
-            nickname,
-            introduce,
-            price,
-            editUserMutation,
-            techs,
-            oneLineIntroduce,
-        ]
+        [user, nickname, introduce, price, editUserMutation, techs, oneLineIntroduce]
     );
 
     const goToProfile = () => {
@@ -121,51 +81,16 @@ export default function EditUser() {
     return (
         <div className="py-12">
             {editUserMutation.isPending && <CSpinner />}
-            <h1 className="text-center w-full text-3xl font-bold mb-12">
-                사용자 정보 수정
-            </h1>
+            <h1 className="text-center w-full text-3xl font-bold mb-12">사용자 정보 수정</h1>
             <div className="flex flex-col gap-6">
-                <CInput
-                    {...nickname}
-                    type="text"
-                    label="닉네임"
-                    placeholder="닉네임을 입력해주세요."
-                    isErr={nicknameErr}
-                    errMsg={nicknameErrmsg}
-                />
-                <CInput
-                    {...oneLineIntroduce}
-                    type="text"
-                    label="한 줄 소개"
-                    placeholder="한 줄 소개를 입력해주세요."
-                />
-                <CInput
-                    {...price}
-                    type="text"
-                    label="시간 당 가격 (원)"
-                    placeholder="시간 당 가격을 입력해주세요."
-                />
-                <SetTech
-                    defaultTechs={user!.lang}
-                    techErr={techErr}
-                    techErrmsg={techErrmsg}
-                    setTechs={setTechs}
-                />
-                <SetTextareaContents
-                    label="소개"
-                    placeholder="소개를 입력해주세요."
-                    contents={introduce}
-                    setContents={setIntroduce}
-                    err={introErr}
-                    errmsg={introErrmsg}
-                />
+                <CInput {...nickname} type="text" label="닉네임" placeholder="닉네임을 입력해주세요." isErr={nicknameErr} errMsg={nicknameErrmsg} />
+                <CInput {...oneLineIntroduce} type="text" label="한 줄 소개" placeholder="한 줄 소개를 입력해주세요." />
+                <CInput {...price} type="text" label="시간 당 가격 (원)" placeholder="시간 당 가격을 입력해주세요." />
+                <SetTech defaultTechs={user!.lang} techErr={techErr} techErrmsg={techErrmsg} setTechs={setTechs} />
+                <SetTextareaContents label="소개" placeholder="소개를 입력해주세요." contents={introduce} setContents={setIntroduce} err={introErr} errmsg={introErrmsg} />
 
                 <div className="w-full flex justify-end gap-x-2">
-                    <CButton
-                        title="취소"
-                        isCancel={true}
-                        onClick={goToProfile}
-                    />
+                    <CButton title="취소" isCancel={true} onClick={goToProfile} />
                     <CButton title="등록하기" onClick={handleSubmit} />
                 </div>
             </div>

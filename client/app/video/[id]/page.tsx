@@ -3,7 +3,7 @@
 // Library
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { Socket, io } from "socket.io-client";
+import io from "socket.io-client";
 // Components
 
 // Hooks & Utils
@@ -43,7 +43,7 @@ const Video = () => {
 
     const router = useRouter();
 
-    const socketRef = useRef<Socket>();
+    const socketRef = useRef<any>();
     // 메인 비디오
     const mainVideoRef = useRef<HTMLVideoElement>(null);
     // 자신의 비디오
@@ -284,10 +284,7 @@ const Video = () => {
                             />
                         </svg>
                     </div>
-                    <div
-                        className="w-12 h-12 rounded-full bg-[#3C4043] hover:bg-[#2B3239] transition-all flex justify-center items-center cursor-pointer"
-                        onClick={startScreenSharing}
-                    >
+                    <div className="w-12 h-12 rounded-full bg-[#3C4043] hover:bg-[#2B3239] transition-all flex justify-center items-center cursor-pointer" onClick={startScreenSharing}>
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="white" className="w-6 h-6">
                             <path
                                 strokeLinecap="round"
@@ -296,10 +293,7 @@ const Video = () => {
                             />
                         </svg>
                     </div>
-                    <div
-                        className="w-12 h-12 rounded-full bg-red-500 hover:bg-red-600 transition-all flex justify-center items-center cursor-pointer"
-                        onClick={navigateToMypage}
-                    >
+                    <div className="w-12 h-12 rounded-full bg-red-500 hover:bg-red-600 transition-all flex justify-center items-center cursor-pointer" onClick={navigateToMypage}>
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="white" className="w-6 h-6">
                             <path
                                 strokeLinecap="round"
