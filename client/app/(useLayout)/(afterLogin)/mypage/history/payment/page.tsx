@@ -22,8 +22,6 @@ export default function PayHistory() {
     const queryClient = useQueryClient();
     const user = queryClient.getQueryData<userIFC>(["user"]);
 
-    if (!user) return null;
-
     const router = useRouter();
 
     const [page, setPage] = useState<number>(1);
@@ -32,7 +30,7 @@ export default function PayHistory() {
 
     const { data, error, isPending } = useGetPayments({
         page,
-        userId: user._id,
+        userId: user!._id,
         purpose,
     });
 
@@ -43,6 +41,8 @@ export default function PayHistory() {
     useEffect(() => {
         setPoint(user ? user.point : 0);
     }, [user]);
+
+    if (!user) return null;
 
     return (
         <div className="w-full">

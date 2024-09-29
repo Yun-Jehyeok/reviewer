@@ -11,8 +11,6 @@ export default function ApplicationContent({ item, setStatus, setModalOpen }: { 
     const queryClient = useQueryClient();
     const user = queryClient.getQueryData<userIFC>(["user"]);
 
-    if (!user) return null;
-
     const proceedingMutation = useProceedingMutation(setStatus);
 
     const cancelMutation = useRejectApplicationMutation({
@@ -21,7 +19,7 @@ export default function ApplicationContent({ item, setStatus, setModalOpen }: { 
             if (data.success) {
                 setStatus("cancel");
                 setModalOpen(false);
-                if (user._id === item.reviewerId._id) queryClient.invalidateQueries({ queryKey: ["reviews"] });
+                if (user!._id === item.reviewerId._id) queryClient.invalidateQueries({ queryKey: ["reviews"] });
                 else
                     queryClient.invalidateQueries({
                         queryKey: ["applications"],
@@ -57,6 +55,7 @@ export default function ApplicationContent({ item, setStatus, setModalOpen }: { 
         [proceedingMutation, item]
     );
 
+    if (!user) return null;
     return (
         <div className="w-full">
             {proceedingMutation.isPending && <CSpinner />}

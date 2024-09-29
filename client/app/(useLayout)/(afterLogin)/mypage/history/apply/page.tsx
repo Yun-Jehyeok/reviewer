@@ -29,10 +29,8 @@ export default function ApplyHistory() {
     const queryClient = useQueryClient();
     const user = queryClient.getQueryData<userIFC>(["user"]);
 
-    if (!user) return null;
-
     const { reviews, error, isPending } = useGetApplicationsQuery({
-        userId: user._id,
+        userId: user!._id,
     });
 
     const openDetail = (application: applicationIFC) => {
@@ -40,6 +38,8 @@ export default function ApplyHistory() {
         bgFixed();
         setApplication(application);
     };
+
+    if (!user) return null;
 
     return (
         <div className="w-full">
