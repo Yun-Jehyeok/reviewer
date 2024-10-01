@@ -19,7 +19,6 @@ module.exports = (io) => {
         socket.on("message", (msg) => {
             const { roomId, author, message, userName } = msg;
             console.log("get message:::", roomId, author, message, userName);
-
             const newChat = new Chat({
                 roomId,
                 user: author,

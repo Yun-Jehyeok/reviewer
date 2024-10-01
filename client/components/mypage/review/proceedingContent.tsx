@@ -61,13 +61,7 @@ export default function ProceedingContent({ item, setModalOpen }: { item: applic
         // 컴포넌트 언마운트 시, 소켓 이벤트 제거 및 연결 해제
         return () => {
             socket.off("message");
-
-            // 지금 reviewModal 에서 recoil을 사용하고, 그에 따라 status가 변경되며
-            // 이에 따라, proceedingContent가 조건부 렌더링 되고 있는데
-            // 이로 인해, 컴포넌트 렌더링 시, unmount도 같이 진행되고 있다.
-            // 나중에 이를 해결한 이후 disconnect는 다시...
-
-            // socket.disconnect();
+            socket.disconnect();
         };
     }, []);
 
