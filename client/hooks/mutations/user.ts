@@ -6,6 +6,8 @@ import { cancelBgFixed } from "@/utils/utils";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { SetStateAction } from "react";
+import { setCookie } from "nookies";
+import nookies from "nookies";
 
 export const useEditUserMutation = () => {
     const queryClient = useQueryClient();
@@ -154,7 +156,25 @@ export const useSigninMutation = ({ onError, onSuccess }: ISignin) => {
             console.log("onMutate", variable);
         },
         onError,
-        onSuccess,
+        onSuccess: (data, variables, context) => {
+            if (data.token) {
+                try {
+                    console.log("Token Exist >>>> ", data);
+                    setCookie(null, "token", data.token, {
+                        maxAge: 30 * 24 * 60 * 60,
+                        path: "/",
+                        secure: process.env.NODE_ENV === "production",
+                        sameSite: "strict",
+                    });
+                } catch (err) {
+                    console.error("Login Mutation Error >>>> ", err);
+                }
+            }
+
+            if (onSuccess) {
+                onSuccess(data, variables, context);
+            }
+        },
         onSettled: () => {
             cancelBgFixed();
             console.log("signinEnd");

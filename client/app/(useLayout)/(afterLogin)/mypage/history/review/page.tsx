@@ -30,7 +30,7 @@ export default function ReviweHistory() {
 
     const [application, setApplication] = useRecoilState(applicationState);
 
-    const { reviews, error, isPending } = useGetReviews(user!._id);
+    const { reviews, error, isPending } = useGetReviews(user?._id ?? "");
 
     const openDetail = (application: applicationIFC) => {
         setShowModal(true);
@@ -47,7 +47,13 @@ export default function ReviweHistory() {
             <div className="w-full flex flex-col">
                 {reviews && reviews.length > 0 ? (
                     reviews.map((v, i) => {
-                        return <ReviewItem key={i} review={v} openDetail={openDetail} />;
+                        return (
+                            <ReviewItem
+                                key={i}
+                                review={v}
+                                openDetail={openDetail}
+                            />
+                        );
                     })
                 ) : (
                     <CNoItem title="신청 받은 리뷰가 없습니다." />
