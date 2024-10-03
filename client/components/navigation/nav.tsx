@@ -6,6 +6,7 @@ import { bgFixed } from "@/utils/utils";
 import { useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { destroyCookie } from "nookies";
 import { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
 import CButton from "../common/CButton";
@@ -57,7 +58,7 @@ export default function Navigation() {
 
     const onClickLogout = () => {
         setShowDropdown(false);
-        localStorage.removeItem("token");
+        destroyCookie(null, "token");
         queryClient.invalidateQueries({ queryKey: ["user"] });
 
         router.push("/");

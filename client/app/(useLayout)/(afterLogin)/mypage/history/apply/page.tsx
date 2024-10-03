@@ -1,8 +1,7 @@
 "use client";
 
 // Library
-import { useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
 
 // Components
@@ -18,8 +17,8 @@ import { bgFixed } from "@/utils/utils";
 
 // Interface & States
 import { useGetApplicationsQuery } from "@/hooks/queries/application";
+import { useGetUserQuery } from "@/hooks/queries/user";
 import { applicationIFC } from "@/interfaces/applicationIFC";
-import { userIFC } from "@/interfaces/userIFC";
 import { applicationState } from "@/states/applicationStates";
 import { redirect } from "next/navigation";
 
@@ -27,15 +26,15 @@ export default function ApplyHistory() {
     const [showModal, setShowModal] = useState<boolean>(false);
 
     const [application, setApplication] = useRecoilState(applicationState);
-    const queryClient = useQueryClient();
-    const user = queryClient.getQueryData<userIFC>(["user"]);
 
-    if (!user) {
-        redirect("/");
-    }
+    const { user, error: getUserError, isPending: getUserIsPending } = useGetUserQuery();
+
+    useEffect(() => {
+        if (!getUserIsPending && !user) redirect("/");
+    }, [getUserIsPending, user]);
 
     const { reviews, error, isPending } = useGetApplicationsQuery({
-        userId: user._id,
+        userId: user ? user._id : "",
     });
 
     const openDetail = (application: applicationIFC) => {

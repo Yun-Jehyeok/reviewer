@@ -5,9 +5,8 @@ import { emailIFC, signinIFC, signupIFC } from "@/interfaces/userIFC";
 import { cancelBgFixed } from "@/utils/utils";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
+import nookies, { setCookie } from "nookies";
 import { SetStateAction } from "react";
-import { setCookie } from "nookies";
-import nookies from "nookies";
 
 export const useEditUserMutation = () => {
     const queryClient = useQueryClient();
@@ -125,6 +124,7 @@ interface ISignup {
 }
 export const useSignupMutation = ({ onError }: ISignup) => {
     const router = useRouter();
+    const queryClient = useQueryClient();
 
     return useMutation({
         mutationFn: signupApi,
@@ -135,7 +135,15 @@ export const useSignupMutation = ({ onError }: ISignup) => {
         onSuccess: (data, variables, context) => {
             console.log("signupSuccess", data, variables, context);
             if (data.success) {
-                localStorage.setItem("token", data.token);
+                setCookie(null, "token", data.token, {
+                    maxAge: 30 * 24 * 60 * 60,
+                    path: "/",
+                    secure: process.env.NODE_ENV === "production",
+                    sameSite: "strict",
+                });
+                console.log(nookies.get(), " : on Success Query Nookies");
+
+                queryClient.invalidateQueries({ queryKey: ["user"] });
                 router.push("/");
             }
         },
