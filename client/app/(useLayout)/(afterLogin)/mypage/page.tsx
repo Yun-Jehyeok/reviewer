@@ -4,7 +4,6 @@
 import { useQueryClient } from "@tanstack/react-query";
 import DOMPurify from "dompurify";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
 
 // Components
 import CButton from "@/components/common/CButton";
@@ -27,7 +26,9 @@ export default function Mypage() {
         router.push("/edituser");
     };
 
-    if (!user) return <div>Loading...</div>;
+    console.log("no user???:::", user);
+
+    if (!user) return;
 
     return (
         <div className="w-full">
