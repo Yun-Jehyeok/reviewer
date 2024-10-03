@@ -12,7 +12,7 @@ import CButton from "@/components/common/CButton";
 // Api
 
 // Interface & States
-import { userIFC } from "@/interfaces/userIFC";
+import { useGetUserQuery } from "@/hooks/queries/user";
 import { useQueryClient } from "@tanstack/react-query";
 
 interface Props {
@@ -24,7 +24,7 @@ export default function Layout({ children }: Props) {
     const path = usePathname();
 
     const queryClient = useQueryClient();
-    const user = queryClient.getQueryData<userIFC>(["user"]);
+    const { user, getUserError, getUserIsPending } = useGetUserQuery();
 
     const [nickname, setNickname] = useState("");
     const [oneLineIntroduce, setOneLineIntroduce] = useState("");
@@ -67,9 +67,7 @@ export default function Layout({ children }: Props) {
         tabs.forEach((tab) => {
             tab.checked = false;
 
-            const condition =
-                (currentPath === "mypage" || currentPath === tab.value) &&
-                !isBraek;
+            const condition = (currentPath === "mypage" || currentPath === tab.value) && !isBraek;
             if (condition) {
                 tab.checked = true;
                 isBraek = true;
@@ -109,17 +107,10 @@ export default function Layout({ children }: Props) {
                         <div className="w-32 h-32 rounded-full bg-gray-500"></div>
                         <div className="flex flex-col justify-center gap-2">
                             <div className="text-2xl font-bold">{nickname}</div>
-                            <div className="text-sm text-gray-500">
-                                {oneLineIntroduce !== ""
-                                    ? oneLineIntroduce
-                                    : "한 줄 소개를 작성해주세요."}
-                            </div>
+                            <div className="text-sm text-gray-500">{oneLineIntroduce !== "" ? oneLineIntroduce : "한 줄 소개를 작성해주세요."}</div>
                         </div>
                     </div>
-                    <CButton
-                        title="프로필 수정"
-                        onClick={navigateToUpdateUser}
-                    />
+                    <CButton title="프로필 수정" onClick={navigateToUpdateUser} />
                 </div>
             </div>
 
@@ -127,22 +118,13 @@ export default function Layout({ children }: Props) {
                 <div className="w-[240px] text-xl flex flex-col">
                     {isTabRender &&
                         tabs.map((v) => (
-                            <div
-                                key={v.id}
-                                data-value={v.value}
-                                className={`px-8 py-4 hover:bg-gray-100 cursor-pointer rounded-md ${
-                                    v.checked && "font-bold"
-                                }`}
-                                onClick={onClickTab}
-                            >
+                            <div key={v.id} data-value={v.value} className={`px-8 py-4 hover:bg-gray-100 cursor-pointer rounded-md ${v.checked && "font-bold"}`} onClick={onClickTab}>
                                 {v.title}
                             </div>
                         ))}
                 </div>
 
-                <div className="flex-1 border-l border-gray-200 pl-12 pr-8 min-h-[40vh]">
-                    {children}
-                </div>
+                <div className="flex-1 border-l border-gray-200 pl-12 pr-8 min-h-[40vh]">{children}</div>
             </div>
         </div>
     );
