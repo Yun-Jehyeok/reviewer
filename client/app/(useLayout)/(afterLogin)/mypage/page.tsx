@@ -4,6 +4,7 @@
 import { useQueryClient } from "@tanstack/react-query";
 import DOMPurify from "dompurify";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 // Components
 import CButton from "@/components/common/CButton";
@@ -25,8 +26,11 @@ export default function Mypage() {
     const handleEdit = () => {
         router.push("/edituser");
     };
+    useEffect(() => {
+        console.log("!)!)!)!)!)!)!) >>>> ", user);
+    }, [user]);
 
-    if (!user) return;
+    if (!user) return <div>Loading...</div>;
 
     return (
         <div className="w-full">
@@ -40,11 +44,7 @@ export default function Mypage() {
 
                 <div className="w-full flex gap-8 py-4">
                     <div className="w-[120px] font-bold">사용 언어</div>
-                    <div className="flex-1">
-                        {user.lang.length > 0
-                            ? user.lang.join(", ")
-                            : "사용 언어를 설정해주세요."}
-                    </div>
+                    <div className="flex-1">{user.lang.length > 0 ? user.lang.join(", ") : "사용 언어를 설정해주세요."}</div>
                 </div>
 
                 <div className="w-full flex gap-8 py-4">
@@ -65,9 +65,7 @@ export default function Mypage() {
                                     whiteSpace: "normal",
                                 }}
                                 dangerouslySetInnerHTML={{
-                                    __html: DOMPurify.sanitize(
-                                        String(user.introduce)
-                                    ),
+                                    __html: DOMPurify.sanitize(String(user.introduce)),
                                 }}
                             />
                         ) : (
@@ -78,7 +76,10 @@ export default function Mypage() {
             </div>
 
             <div className="w-full flex justify-end mt-12">
-                <CButton title="수정하기" onClick={handleEdit} />
+                <CButton
+                    title="수정하기"
+                    onClick={handleEdit}
+                />
             </div>
         </div>
     );
