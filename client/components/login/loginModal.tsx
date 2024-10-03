@@ -1,17 +1,29 @@
 "use client";
 
-import { useSigninMutation } from "@/hooks/mutations/user";
-import { useInput } from "@/hooks/useInput";
-import { IError } from "@/interfaces/commonIFC";
-import { cancelBgFixed } from "@/utils/utils";
-import { useQueryClient } from "@tanstack/react-query";
+// Library
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import nookies, { setCookie } from "nookies";
 import { useCallback, useState } from "react";
+
+// Hook
+import { useInput } from "@/hooks/useInput";
+
+// Component
 import CButton from "../common/CButton";
 import { emailico, pwico } from "../common/CIcons";
 import CInput from "../common/CInput";
 import CSpinner from "../common/CSpinner";
+
+// Interface
+import { IError } from "@/interfaces/commonIFC";
+
+// Util
+import { cancelBgFixed } from "@/utils/utils";
+
+// API
+import { signinApi } from "@/apis/userApi";
 
 interface ILoginModal {
     setModalOpen: (flag: boolean) => void;
@@ -27,13 +39,16 @@ export default function LoginModal({ setModalOpen }: ILoginModal) {
     const [errMsg, setErrMsg] = useState("이메일 또는 비밀번호를 확인해주세요.");
 
     const router = useRouter();
+    const queryClient = useQueryClient();
 
     const email = useInput("");
     const password = useInput("");
 
-    const queryClient = useQueryClient();
-
-    const signInMutation = useSigninMutation({
+    const signInMutation = useMutation({
+        mutationFn: signinApi,
+        onMutate: (variable) => {
+            console.log("onMutate", variable);
+        },
         onError: (error: IError, variable, context) => {
             console.error("signinErr:::", error);
             let { msg } = error.response.data;
@@ -52,11 +67,21 @@ export default function LoginModal({ setModalOpen }: ILoginModal) {
             console.log("signinSuccess", data, variables, context);
             if (data.success) {
                 setModalOpen(false);
-                localStorage.setItem("token", data.token);
-                queryClient.setQueryData(["user"], data.user);
+                setCookie(null, "token", data.token, {
+                    maxAge: 30 * 24 * 60 * 60,
+                    path: "/",
+                    secure: process.env.NODE_ENV === "production",
+                    sameSite: "strict",
+                });
+                console.log(nookies.get(), " : on Success Query Nookies");
 
+                queryClient.invalidateQueries({ queryKey: ["user"] });
                 router.push("/");
             }
+        },
+        onSettled: () => {
+            cancelBgFixed();
+            console.log("signinEnd");
         },
     });
 

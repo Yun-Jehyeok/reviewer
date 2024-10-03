@@ -5,6 +5,7 @@ import { emailIFC, signinIFC, signupIFC } from "@/interfaces/userIFC";
 import { cancelBgFixed } from "@/utils/utils";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
+import nookies, { setCookie } from "nookies";
 import { SetStateAction } from "react";
 
 export const useEditUserMutation = () => {
@@ -123,6 +124,7 @@ interface ISignup {
 }
 export const useSignupMutation = ({ onError }: ISignup) => {
     const router = useRouter();
+    const queryClient = useQueryClient();
 
     return useMutation({
         mutationFn: signupApi,
@@ -133,7 +135,15 @@ export const useSignupMutation = ({ onError }: ISignup) => {
         onSuccess: (data, variables, context) => {
             console.log("signupSuccess", data, variables, context);
             if (data.success) {
-                localStorage.setItem("token", data.token);
+                setCookie(null, "token", data.token, {
+                    maxAge: 30 * 24 * 60 * 60,
+                    path: "/",
+                    secure: process.env.NODE_ENV === "production",
+                    sameSite: "strict",
+                });
+                console.log(nookies.get(), " : on Success Query Nookies");
+
+                queryClient.invalidateQueries({ queryKey: ["user"] });
                 router.push("/");
             }
         },
@@ -154,7 +164,25 @@ export const useSigninMutation = ({ onError, onSuccess }: ISignin) => {
             console.log("onMutate", variable);
         },
         onError,
-        onSuccess,
+        onSuccess: (data, variables, context) => {
+            if (data.token) {
+                try {
+                    console.log("Token Exist >>>> ", data);
+                    setCookie(null, "token", data.token, {
+                        maxAge: 30 * 24 * 60 * 60,
+                        path: "/",
+                        secure: process.env.NODE_ENV === "production",
+                        sameSite: "strict",
+                    });
+                } catch (err) {
+                    console.error("Login Mutation Error >>>> ", err);
+                }
+            }
+
+            if (onSuccess) {
+                onSuccess(data, variables, context);
+            }
+        },
         onSettled: () => {
             cancelBgFixed();
             console.log("signinEnd");
