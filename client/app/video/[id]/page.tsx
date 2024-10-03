@@ -1,73 +1,41 @@
 "use client";
 
-// Library
+// 라이브러리 임포트
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import io from "socket.io-client";
-// Components
 
-// Hooks & Utils
-
-// Api
-
-// Interface & States
-
-//////////////////////////////////////////////////////////////////////////////
-// PeerA = 먼저 룸에 들어와있는 상태
-// PeerB = 이후에 룸에 접속을 할 상태
-
-// PeerA
-// 1. 브라우저에서 미디어 스트림을 받는다 (getUserMedia)
-// 2. stream을 등록한다. (addStream, addTrack)
-// 3. createOffer 후에 local sdp를 설정한다. (createOffer => setLocalDescription)
-// 4. PeerB에 offer를 전달한다. (send offer)
-
-// PeerB에서 offer를 받은 이후
-
-// PeerB
-// 1. PeerA에게서 받은 offer(sdp)로 remote sdp를 설정한다. (setRemoteDescription)
-// 2. 브라우저 미디어 스트림을 받는다. (getUserMedia)
-// 3. createAnswer 이후 local sdp를 설정한다. (createAnswer => setLocalDescription)
-// 4. PeerA에게 answer를 보낸다. (send answer)
-// 5. PeerA에서는 answer를 전달받고 remote sdp를 설정한다 (setRemoteDescription)
-
-// create answer 과정 이후 icecandidate로 네트워크 정보를 교환한다.
-
-// 1. 요청자에게 candidate륿 보낸다.
-// 2. 연결할 peer에서 받은 정보를 저장하고 자신의 candidate를 보내고(send candidate)
-// 3. 받는 쪽에서 해당 candidate를 저장한다. (addICECandidate)
-//////////////////////////////////////////////////////////////////////////////
+// Socket.IO 클라이언트 인스턴스 생성
+const socket = io(process.env.NEXT_PUBLIC_SERVER_URL as string, {
+    path: "/api/video",
+});
 
 const Video = () => {
     const [isAudioOn, setIsAudioOn] = useState<boolean>(true);
-
     const router = useRouter();
 
-    const socketRef = useRef<any>();
-    // 메인 비디오
+    // 비디오 요소 참조
     const mainVideoRef = useRef<HTMLVideoElement>(null);
-    // 자신의 비디오
     const myVideoRef = useRef<HTMLVideoElement>(null);
-    // 다른 사람의 비디오
     const remoteVideoRef = useRef<HTMLVideoElement>(null);
-    // peerConnection
     const peerConnectionRef = useRef<RTCPeerConnection>();
 
-    // url 파라미터에 있는 room 정보
-    const roomName = "1";
+    const roomName = "1"; // 룸 이름
 
     const getMedia = async () => {
         try {
-            // 자신의 스트림 정보
-            const stream = await navigator.mediaDevices.getDisplayMedia({
-                video: true,
+            // 자신의 미디어 스트림 정보를 가져옴 (카메라, 마이크 등)
+            const stream = await navigator.mediaDevices.getUserMedia({
+                video: false,
                 audio: true,
             });
 
+            // 자신의 비디오에 스트림 설정
             if (myVideoRef.current) {
                 myVideoRef.current.srcObject = stream;
             }
-            if (!(peerConnectionRef.current && socketRef.current)) {
+
+            if (!(peerConnectionRef.current && socket)) {
                 return;
             }
 
@@ -79,17 +47,17 @@ const Video = () => {
                 peerConnectionRef.current.addTrack(track, stream);
             });
 
-            // iceCandidate 이벤트
+            // ICE candidate 이벤트 설정
             peerConnectionRef.current.onicecandidate = (e) => {
                 if (e.candidate) {
-                    if (!socketRef.current) return;
+                    if (!socket) return;
 
                     console.log("recv candidate");
-                    socketRef.current.emit("candidate", e.candidate, roomName);
+                    socket.emit("candidate", e.candidate, roomName);
                 }
             };
 
-            // 구 addStream 현 track 이벤트
+            // 수신한 트랙 설정
             peerConnectionRef.current.ontrack = (e) => {
                 if (remoteVideoRef.current) {
                     remoteVideoRef.current.srcObject = e.streams[0];
@@ -101,135 +69,107 @@ const Video = () => {
     };
 
     const createOffer = async () => {
-        console.log("create Offer");
-        if (!(peerConnectionRef.current && socketRef.current)) {
-            return;
-        }
+        if (!(peerConnectionRef.current && socket)) return;
         try {
-            // offer 생성
-            const sdp = await peerConnectionRef.current.createOffer();
-            // 자신의 sdp로 localDescription 설정
-            peerConnectionRef.current.setLocalDescription(sdp);
-            console.log("sent the offer");
+            const sdp = await peerConnectionRef.current.createOffer(); // 오퍼를 만들어서
+            await peerConnectionRef.current.setLocalDescription(sdp);
+            socket.emit("offer", sdp, roomName); // 서버에 전송
 
-            // offer 전달
-            socketRef.current.emit("offer", sdp, roomName);
-        } catch (e) {
-            console.error(e);
+            // 서버에선 오퍼를 수신 받고, 해당 룸의 모든 사용자에게 getOffer 송신(sdp를 모든 유저에게 전달)
+        } catch (error) {
+            console.error("Error creating offer:", error);
         }
     };
 
     const createAnswer = async (sdp: RTCSessionDescription) => {
-        // sdp인자 : PeerA 에게서 받은 offer
-        console.log("createAnswer");
-        if (!(peerConnectionRef.current && socketRef.current)) {
-            return;
-        }
-
+        if (!(peerConnectionRef.current && socket)) return;
         try {
-            // sdp를 remoteDescription에 등록
-            peerConnectionRef.current.setRemoteDescription(sdp);
-            // answer 생성
-            const answerSdp = await peerConnectionRef.current.createAnswer();
-            // answer를 localDescription에 등록 (PeerB 기준)
-            peerConnectionRef.current.setLocalDescription(answerSdp);
+            await peerConnectionRef.current.setRemoteDescription(sdp); // 원격 디스크립션 설정
+            const answerSdp = await peerConnectionRef.current.createAnswer(); // 답변 생성
+            await peerConnectionRef.current.setLocalDescription(answerSdp); // 로컬 디스크립션 설정
+            socket.emit("answer", answerSdp, roomName); // 서버에 답변 전달
 
-            console.log("sent the answer");
-            socketRef.current.emit("answer", answerSdp, roomName);
-        } catch (e) {
-            console.error(e);
+            // 서버는 답변을 전달 받고 다시 getAnswer 송신을 통해 방의 모든 사용자에게 답변을 보냄
+        } catch (error) {
+            console.error("Error creating answer:", error);
         }
     };
 
     useEffect(() => {
-        socketRef.current = io(process.env.NEXT_PUBLIC_SERVER_URL as string, {
-            path: "/api/video",
-        });
-
+        // 1. RTCPeerConnection 초기화
         peerConnectionRef.current = new RTCPeerConnection({
-            iceServers: [
-                {
-                    urls: "stun:stun.l.google.com:19302",
-                },
-            ],
+            iceServers: [{ urls: "stun:stun.l.google.com:19302" }], // STUN 서버 설정
         });
 
-        // 기존 유저가 있고, 새로운 유저가 들어왔다면 오퍼 생성
-        socketRef.current.on("all_users", (allUsers: Array<{ id: string }>) => {
-            if (allUsers.length > 0) {
-                createOffer();
+        // 3. 모든 유저 정보를 받고,
+        socket.on("all_users", (allUsers: Array<{ id: string }>) => {
+            // 유저가 1명이라도 있다면 createOffer
+            if (allUsers.length > 0) createOffer();
+        });
+
+        // 4. 유저가 룸에 참가해 오퍼를 만들고, 이를 방의 모든 사용자에게 송신해서
+        // 모든 유저는 오퍼를 받음
+        socket.on("getOffer", (sdp: RTCSessionDescription) => {
+            createAnswer(sdp); // 수신한 오퍼로 답변 생성
+        });
+
+        socket.on("getAnswer", (sdp: RTCSessionDescription) => {
+            if (peerConnectionRef.current) {
+                peerConnectionRef.current.setRemoteDescription(sdp); // 5. 수신한 답변으로 원격 디스크립션 설정
             }
         });
 
-        // 오퍼를 전달받은 PeerB만 사용할 함수
-        // offer를 들고 만들어준 answer 함수 실행
-        socketRef.current.on("getOffer", (sdp: RTCSessionDescription) => {
-            console.log("recv Offer");
-            createAnswer(sdp);
+        socket.on("getCandidate", async (candidate: RTCIceCandidate) => {
+            if (peerConnectionRef.current) {
+                await peerConnectionRef.current.addIceCandidate(candidate);
+            }
         });
 
-        // answer를 전달받을 PeerA만 사용할 함수
-        // answer를 전달받아 PeerA의 RemoteDescription에 등록
-        socketRef.current.on("getAnswer", (sdp: RTCSessionDescription) => {
-            console.log("recv Answer");
-            if (!peerConnectionRef.current) return;
+        // 2. Room 에 참가 -> Room 참가시, all_users 를 수신하며, 그 안엔 모든 유저 정보가 있음
+        socket.emit("join_room", { room: roomName });
 
-            peerConnectionRef.current.setRemoteDescription(sdp);
-        });
-
-        // 서로의 candidate를 전달받아 등록
-        socketRef.current.on("getCandidate", async (candidate: RTCIceCandidate) => {
-            if (!peerConnectionRef.current) return;
-
-            await peerConnectionRef.current.addIceCandidate(candidate);
-        });
-
-        // 마운트 시, 해당 방의 roomName을 서버에 전달
-        socketRef.current.emit("join_room", {
-            room: roomName,
-        });
-
+        // 미디어 스트림 가져오기
         getMedia();
 
         return () => {
-            // 언마운트 시 socketRef disconnect
-            if (socketRef.current) {
-                socketRef.current.disconnect();
-            }
-            if (peerConnectionRef.current) {
-                peerConnectionRef.current.close();
-            }
+            socket.disconnect();
+            if (peerConnectionRef.current) peerConnectionRef.current.close();
         };
-    }, [socketRef]);
+    }, []);
 
-    let screenStream: MediaStream | null = null; // 화면 공유 미디어 스트림
-
-    // 화면 공유를 시작하는 함수
     const startScreenSharing = async () => {
         try {
-            screenStream = await navigator.mediaDevices.getDisplayMedia({
+            const screenStream = await navigator.mediaDevices.getDisplayMedia({
                 video: true,
                 audio: true,
             });
-            // 공유되는 화면을 내 화면에 출력
             if (myVideoRef.current) {
                 myVideoRef.current.srcObject = screenStream;
             }
         } catch (error) {
-            console.error("Error accessing screen sharing.", error);
+            console.error("Error accessing screen sharing:", error);
         }
     };
 
-    const handleAudio = () => {
-        setIsAudioOn(!isAudioOn);
-
+    const handleAudioToggle = () => {
+        setIsAudioOn((prev) => !prev);
         if (myVideoRef.current) {
-            let myAudioObj: MediaStream = myVideoRef.current.srcObject as MediaStream;
-            let myAudioTracks = myAudioObj.getAudioTracks();
-            myAudioTracks.forEach((track) => {
+            const mediaStream = myVideoRef.current.srcObject as MediaStream;
+            mediaStream.getAudioTracks().forEach((track) => {
                 track.enabled = !track.enabled;
             });
-            myVideoRef.current.srcObject = myAudioObj;
+        }
+    };
+
+    const handleMainVideo = (type: "myvideo" | "opponentvideo") => {
+        if (mainVideoRef.current) {
+            if (type === "myvideo" && myVideoRef.current) {
+                // 나의 비디오를 클릭했을 때
+                mainVideoRef.current.srcObject = myVideoRef.current.srcObject;
+            } else if (type === "opponentvideo" && remoteVideoRef.current) {
+                // 상대방 비디오를 클릭했을 때
+                mainVideoRef.current.srcObject = remoteVideoRef.current.srcObject;
+            }
         }
     };
 
@@ -237,44 +177,18 @@ const Video = () => {
         router.back();
     };
 
-    const handleMainVideo = (type: string) => {
-        if (mainVideoRef.current) {
-            if (type === "myvideo") {
-                if (myVideoRef.current) mainVideoRef.current.srcObject = myVideoRef.current.srcObject;
-            } else if (type === "opponentvideo") {
-                if (remoteVideoRef.current) mainVideoRef.current.srcObject = remoteVideoRef.current.srcObject;
-            }
-        }
-    };
-
     return (
         <div className="w-screen h-screen relative bg-[#202124] overflow-hidden p-8">
-            <video id="mainvideo" className="w-full h-[calc(100vh-356px)] mb-8 bg-black rounded-md" ref={mainVideoRef} autoPlay></video>
-
+            <video id="mainvideo" ref={mainVideoRef} className="w-full h-[calc(100vh-356px)] mb-8 bg-black rounded-md" autoPlay />
             <div className="w-full flex gap-4">
-                <video
-                    id="myvideo"
-                    className="bg-black w-[240px] h-[180px] rounded-md cursor-pointer hover:outline-2 hover:outline hover:outline-blue-500"
-                    ref={myVideoRef}
-                    onClick={() => handleMainVideo("myvideo")}
-                    autoPlay
-                />
-                <video
-                    id="remotevideo"
-                    className="bg-black w-[240px] h-[180px] rounded-md cursor-pointer hover:outline-2 hover:outline hover:outline-blue-500"
-                    ref={remoteVideoRef}
-                    onClick={() => handleMainVideo("opponentvideo")}
-                    autoPlay
-                />
+                <video ref={myVideoRef} className="bg-black w-[240px] h-[180px] rounded-md cursor-pointer" autoPlay onClick={() => handleMainVideo("myvideo")} />
+                <video ref={remoteVideoRef} className="bg-black w-[240px] h-[180px] rounded-md cursor-pointer" autoPlay onClick={() => handleMainVideo("opponentvideo")} />
             </div>
-
             <div className="flex justify-center mt-8">
                 <div className="flex gap-6">
                     <div
-                        className={`w-12 h-12 rounded-full ${
-                            isAudioOn ? "bg-[#3C4043] hover:bg-[#2B3239]" : "bg-red-500 hover:bg-red-600"
-                        } transition-all flex justify-center items-center cursor-pointer`}
-                        onClick={handleAudio}
+                        className={`w-12 h-12 flex justify-center items-center rounded-full ${isAudioOn ? "bg-[#3C4043] hover:bg-[#2B3239]" : "bg-red-500 hover:bg-red-600"}`}
+                        onClick={handleAudioToggle}
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="white" className="w-6 h-6">
                             <path
@@ -284,7 +198,7 @@ const Video = () => {
                             />
                         </svg>
                     </div>
-                    <div className="w-12 h-12 rounded-full bg-[#3C4043] hover:bg-[#2B3239] transition-all flex justify-center items-center cursor-pointer" onClick={startScreenSharing}>
+                    <div className="w-12 h-12 flex justify-center items-center rounded-full bg-[#3C4043] hover:bg-[#2B3239]" onClick={startScreenSharing}>
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="white" className="w-6 h-6">
                             <path
                                 strokeLinecap="round"
@@ -293,7 +207,7 @@ const Video = () => {
                             />
                         </svg>
                     </div>
-                    <div className="w-12 h-12 rounded-full bg-red-500 hover:bg-red-600 transition-all flex justify-center items-center cursor-pointer" onClick={navigateToMypage}>
+                    <div className="w-12 h-12 flex justify-center items-center rounded-full bg-red-500 hover:bg-red-600" onClick={navigateToMypage}>
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="white" className="w-6 h-6">
                             <path
                                 strokeLinecap="round"
