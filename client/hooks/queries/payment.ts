@@ -14,7 +14,7 @@ export const useGetPayments = ({ page, userId, purpose }: IGetPaymentsReq) => {
         queryFn: getPaymentsApi,
         staleTime: 60 * 1000,
         gcTime: 300 * 1000,
-        enabled: !!userId,
+        enabled: userId !== "",
     });
 
     return { data, error, isPending };

@@ -33,7 +33,7 @@ export default function ReviweHistory() {
         if (!getUserIsPending && !user) redirect("/");
     }, [getUserIsPending, user]);
 
-    const { reviews, error, isPending } = useGetReviews(user!._id);
+    const { reviews, error, isPending } = useGetReviews(user ? user._id : "");
 
     const openDetail = (application: applicationIFC) => {
         setShowModal(true);

@@ -34,7 +34,7 @@ export default function ApplyHistory() {
     }, [getUserIsPending, user]);
 
     const { reviews, error, isPending } = useGetApplicationsQuery({
-        userId: user!._id,
+        userId: user ? user._id : "",
     });
 
     const openDetail = (application: applicationIFC) => {
