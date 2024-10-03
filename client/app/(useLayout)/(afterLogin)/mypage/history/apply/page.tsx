@@ -18,8 +18,8 @@ import { bgFixed } from "@/utils/utils";
 
 // Interface & States
 import { useGetApplicationsQuery } from "@/hooks/queries/application";
+import { useGetUserQuery } from "@/hooks/queries/user";
 import { applicationIFC } from "@/interfaces/applicationIFC";
-import { userIFC } from "@/interfaces/userIFC";
 import { applicationState } from "@/states/applicationStates";
 import { redirect } from "next/navigation";
 
@@ -28,7 +28,9 @@ export default function ApplyHistory() {
 
     const [application, setApplication] = useRecoilState(applicationState);
     const queryClient = useQueryClient();
-    const user = queryClient.getQueryData<userIFC>(["user"]);
+    // const user = queryClient.getQueryData<userIFC>(["user"]);
+
+    const { user, getUserError, getUserIsPending } = useGetUserQuery();
 
     if (!user) {
         redirect("/");

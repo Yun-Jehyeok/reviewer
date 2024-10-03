@@ -5,8 +5,8 @@ import { useQuery } from "@tanstack/react-query";
 export const useGetUserQuery = () => {
     const {
         data: user,
-        error,
-        isPending,
+        error: getUserError,
+        isPending: getUserIsPending,
     } = useQuery<userIFC, Error, userIFC, [_1: string]>({
         queryKey: ["user"],
         queryFn: getUserApi,
@@ -14,5 +14,5 @@ export const useGetUserQuery = () => {
         gcTime: 300 * 1000,
     });
 
-    return { user, error, isPending };
+    return { user, getUserError, getUserIsPending };
 };

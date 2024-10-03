@@ -11,16 +11,12 @@ export const useGetApplicationsQuery = ({ userId }: IGetApplicationsReq) => {
         data: reviews,
         error,
         isPending,
-    } = useQuery<
-        applicationIFC[],
-        Error,
-        applicationIFC[],
-        [_1: string, _2: string]
-    >({
+    } = useQuery<applicationIFC[], Error, applicationIFC[], [_1: string, _2: string]>({
         queryKey: ["applications", userId],
         queryFn: getApplicationsApi,
         staleTime: 60 * 1000,
         gcTime: 300 * 1000,
+        enabled: !!userId, // user가 존재할 때만 쿼리 실행
     });
 
     return { reviews, error, isPending };
