@@ -26,6 +26,8 @@ export default function Mypage() {
         router.push("/edituser");
     };
 
+    console.log("no user???:::", user);
+
     if (!user) return;
 
     return (
@@ -40,11 +42,7 @@ export default function Mypage() {
 
                 <div className="w-full flex gap-8 py-4">
                     <div className="w-[120px] font-bold">사용 언어</div>
-                    <div className="flex-1">
-                        {user.lang.length > 0
-                            ? user.lang.join(", ")
-                            : "사용 언어를 설정해주세요."}
-                    </div>
+                    <div className="flex-1">{user.lang.length > 0 ? user.lang.join(", ") : "사용 언어를 설정해주세요."}</div>
                 </div>
 
                 <div className="w-full flex gap-8 py-4">
@@ -65,9 +63,7 @@ export default function Mypage() {
                                     whiteSpace: "normal",
                                 }}
                                 dangerouslySetInnerHTML={{
-                                    __html: DOMPurify.sanitize(
-                                        String(user.introduce)
-                                    ),
+                                    __html: DOMPurify.sanitize(String(user.introduce)),
                                 }}
                             />
                         ) : (
