@@ -14,11 +14,11 @@ import { foramttedNumber } from "@/utils/utils";
 // Api
 
 // Interface & States
-import { userIFC } from "@/interfaces/userIFC";
+import { useGetUserQuery } from "@/hooks/queries/user";
 
 export default function Mypage() {
     const queryClient = useQueryClient();
-    const user = queryClient.getQueryData<userIFC>(["user"]);
+    const { user, getUserError, getUserIsPending } = useGetUserQuery();
 
     const router = useRouter();
 
