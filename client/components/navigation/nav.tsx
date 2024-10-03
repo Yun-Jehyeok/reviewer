@@ -23,7 +23,7 @@ export default function Navigation() {
     const [showAlarms, setShowAlarms] = useState<boolean>(false);
     const [isOpenSearch, setIsOpenSearch] = useState<boolean>(false);
 
-    const { user, getUserError, getUserIsPending } = useGetUserQuery();
+    const { user, error, isPending } = useGetUserQuery();
     const queryClient = useQueryClient();
 
     const router = useRouter();

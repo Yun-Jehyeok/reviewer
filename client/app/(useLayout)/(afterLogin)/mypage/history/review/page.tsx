@@ -1,7 +1,7 @@
 "use client";
 
 // Library
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
 
 // Components
@@ -27,15 +27,19 @@ export default function ReviweHistory() {
 
     const [application, setApplication] = useRecoilState(applicationState);
 
-    const { user, getUserError, getUserIsPending } = useGetUserQuery();
+    const { user, error: getUserError, isPending: getUserIsPending } = useGetUserQuery();
 
     if (getUserIsPending) {
         return <div>Loading...</div>; // 로딩 중일 때 로딩 컴포넌트를 보여줌
     }
 
-    if (!user) redirect("/");
+    useEffect(() => {
+        if (user === null) {
+            redirect("/");
+        }
+    }, [user]);
 
-    const { reviews, error, isPending } = useGetReviews(user._id);
+    const { reviews, error, isPending } = useGetReviews(user!._id);
 
     const openDetail = (application: applicationIFC) => {
         setShowModal(true);
