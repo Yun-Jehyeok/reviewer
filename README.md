@@ -1,4 +1,4 @@
-# Reviewer
+# Reviewer.v.hs
 
 Reviewer는 개발자들을 위한 코드 리뷰 서비스입니다.
 

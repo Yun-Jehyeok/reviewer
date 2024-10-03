@@ -1,5 +1,6 @@
 // Library
 import { QueryFunction } from "@tanstack/react-query";
+import nookies from "nookies";
 
 // Utils
 import { Apis } from "@/utils/api";
@@ -41,7 +42,7 @@ export const paymentApi = async (data: paymentIFC) => {
 
 export const getUserApi: QueryFunction<userIFC, [string]> = async ({ queryKey }) => {
     try {
-        const token = localStorage.getItem("token");
+        const { token } = nookies.get();
         const res = await Apis.get(`/user/${token}`);
 
         if (!res.success) throw new Error("Failed to fetch data");
