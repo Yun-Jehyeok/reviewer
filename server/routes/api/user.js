@@ -7,8 +7,7 @@ const { auth } = require("../../middleware/auth");
 const coolsms = require("coolsms-node-sdk");
 const { Post } = require("../../models/post");
 const nodemailer = require("nodemailer");
-const { Payment } = require("../../models/payment");
-
+const { Payment } = require("../../models/payment")
 const {
     JWT_SECRET,
     COOLSMS_APIKEY,
