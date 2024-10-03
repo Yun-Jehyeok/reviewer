@@ -1,7 +1,6 @@
 "use client";
 
 // Library
-import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useRecoilState } from "recoil";
 
@@ -18,20 +17,25 @@ import { bgFixed } from "@/utils/utils";
 
 // Interface & States
 import { useGetReviews } from "@/hooks/queries/review";
+import { useGetUserQuery } from "@/hooks/queries/user";
 import { applicationIFC } from "@/interfaces/applicationIFC";
-import { userIFC } from "@/interfaces/userIFC";
 import { applicationState } from "@/states/applicationStates";
 import { redirect } from "next/navigation";
 
 export default function ReviweHistory() {
-    const queryClient = useQueryClient();
-    const user = queryClient.getQueryData<userIFC>(["user"]);
-
     const [showModal, setShowModal] = useState<boolean>(false);
 
     const [application, setApplication] = useRecoilState(applicationState);
 
-    const { reviews, error, isPending } = useGetReviews(user?._id ?? "");
+    const { user, getUserError, getUserIsPending } = useGetUserQuery();
+
+    if (getUserIsPending) {
+        return <div>Loading...</div>; // 로딩 중일 때 로딩 컴포넌트를 보여줌
+    }
+
+    if (!user) redirect("/");
+
+    const { reviews, error, isPending } = useGetReviews(user._id);
 
     const openDetail = (application: applicationIFC) => {
         setShowModal(true);
@@ -46,13 +50,7 @@ export default function ReviweHistory() {
             <div className="w-full flex flex-col">
                 {reviews && reviews.length > 0 ? (
                     reviews.map((v, i) => {
-                        return (
-                            <ReviewItem
-                                key={i}
-                                review={v}
-                                openDetail={openDetail}
-                            />
-                        );
+                        return <ReviewItem key={i} review={v} openDetail={openDetail} />;
                     })
                 ) : (
                     <CNoItem title="신청 받은 리뷰가 없습니다." />
