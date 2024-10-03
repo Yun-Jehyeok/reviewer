@@ -16,7 +16,7 @@ export const useGetApplicationsQuery = ({ userId }: IGetApplicationsReq) => {
         queryFn: getApplicationsApi,
         staleTime: 60 * 1000,
         gcTime: 300 * 1000,
-        enabled: !!userId, // user가 존재할 때만 쿼리 실행
+        enabled: userId !== "",
     });
 
     return { reviews, error, isPending };

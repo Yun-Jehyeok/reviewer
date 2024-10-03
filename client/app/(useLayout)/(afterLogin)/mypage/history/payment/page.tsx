@@ -32,7 +32,7 @@ export default function PayHistory() {
 
     const { data, error, isPending } = useGetPayments({
         page,
-        userId: user!._id,
+        userId: user ? user._id : "",
         purpose,
     });
 

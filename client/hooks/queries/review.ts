@@ -12,7 +12,7 @@ export const useGetReviews = (userId: string) => {
         queryFn: getReviewsApi,
         staleTime: 60 * 1000,
         gcTime: 300 * 1000,
-        enabled: !!userId,
+        enabled: userId !== "",
     });
 
     return { reviews, error, isPending };
