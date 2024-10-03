@@ -29,15 +29,9 @@ export default function ApplyHistory() {
 
     const { user, error: getUserError, isPending: getUserIsPending } = useGetUserQuery();
 
-    if (getUserIsPending) {
-        return <div>Loading...</div>; // 로딩 중일 때 로딩 컴포넌트를 보여줌
-    }
-
     useEffect(() => {
-        if (user === null) {
-            redirect("/");
-        }
-    }, [user]);
+        if (!getUserIsPending && !user) redirect("/");
+    }, [getUserIsPending, user]);
 
     const { reviews, error, isPending } = useGetApplicationsQuery({
         userId: user!._id,
