@@ -24,19 +24,15 @@ export default function PayHistory() {
     const [purpose, setPurpose] = useState<string>("");
     const [point, setPoint] = useState<number>(0);
 
-    const { user, getUserError, getUserIsPending } = useGetUserQuery();
+    const { user, error: getUserError, isPending: getUserIsPending } = useGetUserQuery();
 
-    if (getUserIsPending) {
-        return <div>Loading...</div>; // 로딩 중일 때 로딩 컴포넌트를 보여줌
-    }
-
-    if (!user) {
-        redirect("/");
-    }
+    useEffect(() => {
+        if (!getUserIsPending && !user) redirect("/");
+    }, [getUserIsPending, user]);
 
     const { data, error, isPending } = useGetPayments({
         page,
-        userId: user._id,
+        userId: user!._id,
         purpose,
     });
 
@@ -45,7 +41,7 @@ export default function PayHistory() {
     };
 
     useEffect(() => {
-        setPoint(user.point);
+        setPoint(user ? user.point : 0);
     }, [user]);
 
     if (!user) return null;

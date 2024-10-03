@@ -24,7 +24,7 @@ export default function Layout({ children }: Props) {
     const path = usePathname();
 
     const queryClient = useQueryClient();
-    const { user, getUserError, getUserIsPending } = useGetUserQuery();
+    const { user, error, isPending } = useGetUserQuery();
 
     const [nickname, setNickname] = useState("");
     const [oneLineIntroduce, setOneLineIntroduce] = useState("");
