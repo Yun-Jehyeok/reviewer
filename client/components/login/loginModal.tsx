@@ -1,12 +1,11 @@
 "use client";
 
 // Library
-import { setCookie } from "nookies";
-import nookies from "nookies";
-import { useRouter } from "next/navigation";
-import { useCallback, useState } from "react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import nookies, { setCookie } from "nookies";
+import { useCallback, useState } from "react";
 
 // Hook
 import { useInput } from "@/hooks/useInput";
@@ -40,6 +39,7 @@ export default function LoginModal({ setModalOpen }: ILoginModal) {
     const [errMsg, setErrMsg] = useState("이메일 또는 비밀번호를 확인해주세요.");
 
     const router = useRouter();
+    const queryClient = useQueryClient();
 
     const email = useInput("");
     const password = useInput("");
@@ -74,6 +74,8 @@ export default function LoginModal({ setModalOpen }: ILoginModal) {
                     sameSite: "strict",
                 });
                 console.log(nookies.get(), " : on Success Query Nookies");
+
+                queryClient.invalidateQueries({ queryKey: ["user"] });
                 router.push("/");
             }
         },
@@ -136,43 +138,24 @@ export default function LoginModal({ setModalOpen }: ILoginModal) {
                 <div className="w-full h-full px-12 flex justify-center flex-col">
                     <div className="mb-12 text-2xl font-bold">Log In To REVIEWERS</div>
 
-                    <form
-                        onSubmit={handleSubmit}
-                        className="flex flex-col gap-4"
-                    >
+                    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
                         <div>
                             <div className="mb-2 font-medium text-sm">E-Mail</div>
-                            <CInput
-                                {...email}
-                                type="email"
-                                placeholder="이메일을 입력해주세요."
-                                isErr={emailErr}
-                                errMsg={emailErrMsg}
-                            >
+                            <CInput {...email} type="email" placeholder="이메일을 입력해주세요." isErr={emailErr} errMsg={emailErrMsg}>
                                 {emailico}
                             </CInput>
                         </div>
 
                         <div>
                             <div className="mb-2 font-medium text-sm">Password</div>
-                            <CInput
-                                {...password}
-                                type="password"
-                                placeholder="비밀번호를 입력해주세요."
-                                isErr={pwErr}
-                                errMsg={pwErrMsg}
-                            >
+                            <CInput {...password} type="password" placeholder="비밀번호를 입력해주세요." isErr={pwErr} errMsg={pwErrMsg}>
                                 {pwico}
                             </CInput>
                         </div>
 
                         {err && <div className="text-[#ea002c] text-[0.625vw] pl-[0.4167vw] -mt-[0.8vh]">이메일 혹은 비밀번호를 확인해주세요.</div>}
 
-                        <CButton
-                            title="SIGN IN"
-                            onClick={handleSubmit}
-                            type="submit"
-                        />
+                        <CButton title="SIGN IN" onClick={handleSubmit} type="submit" />
                     </form>
 
                     <div className="text-center mt-8 text-sm text-gray-400">
@@ -208,19 +191,8 @@ export default function LoginModal({ setModalOpen }: ILoginModal) {
                         cancelBgFixed();
                     }}
                 >
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        strokeWidth="3"
-                        stroke="currentColor"
-                        className="w-6 h-6"
-                    >
-                        <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="M6 18L18 6M6 6l12 12"
-                        />
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="3" stroke="currentColor" className="w-6 h-6">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </div>
             </div>

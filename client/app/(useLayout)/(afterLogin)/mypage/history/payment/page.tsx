@@ -1,7 +1,6 @@
 "use client";
 
 // Library
-import { useQueryClient } from "@tanstack/react-query";
 import { redirect, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -16,25 +15,24 @@ import { foramttedNumber } from "@/utils/utils";
 // Interface & States
 import CNoItem from "@/components/common/CNoItem";
 import { useGetPayments } from "@/hooks/queries/payment";
-import { userIFC } from "@/interfaces/userIFC";
+import { useGetUserQuery } from "@/hooks/queries/user";
 
 export default function PayHistory() {
-    const queryClient = useQueryClient();
-    const user = queryClient.getQueryData<userIFC>(["user"]);
-
     const router = useRouter();
 
     const [page, setPage] = useState<number>(1);
     const [purpose, setPurpose] = useState<string>("");
     const [point, setPoint] = useState<number>(0);
 
-    if (!user) {
-        redirect("/");
-    }
+    const { user, error: getUserError, isPending: getUserIsPending } = useGetUserQuery();
+
+    useEffect(() => {
+        if (!getUserIsPending && !user) redirect("/");
+    }, [getUserIsPending, user]);
 
     const { data, error, isPending } = useGetPayments({
         page,
-        userId: user._id,
+        userId: user ? user._id : "",
         purpose,
     });
 
@@ -43,7 +41,7 @@ export default function PayHistory() {
     };
 
     useEffect(() => {
-        setPoint(user.point);
+        setPoint(user ? user.point : 0);
     }, [user]);
 
     if (!user) return null;

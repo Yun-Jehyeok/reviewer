@@ -4,7 +4,6 @@
 import { useQueryClient } from "@tanstack/react-query";
 import DOMPurify from "dompurify";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
 
 // Components
 import CButton from "@/components/common/CButton";
@@ -15,22 +14,21 @@ import { foramttedNumber } from "@/utils/utils";
 // Api
 
 // Interface & States
-import { userIFC } from "@/interfaces/userIFC";
+import { useGetUserQuery } from "@/hooks/queries/user";
 
 export default function Mypage() {
     const queryClient = useQueryClient();
-    const user = queryClient.getQueryData<userIFC>(["user"]);
+    const { user, error, isPending } = useGetUserQuery();
 
     const router = useRouter();
 
     const handleEdit = () => {
         router.push("/edituser");
     };
-    useEffect(() => {
-        console.log("!)!)!)!)!)!)!) >>>> ", user);
-    }, [user]);
 
-    if (!user) return <div>Loading...</div>;
+    console.log("no user???:::", user);
+
+    if (!user) return;
 
     return (
         <div className="w-full">
