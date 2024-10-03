@@ -18,7 +18,7 @@ import { useGetUserQuery } from "@/hooks/queries/user";
 
 export default function Mypage() {
     const queryClient = useQueryClient();
-    const { user, getUserError, getUserIsPending } = useGetUserQuery();
+    const { user, error, isPending } = useGetUserQuery();
 
     const router = useRouter();
 
