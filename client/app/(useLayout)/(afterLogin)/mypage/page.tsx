@@ -74,7 +74,10 @@ export default function Mypage() {
             </div>
 
             <div className="w-full flex justify-end mt-12">
-                <CButton title="수정하기" onClick={handleEdit} />
+                <CButton
+                    title="수정하기"
+                    onClick={handleEdit}
+                />
             </div>
         </div>
     );
