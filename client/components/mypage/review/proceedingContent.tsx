@@ -7,8 +7,6 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import io from "socket.io-client";
 
-const socket = io(process.env.NEXT_PUBLIC_SERVER_URL as string);
-
 /**
  * 1. ChatRoom 에 접속 시, 해당 채팅방의 채팅 내용을 DB에서 가져온다.
  * 2. 채팅을 하고, 매 요청 발생시마다, 데이터를 저장한다.
@@ -35,35 +33,57 @@ export default function ProceedingContent({ item, setModalOpen }: { item: applic
     const msgBoxEl = useRef<null | HTMLDivElement>(null);
     const { chatRoom, error, isPending } = useGetChatRoom(item.chatRoom);
 
+    const [socket, setSocket] = useState<any>(null); // 소켓 상태 추가
+
+    useEffect(() => {
+        const newSocket = io(process.env.NEXT_PUBLIC_SERVER_URL as string);
+        setSocket(newSocket);
+
+        return () => {
+            newSocket.disconnect(); // 컴포넌트 언마운트 시 소켓 연결 해제
+        };
+    }, []); // 컴포넌트가 마운트될 때 소켓 연결
+
     // 첫 렌더링 후, 채팅방의 모든채팅을 가져와 messages에 담고,
     // 해당 chatroom에 접속한다.
     const [isRendered, setIsRendered] = useState<boolean>(false);
     useEffect(() => {
-        if (chatRoom && !isRendered) {
+        if (chatRoom && !isRendered && socket) {
             setIsRendered(true);
 
             setMessages(chatRoom.chats);
-            scrollBottom();
+
+            if (msgBoxEl) {
+                // 채팅방 접속 시엔 smooth하게 하단으로 이동하면 UX가 떨어지는듯
+                setTimeout(() => {
+                    msgBoxEl.current?.scrollTo({
+                        top: msgBoxEl.current?.scrollHeight,
+                    });
+                }, 10);
+            }
 
             // 특정 채팅룸에 Join
             socket.emit("join room", item.chatRoom);
         }
-    }, [chatRoom]);
+    }, [chatRoom, socket]);
 
     useEffect(() => {
-        // 서버로부터 메시지 수신
-        // 지금 서버에는 chat 이 하나씩 잘 저장되고 있는데, 여기로 챗이 2번 보내짐
-        socket.on("message", (chat: chatIFC) => {
-            setMessages((prevMessages) => [...prevMessages, chat]);
-            scrollBottom();
-        });
+        if (socket) {
+            // 서버로부터 메시지 수신
+            // 지금 서버에는 chat 이 하나씩 잘 저장되고 있는데, 여기로 챗이 2번 보내짐
+            socket.on("message", (chat: chatIFC) => {
+                setMessages((prevMessages) => [...prevMessages, chat]);
+                scrollBottom();
+                // 컴포넌트 unmount 시, query 캐시 초기화를 하려했는데.. 안되네..?
+                queryClient.invalidateQueries({ queryKey: ["chatRoom", item.chatRoom] });
+            });
 
-        // 컴포넌트 언마운트 시, 소켓 이벤트 제거 및 연결 해제
-        return () => {
-            socket.off("message");
-            socket.disconnect();
-        };
-    }, []);
+            // 컴포넌트 언마운트 시, 소켓 이벤트 제거 및 연결 해제
+            return () => {
+                socket.off("message");
+            };
+        }
+    }, [socket]);
 
     const sendMessage = async () => {
         // 유저가 있을 때만..., 유저가 없으면 당연히 채팅 못보내야지
