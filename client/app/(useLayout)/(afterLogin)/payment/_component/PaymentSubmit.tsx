@@ -21,7 +21,7 @@ export default function PaymentSubmit({ user, price }: IProps) {
     const paymentMutation = usePaymentMutation();
 
     function callback(response: RequestPayResponse) {
-        const { imp_uid, merchant_uid, error_code, error_msg } = response;
+        const { error_code, error_msg } = response;
 
         if (error_code) {
             // 결제 창 닫음

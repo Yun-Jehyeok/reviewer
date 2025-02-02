@@ -25,7 +25,6 @@ export default function ReviewModal({ setModalOpen }: { setModalOpen: (status: b
     // 완료 : 신청자 닉네임(클릭 시, 유저 정보로), 날짜, 채팅 내역들
     // 취소 : 신청자 닉네임(클릭 불가), 취소일
     const [status, setStatus] = useState<string>("");
-    const [width, setWidth] = useState<string>("600px");
     const [item, setItem] = useRecoilState(applicationState);
 
     useEffect(() => {
@@ -34,10 +33,10 @@ export default function ReviewModal({ setModalOpen }: { setModalOpen: (status: b
 
     return (
         <div className="w-screen h-screen fixed top-0 left-0 bg-gray-500 flex flex-col justify-center bg-opacity-40 overflow-hidden">
-            <div className={`relative w-[${width}] h-fit py-12 bg-white shadow-xl items-center mx-auto my-0 rounded-xl flex`}>
+            <div className={`relative w-[600px] h-fit py-12 bg-white shadow-xl items-center mx-auto my-0 rounded-xl flex`}>
                 <div className="w-full h-full max-h-[70vh] overflow-y-auto px-12 flex justify-center flex-col">
-                    <div className="mb-8 flex justify-between w-full items-center">
-                        <div className="text-3xl font-bold">상세</div>
+                    <div className="mb-4 flex justify-between w-full items-center border-b border-gray-200 pb-4">
+                        <div className="text-2xl font-bold">상세</div>
                         <div>
                             <div
                                 className={`w-fit h-fit text-sm rounded-full py-1 px-4 border ${status === "application" && "border-gray-500 text-gray-500"} ${

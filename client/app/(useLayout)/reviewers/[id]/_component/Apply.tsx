@@ -44,7 +44,7 @@ export default function Apply({ user, post }: { user?: userIFC; post: postIFC })
 
     if (!user) {
         return (
-            <div className="w-full h-fit px-8 py-4 border border-gray-200 rounded-md flex justify-between items-center mb-8">
+            <div className="w-full h-fit px-8 py-4 border border-gray-200 rounded-md flex justify-between items-center mb-4 shadow-md">
                 <div className="text-lg font-bold">
                     {String(post.price)}원<span className="text-sm text-gray-400 font-medium">&nbsp;/&nbsp;시간당</span>
                 </div>
@@ -55,7 +55,7 @@ export default function Apply({ user, post }: { user?: userIFC; post: postIFC })
 
     return (
         user._id !== post.creator._id && (
-            <div className="w-full h-fit px-8 py-4 border border-gray-200 rounded-md flex justify-between items-center mb-8">
+            <div className="w-full h-fit px-8 py-4 border border-gray-200 rounded-md flex justify-between items-center mb-4 shadow-md">
                 <div className="text-lg font-bold">
                     {String(post.price)}원<span className="text-sm text-gray-400 font-medium">&nbsp;/&nbsp;시간당</span>
                 </div>

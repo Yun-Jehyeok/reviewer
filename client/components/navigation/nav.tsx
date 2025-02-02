@@ -6,7 +6,7 @@ import { bgFixed } from "@/utils/utils";
 import { useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { destroyCookie } from "nookies";
+import nookies from "nookies";
 import { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
 import CButton from "../common/CButton";
@@ -18,7 +18,6 @@ import NavAlarm from "./navAlarm";
 export default function Navigation() {
     const [modalOpen, setModalOpen] = useState<boolean>(false);
     const [confirm, setConfirm] = useRecoilState(confirmState);
-    const [isAuth, setIsAuth] = useState<boolean>(false);
     const [showDropdown, setShowDropdown] = useState<boolean>(false);
     const [showAlarms, setShowAlarms] = useState<boolean>(false);
     const [isOpenSearch, setIsOpenSearch] = useState<boolean>(false);
@@ -27,10 +26,6 @@ export default function Navigation() {
     const queryClient = useQueryClient();
 
     const router = useRouter();
-
-    useEffect(() => {
-        setIsAuth(!!user);
-    }, [user]);
 
     useEffect(() => {
         const handleShowPopup = async (e: Event) => {
@@ -58,7 +53,7 @@ export default function Navigation() {
 
     const onClickLogout = () => {
         setShowDropdown(false);
-        destroyCookie(null, "token");
+        nookies.destroy(null, "token");
         queryClient.invalidateQueries({ queryKey: ["user"] });
 
         router.push("/");
@@ -89,7 +84,7 @@ export default function Navigation() {
 
             <div className="flex gap-8 items-center">
                 <Link href="/reviewers">리뷰어 목록</Link>
-                {isAuth && (user?.isReviewer ? <Link href="/reviewers/register">게시글 작성</Link> : <Link href="/reviewers/convert">리뷰어 전환</Link>)}
+                {user && (user?.isReviewer ? <Link href="/reviewers/register">게시글 작성</Link> : <Link href="/reviewers/convert">리뷰어 전환</Link>)}
                 <div className={`rounded-full w-6 h-6 cursor-pointer transition-all duration-100`} onClick={openSearch}>
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="black" className="size-4">
                         <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
@@ -97,7 +92,7 @@ export default function Navigation() {
                 </div>
                 <NavAlarm showAlarms={showAlarms} setShowAlarms={setShowAlarms} />
                 {/* <NavMessages /> */}
-                {isAuth ? (
+                {user ? (
                     <div className="relative nav-mypage">
                         <div className="w-10 h-10 rounded-full bg-black flex justify-center items-center cursor-pointer hover:bg-gray-800" onClick={handleShowMyPage}>
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="white" className="w-6 h-6">
@@ -113,7 +108,7 @@ export default function Navigation() {
                             <div className="absolute top-14 right-[280px]">
                                 <div className="bg-white rounded-md border border-gray-200 z-10 absolute w-[280px] h-fit shadow-md">
                                     <div className="p-8 w-full">
-                                        <div className="w-full text-center text-xl font-bold mb-4">{user?.name}</div>
+                                        <div className="w-full text-center text-xl font-bold mb-4">{user.nickname}</div>
                                         <div className="w-full flex justify-center">
                                             <div className="w-24 h-24 rounded-full bg-gray-500"></div>
                                         </div>

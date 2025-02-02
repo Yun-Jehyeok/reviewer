@@ -17,7 +17,7 @@ export default function Footer() {
     return (
         <div className="w-full mt-32">
             <div className="w-full bg-black h-48 flex flex-col justify-center text-white">
-                <div className="w-full px-20 flex justify-between m-auto max-w-[1730px]">
+                <div className="w-full px-20 flex justify-between m-auto max-w-[1520px]">
                     <div>
                         <div className="text-3xl font-bold mb-6">REVIEWERS</div>
                         <div className="text-sm text-gray-500">
@@ -28,22 +28,13 @@ export default function Footer() {
                     </div>
                     <div className="flex gap-32">
                         <div className="flex gap-6 items-center">
-                            <div
-                                className="text-sm text-gray-500 cursor-pointer hover:text-white transition-all w-fit"
-                                onClick={() => handleModalOpen("about")}
-                            >
+                            <div className="text-sm text-gray-500 cursor-pointer hover:text-white transition-all w-fit" onClick={() => handleModalOpen("about")}>
                                 About
                             </div>
-                            <div
-                                className="text-sm text-gray-500 cursor-pointer hover:text-white transition-all w-fit"
-                                onClick={() => handleModalOpen("contact")}
-                            >
+                            <div className="text-sm text-gray-500 cursor-pointer hover:text-white transition-all w-fit" onClick={() => handleModalOpen("contact")}>
                                 Contact us
                             </div>
-                            <div
-                                className="text-sm text-gray-500 cursor-pointer hover:text-white transition-all w-fit"
-                                onClick={() => handleModalOpen("faq")}
-                            >
+                            <div className="text-sm text-gray-500 cursor-pointer hover:text-white transition-all w-fit" onClick={() => handleModalOpen("faq")}>
                                 FAQs
                             </div>
                         </div>
@@ -51,9 +42,7 @@ export default function Footer() {
                 </div>
             </div>
 
-            {isModalOpen && (
-                <FooterModal setModalOpen={setIsModalOpen} content={content} />
-            )}
+            {isModalOpen && <FooterModal setModalOpen={setIsModalOpen} content={content} />}
         </div>
     );
 }

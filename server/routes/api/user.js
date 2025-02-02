@@ -6,15 +6,10 @@ const config = require("../../config/index");
 const { auth } = require("../../middleware/auth");
 const coolsms = require("coolsms-node-sdk");
 const { Post } = require("../../models/post");
+const { Chat } = require("../../models/chat");
 const nodemailer = require("nodemailer");
-const { Payment } = require("../../models/payment")
-const {
-    JWT_SECRET,
-    COOLSMS_APIKEY,
-    COOLSMS_APIKEY_SECRET,
-    NODEMAILER_USER,
-    NODEMAILER_PASS,
-} = config;
+const { Payment } = require("../../models/payment");
+const { JWT_SECRET, COOLSMS_APIKEY, COOLSMS_APIKEY_SECRET, NODEMAILER_USER, NODEMAILER_PASS } = config;
 
 const router = express.Router();
 
@@ -35,14 +30,8 @@ router.get("/:token", auth, async (req, res) => {
 router.post("/login", (req, res) => {
     const { email, password } = req.body;
 
-    if (!email)
-        return res
-            .status(400)
-            .json({ success: false, msg: "이메일을 작성해주세요." });
-    else if (!password)
-        return res
-            .status(400)
-            .json({ success: false, msg: "비밀번호를 작성해주세요." });
+    if (!email) return res.status(400).json({ success: false, msg: "이메일을 작성해주세요." });
+    else if (!password) return res.status(400).json({ success: false, msg: "비밀번호를 작성해주세요." });
 
     User.findOne({ email }).then((user) => {
         if (!user)
@@ -58,24 +47,16 @@ router.post("/login", (req, res) => {
                     msg: "이메일 또는 비밀번호를 확인해주세요.",
                 });
 
-            jwt.sign(
-                { id: user.id },
-                JWT_SECRET,
-                { expiresIn: 36000000 },
-                (err, token) => {
-                    if (err)
-                        return res
-                            .status(400)
-                            .json({ success: false, msg: err });
+            jwt.sign({ id: user.id }, JWT_SECRET, { expiresIn: 36000000 }, (err, token) => {
+                if (err) return res.status(400).json({ success: false, msg: err });
 
-                    delete user.password;
-                    res.json({
-                        success: true,
-                        token,
-                        user,
-                    });
-                }
-            );
+                delete user.password;
+                res.json({
+                    success: true,
+                    token,
+                    user,
+                });
+            });
         });
     });
 });
@@ -84,10 +65,7 @@ router.post("/register", (req, res) => {
     const { name, email, password, phone, nickname } = req.body;
 
     User.findOne({ email }).then((user) => {
-        if (user)
-            return res
-                .status(400)
-                .json({ success: false, msg: "이미 존재하는 이메일입니다." });
+        if (user) return res.status(400).json({ success: false, msg: "이미 존재하는 이메일입니다." });
 
         const newUser = new User({
             name,
@@ -105,20 +83,15 @@ router.post("/register", (req, res) => {
                 newUser
                     .save()
                     .then((user) => {
-                        jwt.sign(
-                            { id: user.id },
-                            JWT_SECRET,
-                            { expiresIn: 36000000 },
-                            (err, token) => {
-                                if (err) return res.status(400).json({ err });
+                        jwt.sign({ id: user.id }, JWT_SECRET, { expiresIn: 36000000 }, (err, token) => {
+                            if (err) return res.status(400).json({ err });
 
-                                res.json({
-                                    success: true,
-                                    token,
-                                    user: delete user.password,
-                                });
-                            }
-                        );
+                            res.json({
+                                success: true,
+                                token,
+                                user: delete user.password,
+                            });
+                        });
                     })
                     .catch((err) => {
                         let error = JSON.parse(JSON.stringify(err));
@@ -129,10 +102,8 @@ router.post("/register", (req, res) => {
                                 let key = Object.keys(keyPattern)[0];
                                 let msg = "";
 
-                                if (key === "nickname")
-                                    msg = "닉네임은 중복될 수 없습니다.";
-                                else if (key === "phone")
-                                    msg = "휴대폰 번호는 중복될 수 없습니다.";
+                                if (key === "nickname") msg = "닉네임은 중복될 수 없습니다.";
+                                else if (key === "phone") msg = "휴대폰 번호는 중복될 수 없습니다.";
 
                                 res.status(400).json({ success: false, msg });
                             } else {
@@ -166,8 +137,7 @@ router.post("/phone", async (req, res) => {
         text: `인증번호 [${authNum}]를 입력해주세요.`,
     });
 
-    if (result.statusCode === "2000")
-        return res.status(200).json({ success: true, msg: authNum });
+    if (result.statusCode === "2000") return res.status(200).json({ success: true, msg: authNum });
 
     return res.status(400).json({ success: false, msg: "인증 문자 전송 실패" });
 });
@@ -208,10 +178,7 @@ router.post("/email", async (req, res) => {
     const { email } = req.body;
 
     User.findOne({ email }).then(async (user) => {
-        if (!user)
-            return res
-                .status(400)
-                .json({ success: false, msg: "이메일을 확인해주세요." });
+        if (!user) return res.status(400).json({ success: false, msg: "이메일을 확인해주세요." });
 
         let authNum = "";
         for (let i = 0; i < 6; i++) {
@@ -255,22 +222,14 @@ router.put("/pw", (req, res) => {
     const { email, password } = req.body;
 
     User.findOne({ email }).then((user) => {
-        if (!user)
-            return res
-                .status(400)
-                .json({ success: false, msg: "이메일을 확인해주세요." });
+        if (!user) return res.status(400).json({ success: false, msg: "이메일을 확인해주세요." });
 
         bcrypt.genSalt(10, (err, salt) => {
             bcrypt.hash(password, salt, async (err, hash) => {
-                if (err)
-                    return res.status(400).json({ success: false, msg: err });
+                if (err) return res.status(400).json({ success: false, msg: err });
 
                 try {
-                    await User.findByIdAndUpdate(
-                        user.id,
-                        { password: hash },
-                        { new: true }
-                    );
+                    await User.findByIdAndUpdate(user.id, { password: hash }, { new: true });
                     res.json({
                         success: true,
                         msg: "비밀번호가 변경되었습니다.",
@@ -287,10 +246,7 @@ router.put("/:id", (req, res) => {
     const { nickname, price, oneLineIntroduce, introduce, techs } = req.body;
 
     User.findById(req.params.id).then((user) => {
-        if (!user)
-            return res
-                .status(400)
-                .json({ success: false, msg: "유저를 찾을 수 없습니다." });
+        if (!user) return res.status(400).json({ success: false, msg: "유저를 찾을 수 없습니다." });
 
         User.findByIdAndUpdate(req.params.id, {
             price,

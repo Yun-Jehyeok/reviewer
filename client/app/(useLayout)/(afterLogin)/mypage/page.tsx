@@ -14,6 +14,7 @@ import { foramttedNumber } from "@/utils/utils";
 // Api
 
 // Interface & States
+import CSpinner from "@/components/common/CSpinner";
 import { useGetUserQuery } from "@/hooks/queries/user";
 
 export default function Mypage() {
@@ -26,8 +27,7 @@ export default function Mypage() {
         router.push("/edituser");
     };
 
-    console.log("no user???:::", user);
-
+    if (isPending) return <CSpinner />;
     if (!user) return;
 
     return (
@@ -74,10 +74,7 @@ export default function Mypage() {
             </div>
 
             <div className="w-full flex justify-end mt-12">
-                <CButton
-                    title="수정하기"
-                    onClick={handleEdit}
-                />
+                <CButton title="수정하기" onClick={handleEdit} />
             </div>
         </div>
     );

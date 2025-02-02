@@ -14,6 +14,7 @@ import { foramttedNumber } from "@/utils/utils";
 
 // Interface & States
 import CNoItem from "@/components/common/CNoItem";
+import CSpinner from "@/components/common/CSpinner";
 import { useGetPayments } from "@/hooks/queries/payment";
 import { useGetUserQuery } from "@/hooks/queries/user";
 
@@ -44,6 +45,7 @@ export default function PayHistory() {
         setPoint(user ? user.point : 0);
     }, [user]);
 
+    if (isPending) return <CSpinner />;
     if (!user) return null;
 
     return (

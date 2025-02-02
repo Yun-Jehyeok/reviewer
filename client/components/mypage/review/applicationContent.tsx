@@ -60,27 +60,26 @@ export default function ApplicationContent({ item, setStatus, setModalOpen }: { 
         <div className="w-full">
             {proceedingMutation.isPending && <CSpinner />}
 
-            <div className="text-xl font-bold mb-4">신청자 정보</div>
+            <div className="text-lg font-bold mb-4">신청자 정보</div>
             <div className="flex flex-col gap-6 mb-12">
-                <div className="w-full grid grid-cols-3">
+                <div className="w-full flex flex-col gap-2">
                     <div>
-                        <div className="text-base font-bold mb-1">닉네임</div>
-                        {/* 클릭해서 해당 유저 정보로 갈 수 있도록 */}
-                        <div className="text-sm cursor-pointer w-fit hover:underline">{item.applicantId.nickname}</div>
-                    </div>
-                    <div>
-                        <div className="text-base font-bold mb-1">언어</div>
-                        <div className="text-sm">
-                            {item.applicantId.lang.length > 0
-                                ? item.applicantId.lang.map((v) => {
-                                      return <span key={v}>{v}, </span>;
-                                  })
-                                : "없음"}
+                        <div className="flex">
+                            <div className="w-20 text-base font-semibold mb-1">닉네임</div>
+                            <span>{item.applicantId.nickname}</span>
                         </div>
                     </div>
                     <div>
-                        <div className="text-base font-bold mb-1">Level</div>
-                        <div className="text-sm">{item.applicantId.grade}</div>
+                        <div className="flex">
+                            <div className="w-20 text-base font-semibold mb-1">언어</div>
+                            <span>{item.applicantId.lang.length > 0 ? item.applicantId.lang.join(", ") : "없음"}</span>
+                        </div>
+                    </div>
+                    <div>
+                        <div className="flex">
+                            <div className="w-20 text-base font-semibold mb-1">Level</div>
+                            <span>{item.applicantId.grade}</span>
+                        </div>
                     </div>
                 </div>
 

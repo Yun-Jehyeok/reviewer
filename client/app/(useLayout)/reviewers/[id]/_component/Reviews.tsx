@@ -18,13 +18,15 @@ export default function Reviews({ reviews }: IProps) {
 
     return (
         <div className="w-full h-fit">
-            <div className="text-darkblue text-2xl font-bold font-josefin mb-3">
+            <div className="text-darkblue text-2xl font-bold font-josefin border-b border-gray-200 pb-4 mb-6">
                 리뷰
-                <span className="text-base text-gray-500 font-medium">&nbsp;총 {reviews.length}개</span>
+                <span className="text-base text-gray-500 font-medium ml-2">
+                    총 <span className="font-bold">{reviews.length}</span>개
+                </span>
             </div>
 
             {/* 리뷰 리스트 */}
-            <div className="w-full h-fit mt-12">
+            <div className="w-full h-fit">
                 {reviews.length > 0 ? (
                     reviews.map((v) => {
                         return (
@@ -40,15 +42,7 @@ export default function Reviews({ reviews }: IProps) {
                                         {stars.map((star) => {
                                             if (star <= v.score)
                                                 return (
-                                                    <svg
-                                                        key={star}
-                                                        xmlns="http://www.w3.org/2000/svg"
-                                                        fill="#FC4C4E"
-                                                        viewBox="0 0 24 24"
-                                                        strokeWidth={1.5}
-                                                        stroke="#FC4C4E"
-                                                        className="w-4 h-4"
-                                                    >
+                                                    <svg key={star} xmlns="http://www.w3.org/2000/svg" fill="#FC4C4E" viewBox="0 0 24 24" strokeWidth={1.5} stroke="#FC4C4E" className="w-4 h-4">
                                                         <path
                                                             strokeLinecap="round"
                                                             strokeLinejoin="round"

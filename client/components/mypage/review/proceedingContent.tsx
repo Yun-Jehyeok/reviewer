@@ -195,7 +195,7 @@ export default function ProceedingContent({ item, setModalOpen }: { item: applic
                         </div>
                     </div>
 
-                    <div className="w-full grid grid-cols-2 mt-6 gap-2">
+                    <div className="w-full grid grid-cols-2 mt-3 gap-2">
                         <button className="h-10 rounded-lg border border-gray-300 text-sm hover:shadow-md transition-all" onClick={navigateToVideo}>
                             화상 채팅 참여하기
                         </button>
