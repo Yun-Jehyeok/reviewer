@@ -15,8 +15,8 @@ interface IProps {
 
 export default function Description({ content }: IProps) {
     return (
-        <div className="w-full mt-24">
-            <div className="text-2xl font-bold mb-6">설명</div>
+        <div className="w-full my-16 mt-8">
+            <div className="text-2xl font-bold mb-6 border-b border-gray-200 pb-4">설명</div>
             <div>
                 {content && (
                     <div
@@ -30,7 +30,6 @@ export default function Description({ content }: IProps) {
                     />
                 )}
             </div>
-            <div className="w-full my-12 h-[1px] border border-gray-100"></div>
         </div>
     );
 }

@@ -1,7 +1,6 @@
 "use client";
 
 // Library
-import { useQueryClient } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
 
 // Components
@@ -18,16 +17,15 @@ import Reviews from "./_component/Reviews";
 
 // Interface & States
 import { useGetPost } from "@/hooks/queries/post";
-import { userIFC } from "@/interfaces/userIFC";
+import { useGetUserQuery } from "@/hooks/queries/user";
 
 export default function ReviewerDetail() {
     const { id } = useParams() as { id: string };
-    const queryClient = useQueryClient();
-    const user = queryClient.getQueryData<userIFC>(["user"]);
+    const { user, error: isUserError, isPending: isUserPending } = useGetUserQuery();
 
     const { post, error, isPending } = useGetPost(id);
 
-    console.log("post:::", post);
+    if (isPending || isUserPending) return <CSpinner />;
     if (!post) return null;
 
     return (

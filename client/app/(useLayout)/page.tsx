@@ -1,5 +1,7 @@
 "use client";
 
+import TempBanner from "../../public/temp_banner.jpg";
+
 // Library
 import { useQueries } from "@tanstack/react-query";
 
@@ -10,6 +12,7 @@ import ReviewerList from "@/components/main/ReviewerList";
 
 // Api
 import { getBestReviewsApi, getNewReviewsApi } from "@/apis/postApi";
+import Image from "next/image";
 
 // Interface & States
 
@@ -34,20 +37,16 @@ export default function Home() {
     return (
         <div>
             <div className="w-full">
-                <div className="w-full h-[540px] bg-[#F4F6F5] rounded-3xl text-center flex flex-col justify-center text-[#9b9b9b] text-lg">추후 이미지 업데이트 예정입니다.</div>
+                <div className="w-full h-[540px] bg-[#F4F6F5] rounded-3xl text-center flex flex-col justify-center text-[#9b9b9b] text-lg bg-contain cursor-pointer">
+                    <Image src={TempBanner} alt="banner" className="w-full h-full rounded-3xl" />
+                </div>
             </div>
 
             <div className="w-full text-3xl font-extrabold pt-16 pb-8">BEST REVIEWERS</div>
-            <ReviewerList
-                posts={results[1].data}
-                noPostContent="최고의 리뷰어가 없습니다."
-            />
+            <ReviewerList posts={results[1].data} noPostContent="최고의 리뷰어가 없습니다." />
 
             <div className="w-full text-3xl font-extrabold pt-16 pb-8 mt-8">NEW REVIEWERS</div>
-            <ReviewerList
-                posts={results[0].data}
-                noPostContent="새로운 리뷰어가 없습니다."
-            />
+            <ReviewerList posts={results[0].data} noPostContent="새로운 리뷰어가 없습니다." />
         </div>
     );
 }

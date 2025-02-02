@@ -61,7 +61,11 @@ export default function SetTech({ defaultTechs = [], techErr, techErrmsg, setTec
     };
 
     const addTech = (val: string) => {
-        if (selectedTechs.includes(val)) return;
+        if (selectedTechs.includes(val)) {
+            setFilteredTechs([]);
+            setTechVal("");
+            return;
+        }
 
         let data = [...selectedTechs];
         data.push(val);
@@ -83,13 +87,7 @@ export default function SetTech({ defaultTechs = [], techErr, techErrmsg, setTec
         <div className="relative">
             <div className="mb-2 font-medium text-sm ">기술</div>
             <div className={`w-full h-10 rounded-md border ${techErr ? "border-[#ea002c]" : "border-gray-400"} px-4`}>
-                <input
-                    className="w-full h-full border-none text-sm focus:outline-none"
-                    value={techVal}
-                    type="text"
-                    placeholder="사용 가능한 기술을 입력해주세요."
-                    onChange={searchTech}
-                />
+                <input className="w-full h-full border-none text-sm focus:outline-none" value={techVal} type="text" placeholder="사용 가능한 기술을 입력해주세요." onChange={searchTech} />
                 {techErr && <div className="text-[#ea002c] text-xs mt-1">{techErrmsg}</div>}
             </div>
 
@@ -106,20 +104,10 @@ export default function SetTech({ defaultTechs = [], techErr, techErrmsg, setTec
             {selectedTechs.length > 0 && (
                 <div className="flex gap-4 mt-4">
                     {selectedTechs.map((v) => (
-                        <div
-                            key={v}
-                            className="w-fit h-10 bg-gray-100 rounded-full flex justify-end items-center px-4 gap-8 cursor-pointer hover:shadow-md hover:border-black transition-all"
-                        >
+                        <div key={v} className="w-fit h-10 bg-gray-100 rounded-full flex justify-end items-center px-4 gap-8 cursor-pointer hover:shadow-sm hover:border-black transition-all">
                             <div className="text-sm">{v}</div>
                             <div onClick={() => removeTech(v)}>
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    strokeWidth={1.5}
-                                    stroke="currentColor"
-                                    className="w-4 h-4"
-                                >
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
                                 </svg>
                             </div>

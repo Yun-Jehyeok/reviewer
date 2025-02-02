@@ -8,6 +8,15 @@ import { useRouter } from "next/navigation";
 import nookies, { setCookie } from "nookies";
 import { SetStateAction } from "react";
 
+const setTokenInCookie = (token: string) => {
+    setCookie(null, "token", token, {
+        maxAge: 30 * 24 * 60 * 60,
+        path: "/",
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+    });
+};
+
 export const useEditUserMutation = () => {
     const queryClient = useQueryClient();
     const router = useRouter();
@@ -24,7 +33,7 @@ export const useEditUserMutation = () => {
             console.log("editUserSuccess", data, variables, context);
             if (data.success) {
                 console.log("Edit Success Data >>>> ", data);
-                queryClient.setQueryData(["user"], data.user);
+                queryClient.invalidateQueries({ queryKey: ["user"] });
 
                 router.push(`/mypage`);
             }
@@ -122,6 +131,7 @@ export const useAuthPhoneMutation = (setAuthNumResponse: (value: SetStateAction<
 interface ISignup {
     onError: (error: IError, variable: signupIFC, context: void | undefined) => void;
 }
+
 export const useSignupMutation = ({ onError }: ISignup) => {
     const router = useRouter();
     const queryClient = useQueryClient();
@@ -135,12 +145,7 @@ export const useSignupMutation = ({ onError }: ISignup) => {
         onSuccess: (data, variables, context) => {
             console.log("signupSuccess", data, variables, context);
             if (data.success) {
-                setCookie(null, "token", data.token, {
-                    maxAge: 30 * 24 * 60 * 60,
-                    path: "/",
-                    secure: process.env.NODE_ENV === "production",
-                    sameSite: "strict",
-                });
+                setTokenInCookie(data.token);
                 console.log(nookies.get(), " : on Success Query Nookies");
 
                 queryClient.invalidateQueries({ queryKey: ["user"] });
@@ -157,6 +162,7 @@ interface ISignin {
     onError: (error: IError, variable: signinIFC, context: void | undefined) => void;
     onSuccess: (data: any, variables: signinIFC, context: void) => void;
 }
+
 export const useSigninMutation = ({ onError, onSuccess }: ISignin) => {
     return useMutation({
         mutationFn: signinApi,
@@ -168,12 +174,7 @@ export const useSigninMutation = ({ onError, onSuccess }: ISignin) => {
             if (data.token) {
                 try {
                     console.log("Token Exist >>>> ", data);
-                    setCookie(null, "token", data.token, {
-                        maxAge: 30 * 24 * 60 * 60,
-                        path: "/",
-                        secure: process.env.NODE_ENV === "production",
-                        sameSite: "strict",
-                    });
+                    setTokenInCookie(data.token);
                 } catch (err) {
                     console.error("Login Mutation Error >>>> ", err);
                 }

@@ -43,12 +43,11 @@ export default function ApplyHistory() {
         setApplication(application);
     };
 
+    if (isPending) return <CSpinner />;
     if (!user) return null;
 
     return (
         <div className="w-full">
-            {isPending && <CSpinner />}
-
             <div className="text-2xl font-bold mb-4">리뷰 신청 내역</div>
 
             <div className="w-full flex flex-col">

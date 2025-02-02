@@ -1,5 +1,9 @@
 import { Dispatch, SetStateAction } from "react";
 
+export const cls = (...classNames: string[]) => {
+    return classNames.join(" ");
+};
+
 export const bgFixed = () => {
     document.querySelector("body")!.style.height = "100vh";
     document.querySelector("body")!.style.overflow = "hidden";
@@ -10,12 +14,7 @@ export const cancelBgFixed = () => {
     document.querySelector("body")!.style.overflow = "auto";
 };
 
-export const checkBlank = (
-    val: string,
-    errFunc: Dispatch<SetStateAction<boolean>>,
-    errMsg: string,
-    setErrMsg: Dispatch<SetStateAction<string>>,
-) => {
+export const checkBlank = (val: string, errFunc: Dispatch<SetStateAction<boolean>>, errMsg: string, setErrMsg: Dispatch<SetStateAction<string>>) => {
     errFunc(val === "");
     if (val === "") setErrMsg(errMsg);
 

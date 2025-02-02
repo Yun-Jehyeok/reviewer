@@ -1,7 +1,6 @@
 "use client";
 
 // Library
-import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
 
@@ -20,16 +19,16 @@ import { checkBlank } from "@/utils/utils";
 
 // Interface & States
 import { useEditUserMutation } from "@/hooks/mutations/user";
-import { editUserIFC, userIFC } from "@/interfaces/userIFC";
+import { useGetUserQuery } from "@/hooks/queries/user";
+import { editUserIFC } from "@/interfaces/userIFC";
 
 export default function EditUser() {
     const router = useRouter();
 
-    const queryClient = useQueryClient();
-    const user = queryClient.getQueryData<userIFC>(["user"]);
+    const { user, error, isPending: getUserIsPending } = useGetUserQuery();
 
     const [introduce, setIntroduce] = useState<string>(user?.introduce || "");
-    const [techs, setTechs] = useState<string[]>([]);
+    const [techs, setTechs] = useState<string[]>(user?.lang || []);
 
     const nickname = useInput(user ? user.nickname : "");
     const price = useInput(user ? user?.price : "");
@@ -81,8 +80,8 @@ export default function EditUser() {
     if (!user) return null;
     return (
         <div className="py-12">
-            {editUserMutation.isPending && <CSpinner />}
-            <h1 className="text-center w-full text-3xl font-bold mb-12">사용자 정보 수정</h1>
+            {(editUserMutation.isPending || getUserIsPending) && <CSpinner />}
+            <h1 className="w-full text-3xl font-bold mb-6 border-b border-b-gray-200 pb-4">사용자 정보 수정</h1>
             <div className="flex flex-col gap-6">
                 <CInput {...nickname} type="text" label="닉네임" placeholder="닉네임을 입력해주세요." isErr={nicknameErr} errMsg={nicknameErrmsg} />
                 <CInput {...oneLineIntroduce} type="text" label="한 줄 소개" placeholder="한 줄 소개를 입력해주세요." />
