@@ -30,6 +30,9 @@ const Video = () => {
                 audio: true,
             });
 
+            console.log("peerConnectionRef >>>> ", peerConnectionRef);
+            console.log("steam >>>> ", stream);
+
             // 자신의 비디오에 스트림 설정
             if (myVideoRef.current) {
                 myVideoRef.current.srcObject = stream;
@@ -44,6 +47,7 @@ const Video = () => {
                 if (!peerConnectionRef.current) {
                     return;
                 }
+
                 peerConnectionRef.current.addTrack(track, stream);
             });
 
@@ -60,6 +64,7 @@ const Video = () => {
             // 수신한 트랙 설정
             peerConnectionRef.current.ontrack = (e) => {
                 if (remoteVideoRef.current) {
+                    console.log("Strema Track Event >>>> ", e);
                     remoteVideoRef.current.srcObject = e.streams[0];
                 }
             };
@@ -109,18 +114,27 @@ const Video = () => {
 
         // 4. 유저가 룸에 참가해 오퍼를 만들고, 이를 방의 모든 사용자에게 송신해서
         // 모든 유저는 오퍼를 받음
-        socket.on("getOffer", (sdp: RTCSessionDescription) => {
-            createAnswer(sdp); // 수신한 오퍼로 답변 생성
+        socket.on("getOffer", async (sdp: RTCSessionDescription) => {
+            console.warn("Offer >>>> ");
+            if (sdp) {
+                await createAnswer(sdp); // 수신한 오퍼로 답변 생성
+            } else {
+                restoreCameraStream();
+            }
         });
 
-        socket.on("getAnswer", (sdp: RTCSessionDescription) => {
+        socket.on("getAnswer", async (sdp: RTCSessionDescription) => {
+            console.warn("Answer >>>> ");
             if (peerConnectionRef.current) {
-                peerConnectionRef.current.setRemoteDescription(sdp); // 5. 수신한 답변으로 원격 디스크립션 설정
+                console.log("sdp >>>> ", sdp);
+                await peerConnectionRef.current.setRemoteDescription(sdp); // 5. 수신한 답변으로 원격 디스크립션 설정
             }
         });
 
         socket.on("getCandidate", async (candidate: RTCIceCandidate) => {
+            console.warn("Candidate >>>> ");
             if (peerConnectionRef.current) {
+                console.log(peerConnectionRef.current.iceConnectionState);
                 await peerConnectionRef.current.addIceCandidate(candidate);
             }
         });
@@ -137,15 +151,25 @@ const Video = () => {
         };
     }, []);
 
+    // 공유 버튼 눌렀을 때 로직
     const startScreenSharing = async () => {
         try {
+            // 공유된 화면 정보
             const screenStream = await navigator.mediaDevices.getDisplayMedia({
                 video: true,
                 audio: true,
             });
+
             if (myVideoRef.current) {
                 myVideoRef.current.srcObject = screenStream;
+                screenStream.getTracks().forEach((track) => peerConnectionRef?.current?.addTrack(track, screenStream));
+
+                // 공유되면 Offer 전송
+                createOffer();
             }
+
+            // onended 이벤트로 화면 공유 중지 감지
+            screenStream.getVideoTracks()[0].onended = restoreCameraStream;
         } catch (error) {
             console.error("Error accessing screen sharing:", error);
         }
@@ -173,6 +197,19 @@ const Video = () => {
         }
     };
 
+    const restoreCameraStream = async () => {
+        const cameraStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        if (myVideoRef.current) {
+            myVideoRef.current.srcObject = cameraStream;
+        }
+        const videoTrack = cameraStream.getVideoTracks()[0];
+        const sender = peerConnectionRef.current?.getSenders().find((s) => s.track?.kind === "video");
+        if (sender) {
+            sender.replaceTrack(videoTrack);
+            socket.emit("offer", sender, roomName);
+        }
+    };
+
     const navigateToMypage = () => {
         router.back();
     };
@@ -181,13 +218,25 @@ const Video = () => {
         <div className="w-screen h-screen relative bg-[#202124] overflow-hidden p-8">
             <video id="mainvideo" ref={mainVideoRef} className="w-full h-[calc(100vh-356px)] mb-8 bg-black rounded-md" autoPlay />
             <div className="w-full flex gap-4">
-                <video ref={myVideoRef} className="bg-black w-[240px] h-[180px] rounded-md cursor-pointer" autoPlay onClick={() => handleMainVideo("myvideo")} />
-                <video ref={remoteVideoRef} className="bg-black w-[240px] h-[180px] rounded-md cursor-pointer" autoPlay onClick={() => handleMainVideo("opponentvideo")} />
+                <video
+                    ref={myVideoRef}
+                    className="bg-black w-[240px] h-[180px] rounded-md cursor-pointer"
+                    autoPlay
+                    onClick={() => handleMainVideo("myvideo")}
+                />
+                <video
+                    ref={remoteVideoRef}
+                    className="bg-black w-[240px] h-[180px] rounded-md cursor-pointer"
+                    autoPlay
+                    onClick={() => handleMainVideo("opponentvideo")}
+                />
             </div>
             <div className="flex justify-center mt-8">
                 <div className="flex gap-6">
                     <div
-                        className={`w-12 h-12 flex justify-center items-center rounded-full ${isAudioOn ? "bg-[#3C4043] hover:bg-[#2B3239]" : "bg-red-500 hover:bg-red-600"}`}
+                        className={`w-12 h-12 flex justify-center items-center rounded-full ${
+                            isAudioOn ? "bg-[#3C4043] hover:bg-[#2B3239]" : "bg-red-500 hover:bg-red-600"
+                        }`}
                         onClick={handleAudioToggle}
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="white" className="w-6 h-6">
@@ -198,7 +247,7 @@ const Video = () => {
                             />
                         </svg>
                     </div>
-                    <div className="w-12 h-12 flex justify-center items-center rounded-full bg-[#3C4043] hover:bg-[#2B3239]" onClick={startScreenSharing}>
+                    <div className="w-12 h-12 flex justify-center items-center rounded-full bg-[#3C4043] hover:bg-[#2B3239] check" onClick={startScreenSharing}>
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="white" className="w-6 h-6">
                             <path
                                 strokeLinecap="round"
