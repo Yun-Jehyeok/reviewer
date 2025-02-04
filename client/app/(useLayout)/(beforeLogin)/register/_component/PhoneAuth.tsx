@@ -19,15 +19,14 @@ interface IProps {
         onChange: (e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>) => void;
     };
     setAuthNumResponse: Dispatch<SetStateAction<string>>;
-    setPhoneErr: Dispatch<SetStateAction<boolean>>;
-    setPhoneErrMsg: Dispatch<SetStateAction<string>>;
-    setAuthCheckErr: Dispatch<SetStateAction<boolean>>;
+    setErr: Dispatch<SetStateAction<{ [key: string]: boolean }>>;
+    setErrMsg: Dispatch<SetStateAction<{ [key: string]: string }>>;
     setShowAuth: Dispatch<SetStateAction<boolean>>;
     phoneErr: boolean;
     phoneErrMsg: string;
 }
 
-export default function PhoneAuth({ setAuthNumResponse, phone, setPhoneErr, setPhoneErrMsg, setAuthCheckErr, setShowAuth, phoneErr, phoneErrMsg }: IProps) {
+export default function PhoneAuth({ setAuthNumResponse, phone, setErr, setErrMsg, setShowAuth, phoneErr, phoneErrMsg }: IProps) {
     const phoneMutation = useAuthPhoneMutation(setAuthNumResponse);
 
     const handleAuth = (e: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement>) => {
@@ -37,10 +36,19 @@ export default function PhoneAuth({ setAuthNumResponse, phone, setPhoneErr, setP
         let phoneVal = phone.value;
 
         if (phoneVal === "") {
-            setPhoneErr(true);
-            setPhoneErrMsg("휴대폰 번호를 입력해주세요.");
+            setErr((prev) => ({
+                ...prev,
+                phone: true,
+            }));
+            setErrMsg((prev) => ({
+                ...prev,
+                phone: "휴대폰 번호를 입력해주세요.",
+            }));
         } else {
-            setAuthCheckErr(false);
+            setErr((prev) => ({
+                ...prev,
+                authCheck: true,
+            }));
             setShowAuth(true);
             setAuthNumResponse("00000000");
 
