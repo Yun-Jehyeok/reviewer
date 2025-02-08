@@ -12,10 +12,10 @@ import Navigation from "@/components/navigation/nav";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
     return (
-        <div className="w-full h-full font-noto">
-            <div className="w-full flex justify-center content">
+        <div className={styles.container}>
+            <div className={styles.wrapper}>
                 {/* 1080 ~ 1440 */}
-                <div className="w-full min-w-[1160px] max-w-[1520px] px-20">
+                <div className={styles.section}>
                     <Navigation />
 
                     {children}
@@ -26,3 +26,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </div>
     );
 }
+
+const styles = {
+    container: "w-full h-full font-noto",
+    wrapper: "w-full flex justify-center content",
+    section: "w-full min-w-[1160px] max-w-[1520px] px-20",
+};

@@ -10,7 +10,7 @@ const socket = io(process.env.NEXT_PUBLIC_SERVER_URL as string, {
     path: "/api/video",
 });
 
-const Video = () => {
+export default function Video() {
     const [isAudioOn, setIsAudioOn] = useState<boolean>(true);
     const router = useRouter();
 
@@ -215,60 +215,68 @@ const Video = () => {
     };
 
     return (
-        <div className="w-screen h-screen relative bg-[#202124] overflow-hidden p-8">
-            <video id="mainvideo" ref={mainVideoRef} className="w-full h-[calc(100vh-356px)] mb-8 bg-black rounded-md" autoPlay />
-            <div className="w-full flex gap-4">
-                <video
-                    ref={myVideoRef}
-                    className="bg-black w-[240px] h-[180px] rounded-md cursor-pointer"
-                    autoPlay
-                    onClick={() => handleMainVideo("myvideo")}
-                />
-                <video
-                    ref={remoteVideoRef}
-                    className="bg-black w-[240px] h-[180px] rounded-md cursor-pointer"
-                    autoPlay
-                    onClick={() => handleMainVideo("opponentvideo")}
-                />
+        <div className={styles.container}>
+            <video id="mainvideo" ref={mainVideoRef} className={styles.mainVideo} autoPlay />
+            <div className={styles.subVideos}>
+                <video ref={myVideoRef} className={styles.subVideo} autoPlay onClick={() => handleMainVideo("myvideo")} />
+                <video ref={remoteVideoRef} className={styles.subVideo} autoPlay onClick={() => handleMainVideo("opponentvideo")} />
             </div>
-            <div className="flex justify-center mt-8">
-                <div className="flex gap-6">
-                    <div
-                        className={`w-12 h-12 flex justify-center items-center rounded-full ${
-                            isAudioOn ? "bg-[#3C4043] hover:bg-[#2B3239]" : "bg-red-500 hover:bg-red-600"
-                        }`}
-                        onClick={handleAudioToggle}
-                    >
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="white" className="w-6 h-6">
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z"
-                            />
-                        </svg>
+            <div className={styles.btns}>
+                <div className={styles.btnsWrapper}>
+                    <div className={styles.audioBtn(isAudioOn)} onClick={handleAudioToggle}>
+                        {Icons.audio}
                     </div>
-                    <div className="w-12 h-12 flex justify-center items-center rounded-full bg-[#3C4043] hover:bg-[#2B3239] check" onClick={startScreenSharing}>
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="white" className="w-6 h-6">
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z"
-                            />
-                        </svg>
+                    <div className={styles.screenShareBtn} onClick={startScreenSharing}>
+                        {Icons.screenShare}
                     </div>
-                    <div className="w-12 h-12 flex justify-center items-center rounded-full bg-red-500 hover:bg-red-600" onClick={navigateToMypage}>
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="white" className="w-6 h-6">
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9"
-                            />
-                        </svg>
+                    <div className={styles.leaveBtn} onClick={navigateToMypage}>
+                        {Icons.leave}
                     </div>
                 </div>
             </div>
         </div>
     );
+}
+
+const styles = {
+    container: "w-screen h-screen relative bg-[#202124] overflow-hidden p-8",
+    mainVideo: "w-full h-[calc(100vh-356px)] mb-8 bg-black rounded-md",
+    subVideos: "w-full flex gap-4",
+    subVideo: "bg-black w-[240px] h-[180px] rounded-md cursor-pointer",
+    btns: "flex justify-center mt-8",
+    btnsWrapper: "flex gap-6",
+    audioBtn: (isAudioOn: boolean) => `w-12 h-12 flex justify-center items-center rounded-full ${isAudioOn ? "bg-[#3C4043] hover:bg-[#2B3239]" : "bg-red-500 hover:bg-red-600"}`,
+    screenShareBtn: "w-12 h-12 flex justify-center items-center rounded-full bg-[#3C4043] hover:bg-[#2B3239] check",
+    leaveBtn: "w-12 h-12 flex justify-center items-center rounded-full bg-red-500 hover:bg-red-600",
+    icon: "w-6 h-6",
 };
 
-export default Video;
+const Icons = {
+    audio: (
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="white" className={styles.icon}>
+            <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z"
+            />
+        </svg>
+    ),
+    screenShare: (
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="white" className={styles.icon}>
+            <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z"
+            />
+        </svg>
+    ),
+    leave: (
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="white" className={styles.icon}>
+            <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9"
+            />
+        </svg>
+    ),
+};

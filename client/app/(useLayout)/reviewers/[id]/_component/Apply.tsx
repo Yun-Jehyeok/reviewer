@@ -42,25 +42,20 @@ export default function Apply({ user, post }: { user?: userIFC; post: postIFC })
         }
     };
 
-    if (!user) {
+    if (!user || user._id !== post.creator._id) {
         return (
-            <div className="w-full h-fit px-8 py-4 border border-gray-200 rounded-md flex justify-between items-center mb-4 shadow-md">
-                <div className="text-lg font-bold">
-                    {String(post.price)}원<span className="text-sm text-gray-400 font-medium">&nbsp;/&nbsp;시간당</span>
+            <div className={styles.container}>
+                <div className={styles.price}>
+                    {String(post.price)}원<span className={styles.pricePerHour}>&nbsp;/&nbsp;시간당</span>
                 </div>
                 <CButton title="신청하기" onClick={onClick} />
             </div>
         );
     }
-
-    return (
-        user._id !== post.creator._id && (
-            <div className="w-full h-fit px-8 py-4 border border-gray-200 rounded-md flex justify-between items-center mb-4 shadow-md">
-                <div className="text-lg font-bold">
-                    {String(post.price)}원<span className="text-sm text-gray-400 font-medium">&nbsp;/&nbsp;시간당</span>
-                </div>
-                <CButton title="신청하기" onClick={onClick} />
-            </div>
-        )
-    );
 }
+
+const styles = {
+    container: "w-full h-fit px-8 py-4 border border-gray-200 rounded-md flex justify-between items-center mb-4 shadow-md",
+    price: "text-lg font-bold",
+    pricePerHour: "text-sm text-gray-400 font-medium",
+};

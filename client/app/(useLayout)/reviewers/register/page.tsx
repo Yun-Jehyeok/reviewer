@@ -114,20 +114,27 @@ export default function RegisterReviewer() {
 
     if (!user) return null;
     return (
-        <div className="py-12">
+        <div className={styles.container}>
             {registerPostMutation.isPending && <CSpinner />}
-            <h1 className="text-center w-full text-3xl font-bold mb-12">Reviewer 등록</h1>
-            <div className="flex flex-col gap-6">
+            <h1 className={styles.title}>Reviewer 등록</h1>
+            <section className={styles.section}>
                 <CInput {...title} type="text" label="제목" placeholder="제목을 입력해주세요." isErr={titleErr} errMsg={titleErrmsg} />
                 <CInput {...price} type="text" label="시간 당 가격 (원)" placeholder="시간 당 가격을 입력해주세요." />
                 <SetTech techErr={techErr} techErrmsg={techErrmsg} setTechs={setTechs} />
                 <SetImgs setImgFiles={setImgFiles} />
                 <SetTextareaContents label="설명" placeholder="설명을 입력해주세요." contents={description} setContents={setDescription} err={descErr} errmsg={descErrmsg} />
 
-                <div className="w-full flex justify-end">
+                <div className={styles.registerBtn}>
                     <CButton title="등록하기" onClick={handleSubmit} />
                 </div>
-            </div>
+            </section>
         </div>
     );
 }
+
+const styles = {
+    container: "py-12",
+    title: "text-center w-full text-3xl font-bold mb-12",
+    section: "flex flex-col gap-6",
+    registerBtn: "w-full flex justify-end",
+};

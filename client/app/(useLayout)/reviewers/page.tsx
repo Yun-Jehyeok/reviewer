@@ -91,15 +91,15 @@ export default function Reviewers() {
     };
 
     return (
-        <div className="w-full">
+        <div className={styles.container}>
             {isLoading && <CSpinner />}
-            <div className="w-full flex justify-between items-center">
-                <div className="">
+            <div className={styles.header}>
+                <div>
                     총&nbsp;
-                    <span className="font-bold">{data ? data.allPostsCnt : 0}</span>개
+                    <span className={styles.totalCnt}>{data ? data.allPostsCnt : 0}</span>개
                 </div>
                 {/* 필터링 */}
-                <div className="w-fit flex gap-4">
+                <div className={styles.filter}>
                     <CSelectBox items={filter} onChange={handleValFilter} />
                     <CSelectBox items={langFilter} onChange={handleLangFilter} />
                 </div>
@@ -107,7 +107,7 @@ export default function Reviewers() {
 
             {/* 리스트 */}
             {data && data.posts && data.posts.length > 0 ? (
-                <div className="w-full grid grid-cols-5 gap-x-8 gap-y-6 mt-6">
+                <div className={styles.list}>
                     {data.posts.map((post) => {
                         let data = {
                             id: post._id,
@@ -119,16 +119,28 @@ export default function Reviewers() {
                     })}
                 </div>
             ) : (
-                <div className="w-full h-[540px] bg-[#F4F6F5] rounded-3xl flex justify-center flex-col mt-6">
-                    <div className="h-fit w-full flex flex-col gap-4">
-                        <div className="text-[#9b9b9b] text-lg text-center">조건에 맞는 리뷰어가 없습니다.</div>
+                <div className={styles.noList}>
+                    <div className={styles.noListWrapper}>
+                        <div className={styles.noListText}>조건에 맞는 리뷰어가 없습니다.</div>
                     </div>
                 </div>
             )}
 
-            <div className="w-full flex justify-center mt-12">
+            <div className={styles.pagination}>
                 <Pagination defaultCurrent={page} total={data ? data.allPostsCnt : 0} defaultPageSize={16} current={page} onChange={handlePagination} />
             </div>
         </div>
     );
 }
+
+const styles = {
+    container: "w-full",
+    header: "w-full flex justify-between items-center",
+    totalCnt: "font-bold",
+    filter: "w-fit flex gap-4",
+    list: "w-full grid grid-cols-5 gap-x-8 gap-y-6 mt-6",
+    noList: "w-full h-[540px] bg-[#F4F6F5] rounded-3xl flex justify-center flex-col mt-6",
+    noListWrapper: "h-fit w-full flex flex-col gap-4",
+    noListText: "text-[#9b9b9b] text-lg text-center",
+    pagination: "w-full flex justify-center mt-12",
+};

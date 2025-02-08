@@ -18,13 +18,9 @@ export default function FindPw() {
     const email = useInput("");
     const [isAuth, setIsAuth] = useState<boolean>(false);
 
-    return (
-        <div className="w-full h-[540px] rounded-lg flex justify-center items-center bg-gray-50 mt-32 mb-24">
-            {isAuth ? (
-                <EditPassword email={email.value} />
-            ) : (
-                <SendAuthEmail email={email} setIsAuth={setIsAuth} />
-            )}
-        </div>
-    );
+    return <div className={styles.container}>{isAuth ? <EditPassword email={email.value} /> : <SendAuthEmail email={email} setIsAuth={setIsAuth} />}</div>;
 }
+
+const styles = {
+    container: "w-full h-[540px] rounded-lg flex justify-center items-center bg-gray-50 mt-32 mb-24",
+};

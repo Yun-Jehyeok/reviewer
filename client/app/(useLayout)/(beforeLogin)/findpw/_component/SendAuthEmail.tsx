@@ -100,25 +100,46 @@ export default function SendAuthEmail({ email, setIsAuth }: IProps) {
         <div>
             {authEmailMutation.isPending && <CSpinner />}
 
-            <div className="text-lg font-bold mb-4 text-center">비밀번호를 찾을 이메일을 입력해주세요</div>
+            <div className={styles.title}>비밀번호를 찾을 이메일을 입력해주세요</div>
             <form
-                className="flex gap-2"
+                className={styles.form}
                 onSubmit={(e) => {
                     e.preventDefault();
                 }}
             >
                 <CInput {...email} placeholder="이메일을 입력해주세요." type="email" isErr={isErr} errMsg={errMsg} />
-                <div className="h-10 w-52">
+                <div className={styles.sendEmailBtn}>
                     <CButton title="인증번호 전송" isFull={true} onClick={sendEmail} />
                 </div>
             </form>
 
-            {showAuth && (
-                <div className="flex flex-col gap-2 mt-4">
-                    <CInput {...authNum} placeholder="인증번호를 입력해주세요." type="text" isErr={authErr} errMsg={authErrMsg} />
-                    <CButton title="인증하기" isFull={true} onClick={checkAuth} />
-                </div>
-            )}
+            {showAuth && <AuthenticationForm authNum={authNum} authErr={authErr} authErrMsg={authErrMsg} checkAuth={checkAuth} />}
         </div>
     );
 }
+
+const AuthenticationForm = ({
+    authNum,
+    authErr,
+    authErrMsg,
+    checkAuth,
+}: {
+    authNum: { value: string; onChange: (e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>) => void };
+    authErr: boolean;
+    authErrMsg: string;
+    checkAuth: () => void;
+}) => {
+    return (
+        <div className={styles.authInput}>
+            <CInput {...authNum} placeholder="인증번호를 입력해주세요." type="text" isErr={authErr} errMsg={authErrMsg} />
+            <CButton title="인증하기" isFull={true} onClick={checkAuth} />
+        </div>
+    );
+};
+
+const styles = {
+    title: "text-lg font-bold mb-4 text-center",
+    form: "flex gap-2",
+    sendEmailBtn: "h-10 w-52",
+    authInput: "flex flex-col gap-2 mt-4",
+};

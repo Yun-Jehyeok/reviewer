@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
+import { useState } from "react";
 // Library
 
 // Components
-import Signup from './_component/Signup';
-import TOS from './_component/TOS';
+import Signup from "./_component/Signup";
+import TOS from "./_component/TOS";
 
 // Hooks & Utils
 
@@ -16,9 +16,9 @@ import TOS from './_component/TOS';
 export default function Register() {
     const [tosCheck, setTosCheck] = useState<boolean>(false);
 
-    return (
-        <div className="w-full flex justify-center my-16">
-            {tosCheck ? <Signup /> : <TOS setTosCheck={setTosCheck} />}
-        </div>
-    );
+    return <div className={styles.container}>{tosCheck ? <Signup /> : <TOS setTosCheck={setTosCheck} />}</div>;
 }
+
+const styles = {
+    container: "w-full flex justify-center my-16",
+};

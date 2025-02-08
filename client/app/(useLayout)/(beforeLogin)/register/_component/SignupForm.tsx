@@ -154,7 +154,7 @@ export default function SignupForm() {
     );
 
     return (
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <form onSubmit={handleSubmit} className={styles.container}>
             <CInput {...email} type="email" placeholder="이메일을 입력해주세요." label="E-Mail" isErr={err.email} errMsg={errMsg.email} isRequired={true}>
                 {emailico}
             </CInput>
@@ -182,3 +182,7 @@ export default function SignupForm() {
         </form>
     );
 }
+
+const styles = {
+    container: "flex flex-col gap-4",
+};
