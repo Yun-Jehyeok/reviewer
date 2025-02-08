@@ -53,10 +53,10 @@ export default function EditPassword({ email }: IProps) {
     );
 
     return (
-        <div className="w-[640px] h-fit bg-white shadow-lg rounded-lg flex p-20">
-            <div className="w-full">
-                <div className="text-center text-4xl font-bold mb-12">비밀번호 변경</div>
-                <form className="flex flex-col gap-4" onSubmit={onChangePw}>
+        <div className={styles.container}>
+            <div className={styles.wrapper}>
+                <div className={styles.title}>비밀번호 변경</div>
+                <form className={styles.form} onSubmit={onChangePw}>
                     <CInput {...password} label="비밀번호" placeholder="변경할 비밀번호를 입력해주세요." type="password" isErr={isErr} errMsg={errMsg} />
                     <CButton title="비밀번호 변경" onClick={onChangePw} />
                 </form>
@@ -64,3 +64,10 @@ export default function EditPassword({ email }: IProps) {
         </div>
     );
 }
+
+const styles = {
+    container: "w-[640px] h-fit bg-white shadow-lg rounded-lg flex p-20",
+    wrapper: "w-full",
+    title: "text-center text-4xl font-bold mb-12",
+    form: "flex flex-col gap-4",
+};

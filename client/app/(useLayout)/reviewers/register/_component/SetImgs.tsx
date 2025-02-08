@@ -73,8 +73,8 @@ export default function SetImgs({ setImgFiles }: IProps) {
     };
 
     return (
-        <div className="w-full">
-            <div className="mb-2 font-medium text-sm">미리보기 이미지</div>
+        <div className={styles.container}>
+            <div className={styles.title}>미리보기 이미지</div>
             <label
                 onDrop={onDragAddImage}
                 onDragOver={onPreventDragOver}
@@ -82,11 +82,9 @@ export default function SetImgs({ setImgFiles }: IProps) {
                 onMouseLeave={() => setIsActive(false)}
                 onDragLeave={() => setIsActive(false)}
                 onDragEnter={() => setIsActive(true)}
-                className={`w-full cursor-pointer text-gray-600 flex items-center justify-center border-2 border-dashed ${
-                    isActive ? "border-[#FB2E86]" : "border-gray-300"
-                } h-48 rounded-md`}
+                className={styles.input(isActive)}
             >
-                <svg className="h-12 w-12" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
+                <svg className={styles.svg} stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
                     <path
                         d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
                         strokeWidth={2}
@@ -94,23 +92,20 @@ export default function SetImgs({ setImgFiles }: IProps) {
                         strokeLinejoin="round"
                     />
                 </svg>
-                <div className="ml-2 font-lato">Select the imgs</div>
-                <input className="hidden" type="file" accept="image/*" multiple onChange={handleImgs} />
+                <div className={styles.inputLabel}>Select the imgs</div>
+                <input className={styles.inputHidden} type="file" accept="image/*" multiple onChange={handleImgs} />
             </label>
 
-            <div className="flex mt-4 gap-4">
+            <div className={styles.previewImgs}>
                 {imgs.map((image, i) => (
-                    <div key={i} className="w-32 h-32 rounded-md">
-                        <Image className="rounded-md w-full h-full cursor-pointer" src={image} width={128} height={128} alt={image} onClick={deleteImage} />
+                    <div key={i} className={styles.previewImgContainer}>
+                        <Image className={styles.previewImg} src={image} width={128} height={128} alt={image} onClick={deleteImage} />
                     </div>
                 ))}
                 {[1, 2, 3].map((item, i) => {
                     if (item <= empties) {
                         return (
-                            <div
-                                key={i}
-                                className="w-32 h-32 text-gray-600 border-2 border-gray-300 rounded-md text-center flex justify-center flex-col text-base"
-                            >
+                            <div key={i} className={styles.previewImgEmpty}>
                                 Empty...
                             </div>
                         );
@@ -120,3 +115,16 @@ export default function SetImgs({ setImgFiles }: IProps) {
         </div>
     );
 }
+
+const styles = {
+    container: "w-full",
+    title: "mb-2 font-medium text-sm",
+    input: (isActive: boolean) => `w-full cursor-pointer text-gray-600 flex items-center justify-center border-2 border-dashed ${isActive ? "border-[#FB2E86]" : "border-gray-300"} h-48 rounded-md`,
+    svg: "h-12 w-12",
+    inputLabel: "ml-2 font-lato",
+    inputHidden: "hidden",
+    previewImgs: "flex mt-4 gap-4",
+    previewImgContainer: "w-32 h-32 rounded-md",
+    previewImg: "rounded-md w-full h-full cursor-pointer",
+    previewImgEmpty: "w-32 h-32 text-gray-600 border-2 border-gray-300 rounded-md text-center flex justify-center flex-col text-base",
+};

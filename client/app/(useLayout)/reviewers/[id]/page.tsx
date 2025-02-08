@@ -29,21 +29,27 @@ export default function ReviewerDetail() {
     if (!post) return null;
 
     return (
-        <div className="w-full h-fit flex gap-12">
+        <div className={styles.container}>
             {isPending && <CSpinner />}
 
             {/* 왼쪽 */}
-            <div className="w-2/3">
+            <div className={styles.left}>
                 <PostImgs imgs={post.imgs} />
                 <Description content={post.content} />
                 <Reviews reviews={post.reviews} />
             </div>
 
             {/* 오른쪽 */}
-            <div className="flex-1">
+            <div className={styles.right}>
                 <Apply user={user} post={post} />
                 <ReviewerInfo creator={post.creator} />
             </div>
         </div>
     );
 }
+
+const styles = {
+    container: "w-full h-fit flex gap-12",
+    left: "w-2/3",
+    right: "flex-1",
+};
