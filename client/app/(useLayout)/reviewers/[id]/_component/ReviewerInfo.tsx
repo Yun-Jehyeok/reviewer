@@ -39,7 +39,6 @@ export default function ReviewerInfo({ creator }: IProps) {
                     </div>
                 </div>
 
-                {/* 내용 없음 */}
                 <div className={styles.jobExperience}>
                     <div>
                         <div className={styles.label}>직무</div>
