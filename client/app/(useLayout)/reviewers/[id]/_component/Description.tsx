@@ -1,14 +1,7 @@
 // Library
 import DOMPurify from "dompurify";
 
-// Components
-
-// Hooks & Utils
-
-// Api
-
 // Interface & States
-
 interface IProps {
     content: string;
 }

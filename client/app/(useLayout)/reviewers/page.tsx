@@ -10,10 +10,6 @@ import CCard from "@/components/common/CCard";
 import CSelectBox from "@/components/common/CSelectbox";
 import CSpinner from "@/components/common/CSpinner";
 
-// Hooks & Utils
-
-// Api
-
 // Interface & States
 import { useGetAllPost } from "@/hooks/queries/post";
 

@@ -6,10 +6,6 @@ import CButton from "@/components/common/CButton";
 import { phoneico } from "@/components/common/CIcons";
 import CInput from "@/components/common/CInput";
 
-// Hooks & Utils
-
-// Api
-
 // Interface & States
 import { useAuthPhoneMutation } from "@/hooks/mutations/user";
 

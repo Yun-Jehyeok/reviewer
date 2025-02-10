@@ -2,14 +2,6 @@
 import Image from "next/image";
 import { Dispatch, SetStateAction, useState } from "react";
 
-// Components
-
-// Hooks & Utils
-
-// Api
-
-// Interface & States
-
 interface IProps {
     setImgFiles: Dispatch<SetStateAction<File[]>>;
 }

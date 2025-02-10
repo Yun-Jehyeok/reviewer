@@ -11,19 +11,15 @@ import PostImgs from "./_component/PostImgs";
 import ReviewerInfo from "./_component/ReviewerInfo";
 import Reviews from "./_component/Reviews";
 
-// Hooks & Utils
-
-// Api
-
 // Interface & States
 import { useGetPost } from "@/hooks/queries/post";
 import { useGetUserQuery } from "@/hooks/queries/user";
 
 export default function ReviewerDetail() {
     const { id } = useParams() as { id: string };
-    const { user, error: isUserError, isPending: isUserPending } = useGetUserQuery();
+    const { user, isPending: isUserPending } = useGetUserQuery();
 
-    const { post, error, isPending } = useGetPost(id);
+    const { post, isPending } = useGetPost(id);
 
     if (isPending || isUserPending) return <CSpinner />;
     if (!post) return null;

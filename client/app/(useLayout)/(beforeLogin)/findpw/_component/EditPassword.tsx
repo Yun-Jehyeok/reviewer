@@ -9,8 +9,6 @@ import CInput from "@/components/common/CInput";
 import { useInput } from "@/hooks/useInput";
 import { checkBlank } from "@/utils/utils";
 
-// Api
-
 // Interface & States
 import { useEditPwMutation } from "@/hooks/mutations/user";
 

@@ -4,10 +4,6 @@ import { useRouter } from "next/navigation";
 // Components
 import CButton from "@/components/common/CButton";
 
-// Hooks & Utils
-
-// Api
-
 // Interface & States
 import { useApplyMutation } from "@/hooks/mutations/application";
 import { postIFC } from "@/interfaces/postIFC";

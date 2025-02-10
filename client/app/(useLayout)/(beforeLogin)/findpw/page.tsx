@@ -10,10 +10,6 @@ import SendAuthEmail from "./_component/SendAuthEmail";
 // Hooks & Utils
 import { useInput } from "@/hooks/useInput";
 
-// Api
-
-// Interface & States
-
 export default function FindPw() {
     const email = useInput("");
     const [isAuth, setIsAuth] = useState<boolean>(false);

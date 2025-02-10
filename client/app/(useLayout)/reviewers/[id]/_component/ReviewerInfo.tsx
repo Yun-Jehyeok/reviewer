@@ -1,12 +1,6 @@
 // Library
 import DOMPurify from "dompurify";
 
-// Components
-
-// Hooks & Utils
-
-// Api
-
 // Interface & States
 import { userIFC } from "@/interfaces/userIFC";
 

@@ -10,12 +10,6 @@ import QueryProviderWrapper from "@/components/wrapper/QueryProviderWrapper";
 import RecoilRootWrapper from "@/components/wrapper/RecoilRootWrapper";
 import { cls } from "@/utils/utils";
 
-// Hooks & Utils
-
-// Api
-
-// Interface & States
-
 const noto = Noto_Sans_KR({ subsets: ["latin"], weight: ["100", "400", "700", "900"] });
 
 export const metadata: Metadata = {
