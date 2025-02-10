@@ -205,25 +205,20 @@ export default function SignupForm() {
 
     return (
         <form onSubmit={handleSubmit} className={styles.container}>
-            <CInput {...email} type="email" placeholder="이메일을 입력해주세요." label="E-Mail" isErr={err.email} errMsg={errMsg.email} isRequired={true}>
-                {emailico}
-            </CInput>
-
-            <CInput {...password} type="password" placeholder="비밀번호를 입력해주세요." label="Password" isErr={err.pw} errMsg={errMsg.pw} isRequired={true}>
-                {pwico}
-            </CInput>
-
-            <CInput {...pwCheck} type="password" placeholder="비밀번호 확인을 입력해주세요." label="Password Check" isErr={err.pwCheck} errMsg={errMsg.pwCheck} isRequired={true}>
-                {pwcheckico}
-            </CInput>
-
-            <CInput {...name} type="text" placeholder="이름을 입력해주세요." label="Name" isErr={err.name} errMsg={errMsg.name} isRequired={true}>
-                {nameico}
-            </CInput>
-
-            <CInput {...nickname} type="text" placeholder="닉네임을 입력해주세요." label="Nickname" isErr={err.nickname} errMsg={errMsg.nickname} isRequired={true}>
-                {nicknameico}
-            </CInput>
+            <Input valueAndOnChange={email} type="email" placeholder="이메일을 입력해주세요." label="E-Mail" isErr={err.email} errMsg={errMsg.email} isRequired={true} icon={emailico} />
+            <Input valueAndOnChange={password} type="password" placeholder="비밀번호를 입력해주세요." label="Password" isErr={err.pw} errMsg={errMsg.pw} isRequired={true} icon={pwico} />
+            <Input
+                valueAndOnChange={pwCheck}
+                type="password"
+                placeholder="비밀번호 확인을 입력해주세요."
+                label="Password Check"
+                isErr={err.pwCheck}
+                errMsg={errMsg.pwCheck}
+                isRequired={true}
+                icon={pwcheckico}
+            />
+            <Input valueAndOnChange={name} type="text" placeholder="이름을 입력해주세요." label="Name" isErr={err.name} errMsg={errMsg.name} isRequired={true} icon={nameico} />
+            <Input valueAndOnChange={nickname} type="text" placeholder="닉네임을 입력해주세요." label="Nickname" isErr={err.nickname} errMsg={errMsg.nickname} isRequired={true} icon={nicknameico} />
 
             <PhoneAuth setAuthNumResponse={setAuthNumResponse} phone={phone} setErr={setErr} setErrMsg={setErrMsg} setShowAuth={setShowAuth} phoneErr={err.phone} phoneErrMsg={errMsg.phone} />
             {showAuth && <CInput {...authNum} placeholder="인증번호를 입력해주세요" type="text" isErr={err.auth} errMsg={errMsg.auth} />}
@@ -232,6 +227,32 @@ export default function SignupForm() {
         </form>
     );
 }
+
+const Input = ({
+    valueAndOnChange,
+    type,
+    placeholder,
+    label,
+    isErr,
+    errMsg,
+    isRequired,
+    icon,
+}: {
+    valueAndOnChange: ReturnType<typeof useInput>;
+    type: string;
+    placeholder: string;
+    label: string;
+    isErr: boolean;
+    errMsg: string;
+    isRequired: boolean;
+    icon: JSX.Element;
+}) => {
+    return (
+        <CInput {...valueAndOnChange} type={type} placeholder={placeholder} label={label} isErr={isErr} errMsg={errMsg} isRequired={isRequired}>
+            {icon}
+        </CInput>
+    );
+};
 
 const styles = {
     container: "flex flex-col gap-4",

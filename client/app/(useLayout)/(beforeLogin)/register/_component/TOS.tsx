@@ -4,6 +4,7 @@ import { Dispatch, SetStateAction, useState } from "react";
 interface IProps {
     setTosCheck: Dispatch<SetStateAction<boolean>>;
 }
+
 export default function TOS({ setTosCheck }: IProps) {
     const [checkFirst, setCheckFirst] = useState<boolean>(false);
     const [checkSecond, setCheckSecond] = useState<boolean>(false);
@@ -19,42 +20,8 @@ export default function TOS({ setTosCheck }: IProps) {
                 <div className={styles.wrapperContainer}>
                     <div className={styles.title}>이용 약관</div>
 
-                    <div className={styles.tosContainer}>
-                        <div className={styles.tosLabel}>
-                            <div className={styles.tosTitle}>
-                                REVIEWER 이용 약관 동의
-                                <span className={styles.required}>(필수)</span>
-                            </div>
-                            <div className={styles.tosCheck(checkFirst)} onClick={() => setCheckFirst(!checkFirst)}></div>
-                        </div>
-                        <div className={styles.tosContent}>
-                            1. 목적 : 지원자 개인 식별, 지원의사 확인, 입사전형의 진행, 고지사항 전달, 입사 지원자와의 원활한 의사소통, 지원이력 확인 및 면접 불합격자 재지원 제한
-                            <br />
-                            <br />
-                            2. 항목 : 아이디(이메일주소), 비밀번호, 이름, 생년월일, 휴대폰번호
-                            <br />
-                            <br />
-                            3. 보유기간 : 회원 탈퇴 시까지 보유
-                        </div>
-                    </div>
-
-                    <div className={styles.personalInfoContainer}>
-                        <div className={styles.personalInfoLabel}>
-                            <div className={styles.personalInfoTitle}>
-                                개인정보 수집 및 이용 동의 <span className={styles.required}>(필수)</span>
-                            </div>
-                            <div className={styles.personalInfoCheck(checkSecond)} onClick={() => setCheckSecond(!checkSecond)}></div>
-                        </div>
-                        <div className={styles.personalInfoContent}>
-                            1. 목적 : 지원자 개인 식별, 지원의사 확인, 입사전형의 진행, 고지사항 전달, 입사 지원자와의 원활한 의사소통, 지원이력 확인 및 면접 불합격자 재지원 제한
-                            <br />
-                            <br />
-                            2. 항목 : 아이디(이메일주소), 비밀번호, 이름, 생년월일, 휴대폰번호
-                            <br />
-                            <br />
-                            3. 보유기간 : 회원 탈퇴 시까지 보유
-                        </div>
-                    </div>
+                    <TOSContainer checkFirst={checkFirst} setCheckFirst={setCheckFirst} />
+                    <PersonalInfoContainer checkSecond={checkSecond} setCheckSecond={setCheckSecond} />
 
                     <CButton title="확인" isFull={true} onClick={onSubmit} />
                 </div>
@@ -62,6 +29,51 @@ export default function TOS({ setTosCheck }: IProps) {
         </div>
     );
 }
+
+const TOSContainer = ({ checkFirst, setCheckFirst }: { checkFirst: boolean; setCheckFirst: Dispatch<SetStateAction<boolean>> }) => {
+    return (
+        <div className={styles.tosContainer}>
+            <div className={styles.tosLabel}>
+                <div className={styles.tosTitle}>
+                    REVIEWER 이용 약관 동의
+                    <span className={styles.required}>(필수)</span>
+                </div>
+                <div className={styles.tosCheck(checkFirst)} onClick={() => setCheckFirst(!checkFirst)}></div>
+            </div>
+            <div className={styles.tosContent}>
+                1. 목적 : 지원자 개인 식별, 지원의사 확인, 입사전형의 진행, 고지사항 전달, 입사 지원자와의 원활한 의사소통, 지원이력 확인 및 면접 불합격자 재지원 제한
+                <br />
+                <br />
+                2. 항목 : 아이디(이메일주소), 비밀번호, 이름, 생년월일, 휴대폰번호
+                <br />
+                <br />
+                3. 보유기간 : 회원 탈퇴 시까지 보유
+            </div>
+        </div>
+    );
+};
+
+const PersonalInfoContainer = ({ checkSecond, setCheckSecond }: { checkSecond: boolean; setCheckSecond: Dispatch<SetStateAction<boolean>> }) => {
+    return (
+        <div className={styles.personalInfoContainer}>
+            <div className={styles.personalInfoLabel}>
+                <div className={styles.personalInfoTitle}>
+                    개인정보 수집 및 이용 동의 <span className={styles.required}>(필수)</span>
+                </div>
+                <div className={styles.personalInfoCheck(checkSecond)} onClick={() => setCheckSecond(!checkSecond)}></div>
+            </div>
+            <div className={styles.personalInfoContent}>
+                1. 목적 : 지원자 개인 식별, 지원의사 확인, 입사전형의 진행, 고지사항 전달, 입사 지원자와의 원활한 의사소통, 지원이력 확인 및 면접 불합격자 재지원 제한
+                <br />
+                <br />
+                2. 항목 : 아이디(이메일주소), 비밀번호, 이름, 생년월일, 휴대폰번호
+                <br />
+                <br />
+                3. 보유기간 : 회원 탈퇴 시까지 보유
+            </div>
+        </div>
+    );
+};
 
 const styles = {
     container: "w-full h-fit py-36 bg-gray-50 rounded-2xl flex justify-center items-center",

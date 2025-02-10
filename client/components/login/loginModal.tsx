@@ -118,7 +118,7 @@ export default function LoginModal({ setModalOpen }: ILoginModal) {
         <div className={styles.background}>
             {signInMutation.isPending && <CSpinner />}
             <div className={styles.container}>
-                <LoginForm email={email} password={password} error={error} handleSubmit={handleSubmit} />
+                <LoginForm email={email} password={password} error={error} handleSubmit={handleSubmit} handleClose={handleClose} />
                 <CloseButton onClick={handleClose} />
             </div>
         </div>
@@ -130,11 +130,13 @@ const LoginForm = ({
     password,
     error,
     handleSubmit,
+    handleClose,
 }: {
     email: ReturnType<typeof useInput>;
     password: ReturnType<typeof useInput>;
     error: { show: boolean; message: string };
     handleSubmit: (e: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement>) => void;
+    handleClose: () => void;
 }) => (
     <div className={styles.wrapper}>
         <div className={styles.header}>Log In To REVIEWERS</div>
@@ -144,7 +146,7 @@ const LoginForm = ({
             {error.show && <div className={styles.errMsg}>{error.message}</div>}
             <CButton title="SIGN IN" type="submit" onClick={handleSubmit} />
         </form>
-        <LoginFooter />
+        <LoginFooter handleClose={handleClose} />
     </div>
 );
 
@@ -157,16 +159,16 @@ const FormInput = ({ label, type, placeholder, valueAndOnChange }: InputProps) =
     </div>
 );
 
-const LoginFooter = () => (
+const LoginFooter = ({ handleClose }: { handleClose: () => void }) => (
     <>
         <div className={styles.signupCon}>
             Not a Member?&nbsp;
-            <Link href="/register" className={styles.signupLink}>
+            <Link href="/register" className={styles.signupLink} onClick={handleClose}>
                 Sign Up
             </Link>
         </div>
         <div className={styles.findPwCon}>
-            <Link href="/findpw" className={styles.findPwLink}>
+            <Link href="/findpw" className={styles.findPwLink} onClick={handleClose}>
                 Forgot your password?
             </Link>
         </div>

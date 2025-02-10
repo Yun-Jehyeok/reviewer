@@ -1,6 +1,6 @@
 // Library
 import Image from "next/image";
-import { Dispatch, SetStateAction, useState } from "react";
+import React, { Dispatch, SetStateAction, useState } from "react";
 
 interface IProps {
     setImgFiles: Dispatch<SetStateAction<File[]>>;
@@ -28,17 +28,13 @@ export default function SetImgs({ setImgFiles }: IProps) {
     };
 
     const deleteImage = (e: React.MouseEvent<HTMLImageElement>) => {
-        let deleteIdx = -1;
+        const deleteIdx = imgs.findIndex((image) => image === e.currentTarget.currentSrc);
 
-        imgs.map((image, idx) => {
-            if (image === e.currentTarget.currentSrc) {
-                deleteIdx = idx;
-            }
-        });
+        if (deleteIdx === -1) return;
 
         setImgs(imgs.filter((image) => image !== e.currentTarget.currentSrc));
-        setImgFiles(selectedImgFiles.filter((image, idx) => idx !== deleteIdx));
-        setSelectedImgFiles(selectedImgFiles.filter((image, idx) => idx !== deleteIdx));
+        setImgFiles(selectedImgFiles.filter((_, idx) => idx !== deleteIdx));
+        setSelectedImgFiles(selectedImgFiles.filter((_, idx) => idx !== deleteIdx));
         setEmpties(4 - imgs.length);
     };
 
@@ -67,46 +63,69 @@ export default function SetImgs({ setImgFiles }: IProps) {
     return (
         <div className={styles.container}>
             <div className={styles.title}>미리보기 이미지</div>
-            <label
-                onDrop={onDragAddImage}
-                onDragOver={onPreventDragOver}
-                onMouseOver={() => setIsActive(true)}
-                onMouseLeave={() => setIsActive(false)}
-                onDragLeave={() => setIsActive(false)}
-                onDragEnter={() => setIsActive(true)}
-                className={styles.input(isActive)}
-            >
-                <svg className={styles.svg} stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
-                    <path
-                        d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
-                        strokeWidth={2}
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                    />
-                </svg>
-                <div className={styles.inputLabel}>Select the imgs</div>
-                <input className={styles.inputHidden} type="file" accept="image/*" multiple onChange={handleImgs} />
-            </label>
-
-            <div className={styles.previewImgs}>
-                {imgs.map((image, i) => (
-                    <div key={i} className={styles.previewImgContainer}>
-                        <Image className={styles.previewImg} src={image} width={128} height={128} alt={image} onClick={deleteImage} />
-                    </div>
-                ))}
-                {[1, 2, 3].map((item, i) => {
-                    if (item <= empties) {
-                        return (
-                            <div key={i} className={styles.previewImgEmpty}>
-                                Empty...
-                            </div>
-                        );
-                    }
-                })}
-            </div>
+            <FileInput onDragAddImage={onDragAddImage} onPreventDragOver={onPreventDragOver} setIsActive={setIsActive} handleImgs={handleImgs} isActive={isActive} />
+            <PreviewImgs imgs={imgs} empties={empties} deleteImage={deleteImage} />
         </div>
     );
 }
+
+const FileInput = ({
+    onDragAddImage,
+    onPreventDragOver,
+    setIsActive,
+    handleImgs,
+    isActive,
+}: {
+    onDragAddImage: (e: React.DragEvent<HTMLLabelElement>) => void;
+    onPreventDragOver: (e: React.DragEvent<HTMLLabelElement>) => void;
+    setIsActive: Dispatch<SetStateAction<boolean>>;
+    handleImgs: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    isActive: boolean;
+}) => {
+    return (
+        <label
+            onDrop={onDragAddImage}
+            onDragOver={onPreventDragOver}
+            onMouseOver={() => setIsActive(true)}
+            onMouseLeave={() => setIsActive(false)}
+            onDragLeave={() => setIsActive(false)}
+            onDragEnter={() => setIsActive(true)}
+            className={styles.input(isActive)}
+        >
+            <svg className={styles.svg} stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
+                <path
+                    d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
+                    strokeWidth={2}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                />
+            </svg>
+            <div className={styles.inputLabel}>Select the imgs</div>
+            <input className={styles.inputHidden} type="file" accept="image/*" multiple onChange={handleImgs} />
+        </label>
+    );
+};
+
+const PreviewImgs = ({ imgs, empties, deleteImage }: { imgs: string[]; empties: number; deleteImage: (e: React.MouseEvent<HTMLImageElement>) => void }) => {
+    return (
+        <div className={styles.previewImgs}>
+            {imgs.map((image, i) => (
+                <div key={i} className={styles.previewImgContainer}>
+                    <Image className={styles.previewImg} src={image} width={128} height={128} alt={image} onClick={deleteImage} />
+                </div>
+            ))}
+            {[1, 2, 3].map((item, i) => {
+                if (item <= empties) {
+                    return (
+                        <div key={i} className={styles.previewImgEmpty}>
+                            Empty...
+                        </div>
+                    );
+                }
+            })}
+        </div>
+    );
+};
 
 const styles = {
     container: "w-full",

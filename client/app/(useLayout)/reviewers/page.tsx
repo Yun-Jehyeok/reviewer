@@ -12,6 +12,7 @@ import CSpinner from "@/components/common/CSpinner";
 
 // Interface & States
 import { useGetAllPost } from "@/hooks/queries/post";
+import { allPostIFC } from "@/interfaces/postIFC";
 
 const filter = [
     { id: "0", value: "registerDate", label: "최신 순" },
@@ -56,7 +57,7 @@ export default function Reviewers() {
     const [val, setVal] = useState<string>("registerDate");
     const [langVal, setLangVal] = useState<string>("all");
 
-    const { data, error, isLoading } = useGetAllPost({
+    const { data, isLoading } = useGetAllPost({
         page,
         filter: val,
         langFilter: langVal,
@@ -89,38 +90,10 @@ export default function Reviewers() {
     return (
         <div className={styles.container}>
             {isLoading && <CSpinner />}
-            <div className={styles.header}>
-                <div>
-                    총&nbsp;
-                    <span className={styles.totalCnt}>{data ? data.allPostsCnt : 0}</span>개
-                </div>
-                {/* 필터링 */}
-                <div className={styles.filter}>
-                    <CSelectBox items={filter} onChange={handleValFilter} />
-                    <CSelectBox items={langFilter} onChange={handleLangFilter} />
-                </div>
-            </div>
+            <Header data={data} handleValFilter={handleValFilter} handleLangFilter={handleLangFilter} />
 
             {/* 리스트 */}
-            {data && data.posts && data.posts.length > 0 ? (
-                <div className={styles.list}>
-                    {data.posts.map((post) => {
-                        let data = {
-                            id: post._id,
-                            title: post.title,
-                            price: Number(post.price),
-                            image: post.imgs && post.imgs.length > 0 ? post.imgs[0] : "noimg",
-                        };
-                        return <CCard key={data.id} data={data} />;
-                    })}
-                </div>
-            ) : (
-                <div className={styles.noList}>
-                    <div className={styles.noListWrapper}>
-                        <div className={styles.noListText}>조건에 맞는 리뷰어가 없습니다.</div>
-                    </div>
-                </div>
-            )}
+            <Posts data={data} />
 
             <div className={styles.pagination}>
                 <Pagination defaultCurrent={page} total={data ? data.allPostsCnt : 0} defaultPageSize={16} current={page} onChange={handlePagination} />
@@ -128,6 +101,45 @@ export default function Reviewers() {
         </div>
     );
 }
+
+const Header = ({ data, handleValFilter, handleLangFilter }: { data: allPostIFC | undefined; handleValFilter: (e: string) => void; handleLangFilter: (e: string) => void }) => {
+    return (
+        <div className={styles.header}>
+            {/* 총 개수 */}
+            <div>
+                총&nbsp;
+                <span className={styles.totalCnt}>{data ? data.allPostsCnt : 0}</span>개
+            </div>
+            {/* 필터링 */}
+            <div className={styles.filter}>
+                <CSelectBox items={filter} onChange={handleValFilter} />
+                <CSelectBox items={langFilter} onChange={handleLangFilter} />
+            </div>
+        </div>
+    );
+};
+
+const Posts = ({ data }: { data: allPostIFC | undefined }) => {
+    return data && data.posts && data.posts.length > 0 ? (
+        <div className={styles.list}>
+            {data.posts.map((post) => {
+                let data = {
+                    id: post._id,
+                    title: post.title,
+                    price: Number(post.price),
+                    image: post.imgs && post.imgs.length > 0 ? post.imgs[0] : "noimg",
+                };
+                return <CCard key={data.id} data={data} />;
+            })}
+        </div>
+    ) : (
+        <div className={styles.noList}>
+            <div className={styles.noListWrapper}>
+                <div className={styles.noListText}>조건에 맞는 리뷰어가 없습니다.</div>
+            </div>
+        </div>
+    );
+};
 
 const styles = {
     container: "w-full",

@@ -16,10 +16,10 @@ import { IError } from "@/interfaces/commonIFC";
 
 /**
  * Props
- * @param setShowAuth: 인증 완료 체크 Func[setState[string]];
- * @param setAuthNumResponse: 서버에서 받아온 6자리 값을 넘겨줄 Func[setState[string]]
  * @param email: 이메일 useInput[typeof useInput];
+ * @param setIsAuth: 인증 완료 체크 Dispatch<SetStateAction<boolean>>;
  */
+
 interface IProps {
     email: {
         value: any;
@@ -39,7 +39,7 @@ export default function SendAuthEmail({ email, setIsAuth }: IProps) {
     const [authErrMsg, setAuthErrMsg] = useState("인증번호를 입력해주세요.");
 
     const authEmailMutation = useAuthEmailMutation({
-        onError: (error: IError, variable, context) => {
+        onError: (error: IError) => {
             console.error("emailAuthErr:::", error.response.data.msg);
             setIsErr(true);
             setErrMsg(error.response.data.msg);
@@ -60,7 +60,7 @@ export default function SendAuthEmail({ email, setIsAuth }: IProps) {
 
             setIsErr(false);
 
-            let emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/i;
+            const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/i;
 
             if (checkBlank(email.value, setIsErr, "이메일을 입력해주세요.", setErrMsg)) {
                 return;
@@ -99,12 +99,8 @@ export default function SendAuthEmail({ email, setIsAuth }: IProps) {
             {authEmailMutation.isPending && <CSpinner />}
 
             <div className={styles.title}>비밀번호를 찾을 이메일을 입력해주세요</div>
-            <form
-                className={styles.form}
-                onSubmit={(e) => {
-                    e.preventDefault();
-                }}
-            >
+
+            <form className={styles.form} onSubmit={sendEmail}>
                 <CInput {...email} placeholder="이메일을 입력해주세요." type="email" isErr={isErr} errMsg={errMsg} />
                 <div className={styles.sendEmailBtn}>
                     <CButton title="인증번호 전송" isFull={true} onClick={sendEmail} />

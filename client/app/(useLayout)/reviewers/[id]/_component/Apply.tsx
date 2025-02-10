@@ -11,7 +11,6 @@ import { userIFC } from "@/interfaces/userIFC";
 
 export default function Apply({ user, post }: { user?: userIFC; post: postIFC }) {
     const router = useRouter();
-
     const applyMutation = useApplyMutation();
 
     const onClick = () => {
@@ -20,7 +19,7 @@ export default function Apply({ user, post }: { user?: userIFC; post: postIFC })
             return;
         }
 
-        let conf = confirm("해당 리뷰어에게 리뷰를 신청하시겠습니까?");
+        const conf = confirm("해당 리뷰어에게 리뷰를 신청하시겠습니까?");
 
         if (conf) {
             if (user.point < post!.price) {
