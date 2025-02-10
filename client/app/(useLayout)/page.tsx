@@ -1,20 +1,17 @@
 "use client";
 
-import TempBanner from "../../public/temp_banner.jpg";
-
 // Library
 import { useQueries } from "@tanstack/react-query";
+import Image from "next/image";
 
 // Components
 import ReviewerList from "@/components/main/ReviewerList";
 
-// Hooks & Utils
-
 // Api
 import { getBestReviewsApi, getNewReviewsApi } from "@/apis/postApi";
-import Image from "next/image";
 
-// Interface & States
+// Assets
+import TempBanner from "../../public/temp_banner.jpg";
 
 export default function Home() {
     const results = useQueries({

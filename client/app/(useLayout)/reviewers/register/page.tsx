@@ -17,8 +17,6 @@ import SetImgs from "./_component/SetImgs";
 import { useInput } from "@/hooks/useInput";
 import { checkBlank } from "@/utils/utils";
 
-// Api
-
 // Interface & States
 import { useRegisterPostMutation } from "@/hooks/mutations/post";
 import { registerPostIFC } from "@/interfaces/postIFC";

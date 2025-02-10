@@ -1,17 +1,11 @@
 "use client";
 
-import { useState } from "react";
 // Library
+import { useState } from "react";
 
 // Components
 import Signup from "./_component/Signup";
 import TOS from "./_component/TOS";
-
-// Hooks & Utils
-
-// Api
-
-// Interface & States
 
 export default function Register() {
     const [tosCheck, setTosCheck] = useState<boolean>(false);

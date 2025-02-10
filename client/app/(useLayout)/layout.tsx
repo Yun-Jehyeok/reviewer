@@ -1,14 +1,6 @@
-// Library
-
 // Components
 import Footer from "@/components/Footer/footer";
 import Navigation from "@/components/navigation/nav";
-
-// Hooks & Utils
-
-// Api
-
-// Interface & States
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
     return (

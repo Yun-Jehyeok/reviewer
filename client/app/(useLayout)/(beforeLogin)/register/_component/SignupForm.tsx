@@ -10,12 +10,14 @@ import PhoneAuth from "./PhoneAuth";
 // Hooks & Utils
 import { useInput } from "@/hooks/useInput";
 
-// Api
-
 // Interface & States
 import { useSignupMutation } from "@/hooks/mutations/user";
 import { IError } from "@/interfaces/commonIFC";
-import { signupIFC } from "@/interfaces/userIFC";
+
+const REGEX = {
+    email: /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/i,
+    password: /^(?!((?:[A-Za-z]+)|(?:[~!@#$%^&*()_+=]+)|(?:[0-9]+))$)[A-Za-z\d~!@#$%^&*()_+=]{8,}$/,
+};
 
 export default function SignupForm() {
     const email = useInput("");
@@ -68,7 +70,7 @@ export default function SignupForm() {
     };
 
     const signupMutation = useSignupMutation({
-        onError: (error: IError, variable, context) => {
+        onError: (error: IError) => {
             console.error("signupErr:::", error);
             let { msg } = error.response.data;
 
@@ -87,67 +89,115 @@ export default function SignupForm() {
         },
     });
 
-    const validation = useCallback(
-        (emailVal: string, pwVal: string, pwCheckVal: string, nameVal: string, nicknameVal: string, phoneVal: string) => {
-            setErr((prev) =>
-                Object.keys(prev).reduce((acc, key) => {
-                    acc[key] = true;
-                    return acc;
-                }, {} as { [key: string]: boolean })
-            );
+    const validation = ({ email, password, pwCheck, name, nickname, phone }: { email: string; password: string; pwCheck: string; name: string; nickname: string; phone: string }) => {
+        // 모든 에러 상태 초기화
+        setErr((prev) => Object.keys(prev).reduce((acc, key) => ({ ...acc, [key]: false }), {}));
 
-            let errFlag = false;
+        const validations = [
+            // 이메일 검증
+            {
+                condition: !email,
+                field: "email",
+                message: "이메일을 입력해주세요.",
+            },
+            {
+                condition: email && !REGEX.email.test(email),
+                field: "email",
+                message: "이메일 형식을 확인해주세요.",
+            },
 
-            let emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/i;
-            let pwRegex = /^(?!((?:[A-Za-z]+)|(?:[~!@#$%^&*()_+=]+)|(?:[0-9]+))$)[A-Za-z\d~!@#$%^&*()_+=]{8,}$/;
+            // 비밀번호 검증
+            {
+                condition: !password,
+                field: "password",
+                message: "비밀번호를 입력해주세요.",
+            },
+            {
+                condition: password && !REGEX.password.test(password),
+                field: "password",
+                message: "비밀번호는 영문, 숫자, 특수문자 중 2가지 이상 조합하여 8자리 이상으로 입력해주세요.",
+            },
 
-            if (emailVal === "") errFlag = handleErr("email", "이메일을 입력해주세요.");
-            else if (!emailRegex.test(emailVal)) errFlag = handleErr("email", "이메일 형식을 확인해주세요.");
+            // 비밀번호 확인 검증
+            {
+                condition: !pwCheck,
+                field: "pwCheck",
+                message: "비밀번호 확인을 입력해주세요.",
+            },
+            {
+                condition: pwCheck && pwCheck !== password,
+                field: "pwCheck",
+                message: "비밀번호와 비밀번호 확인은 동일해야합니다.",
+            },
 
-            if (pwVal === "") errFlag = handleErr("password", "비밀번호를 입력해주세요.");
-            else if (!pwRegex.test(pwVal)) errFlag = handleErr("password", "비밀번호는 영문, 숫자, 특수문자 중 2가지 이상 조합하여 8자리 이상으로 입력해주세요.");
+            // 이름 검증
+            {
+                condition: !name,
+                field: "name",
+                message: "이름을 입력해주세요.",
+            },
 
-            if (pwCheckVal === "") errFlag = handleErr("pwCheck", "비밀번호 확인을 입력해주세요.");
-            else if (pwCheckVal !== pwVal) errFlag = handleErr("pwCheck", "비밀번호와 비밀번호 확인은 동일해야합니다.");
+            // 닉네임 검증
+            {
+                condition: !nickname,
+                field: "nickname",
+                message: "닉네임을 입력해주세요.",
+            },
 
-            if (nameVal === "") errFlag = handleErr("name", "이름을 입력해주세요.");
+            // 휴대폰 및 인증 검증
+            {
+                condition: !phone,
+                field: "phone",
+                message: "휴대폰 번호를 입력해주세요.",
+            },
+            {
+                condition: phone && authCheckErr,
+                field: "phone",
+                message: "휴대폰 인증이 필요합니다.",
+                customHandler: () => alert("휴대폰 인증이 필요합니다."),
+            },
+            {
+                condition: phone && !authCheckErr && !authNum.value,
+                field: "auth",
+                message: "인증번호를 입력해주세요.",
+            },
+            {
+                condition: phone && !authCheckErr && authNum.value && authNum.value !== authNumResponse,
+                field: "auth",
+                message: "인증번호를 확인해주세요.",
+            },
+        ];
 
-            if (nicknameVal === "") errFlag = handleErr("nickname", "닉네임을 입력해주세요.");
+        // 유효성 검사 실행
+        for (const validation of validations) {
+            if (validation.condition) {
+                if (validation.customHandler) {
+                    validation.customHandler();
+                }
+                handleErr(validation.field, validation.message);
+                return true;
+            }
+        }
 
-            if (phoneVal === "") {
-                errFlag = handleErr("phone", "휴대폰 번호를 입력해주세요.");
-            } else if (authCheckErr) {
-                errFlag = true;
-                alert("휴대폰 인증이 필요합니다.");
-            } else if (authNum.value === "") errFlag = handleErr("auth", "인증번호를 입력해주세요.");
-            else if (authNum.value !== authNumResponse) errFlag = handleErr("auth", "인증번호를 확인해주세요.");
-
-            return errFlag;
-        },
-        [authCheckErr, authNumResponse, authNum]
-    );
+        return false;
+    };
 
     const handleSubmit = useCallback(
         (e: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement>) => {
             e.preventDefault();
 
-            let emailVal = email.value;
-            let pwVal = password.value;
-            let pwCheckVal = pwCheck.value;
-            let nameVal = name.value;
-            let nicknameVal = nickname.value;
-            let phoneVal = phone.value;
+            const formValues = {
+                email: email.value,
+                password: password.value,
+                pwCheck: pwCheck.value,
+                name: name.value,
+                nickname: nickname.value,
+                phone: phone.value,
+            } as const;
 
-            if (validation(emailVal, pwVal, pwCheckVal, nameVal, nicknameVal, phoneVal)) return;
+            if (validation(formValues)) return;
 
-            let payload: signupIFC = {
-                email: emailVal,
-                password: pwVal,
-                name: nameVal,
-                nickname: nicknameVal,
-                phone: phoneVal,
-            };
-
+            const { pwCheck: _, ...payload } = formValues;
             signupMutation.mutate(payload);
         },
         [email, password, name, nickname, pwCheck, phone, signupMutation, validation]

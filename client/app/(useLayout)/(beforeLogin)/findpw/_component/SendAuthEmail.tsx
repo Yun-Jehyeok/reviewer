@@ -9,8 +9,6 @@ import CSpinner from "@/components/common/CSpinner";
 // Hooks & Utils
 import { checkBlank } from "@/utils/utils";
 
-// Api
-
 // Interface & States
 import { useAuthEmailMutation } from "@/hooks/mutations/user";
 import { useInput } from "@/hooks/useInput";

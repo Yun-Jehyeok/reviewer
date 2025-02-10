@@ -7,14 +7,6 @@ import "swiper/css";
 import { Swiper, SwiperRef, SwiperSlide } from "swiper/react";
 import { Swiper as SwiperType } from "swiper/types";
 
-// Components
-
-// Hooks & Utils
-
-// Api
-
-// Interface & States
-
 export default function PostImgs({ imgs }: { imgs?: string[] }) {
     const swiperRef = useRef<SwiperRef | null>(null);
 
