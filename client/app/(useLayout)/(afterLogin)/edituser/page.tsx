@@ -22,6 +22,37 @@ import { useEditUserMutation } from "@/hooks/mutations/user";
 import { useGetUserQuery } from "@/hooks/queries/user";
 import { editUserIFC } from "@/interfaces/userIFC";
 
+// 상수 정의
+const STYLES = {
+    container: "py-12",
+    title: "w-full text-3xl font-bold mb-6 border-b border-b-gray-200 pb-4",
+    formContainer: "flex flex-col gap-6",
+    buttonWrapper: "w-full flex justify-end gap-x-2",
+} as const;
+
+const FORM_FIELDS = {
+    nickname: {
+        label: "닉네임",
+        placeholder: "닉네임을 입력해주세요.",
+        type: "text",
+        required: true,
+    },
+    oneLineIntroduce: {
+        label: "한 줄 소개",
+        placeholder: "한 줄 소개를 입력해주세요.",
+        type: "text",
+    },
+    price: {
+        label: "시간 당 가격 (원)",
+        placeholder: "시간 당 가격을 입력해주세요.",
+        type: "text",
+    },
+    introduce: {
+        label: "소개",
+        placeholder: "소개를 입력해주세요.",
+    },
+} as const;
+
 export default function EditUser() {
     const router = useRouter();
 
@@ -34,13 +65,11 @@ export default function EditUser() {
     const price = useInput(user ? user?.price : "");
     const oneLineIntroduce = useInput(user ? user?.oneLineIntroduce : "");
 
-    const [nicknameErr, setNicknameErr] = useState<boolean>(false);
-    const [techErr, setTechErr] = useState<boolean>(false);
-    const [introErr, setIntroErr] = useState<boolean>(false);
-
-    const [nicknameErrmsg, setNicknameErrmsg] = useState<string>("");
-    const [techErrmsg, setTechErrmsg] = useState<string>("");
-    const [introErrmsg, setIntroErrmsg] = useState<string>("");
+    const [errors, setErrors] = useState({
+        nickname: { isError: false, message: "닉네임을 입력해주세요." },
+        tech: { isError: false, message: "기술을 하나 이상 입력해주세요." },
+        intro: { isError: false, message: "" },
+    });
 
     const editUserMutation = useEditUserMutation();
 
@@ -48,29 +77,34 @@ export default function EditUser() {
         (e: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement>) => {
             e.preventDefault();
 
-            let errFlag = false;
-            if (checkBlank(nickname.value, setNicknameErr, "닉네임을 입력해주세요.", setNicknameErrmsg)) errFlag = true;
+            let hasError = false;
+            const newErrors = { ...errors };
 
-            if (techs.length < 1) {
-                setTechErr(true);
-                setTechErrmsg("기술을 하나 이상 입력해주세요.");
-                errFlag = true;
+            if (checkBlank(nickname.value)) {
+                newErrors.nickname = { ...newErrors.nickname, isError: true };
+                hasError = true;
             }
 
-            if (errFlag) return;
+            if (techs.length < 1) {
+                newErrors.tech = { ...newErrors.tech, isError: true };
+                hasError = true;
+            }
 
-            let payload: editUserIFC = {
+            setErrors(newErrors);
+            if (hasError) return;
+
+            const payload: editUserIFC = {
                 id: user!._id,
                 nickname: nickname.value,
-                introduce: introduce,
-                techs: techs,
+                introduce,
+                techs,
                 price: price.value,
                 oneLineIntroduce: oneLineIntroduce.value,
             };
 
             editUserMutation.mutate(payload);
         },
-        [user, nickname, introduce, price, editUserMutation, techs, oneLineIntroduce]
+        [user, nickname, introduce, price, editUserMutation, techs, oneLineIntroduce, errors]
     );
 
     const goToProfile = () => {
@@ -79,17 +113,23 @@ export default function EditUser() {
 
     if (!user) return null;
     return (
-        <div className="py-12">
+        <div className={STYLES.container}>
             {(editUserMutation.isPending || getUserIsPending) && <CSpinner />}
-            <h1 className="w-full text-3xl font-bold mb-6 border-b border-b-gray-200 pb-4">사용자 정보 수정</h1>
-            <div className="flex flex-col gap-6">
-                <CInput {...nickname} type="text" label="닉네임" placeholder="닉네임을 입력해주세요." isErr={nicknameErr} errMsg={nicknameErrmsg} />
-                <CInput {...oneLineIntroduce} type="text" label="한 줄 소개" placeholder="한 줄 소개를 입력해주세요." />
-                <CInput {...price} type="text" label="시간 당 가격 (원)" placeholder="시간 당 가격을 입력해주세요." />
-                <SetTech defaultTechs={user.lang} techErr={techErr} techErrmsg={techErrmsg} setTechs={setTechs} />
-                <SetTextareaContents label="소개" placeholder="소개를 입력해주세요." contents={introduce} setContents={setIntroduce} err={introErr} errmsg={introErrmsg} />
+            <h1 className={STYLES.title}>사용자 정보 수정</h1>
+            <div className={STYLES.formContainer}>
+                <CInput {...nickname} {...FORM_FIELDS.nickname} isErr={errors.nickname.isError} errMsg={errors.nickname.message} />
+                <CInput {...oneLineIntroduce} {...FORM_FIELDS.oneLineIntroduce} />
+                <CInput {...price} {...FORM_FIELDS.price} />
+                <SetTech defaultTechs={user.lang} techErr={errors.tech.isError} techErrmsg={errors.tech.message} setTechs={setTechs} />
+                <SetTextareaContents
+                    {...FORM_FIELDS.introduce}
+                    contents={introduce}
+                    setContents={setIntroduce}
+                    err={errors.intro.isError}
+                    errmsg={errors.intro.message}
+                />
 
-                <div className="w-full flex justify-end gap-x-2">
+                <div className={STYLES.buttonWrapper}>
                     <CButton title="취소" isCancel={true} onClick={goToProfile} />
                     <CButton title="등록하기" onClick={handleSubmit} />
                 </div>
