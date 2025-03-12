@@ -12,6 +12,7 @@ import { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
 import CButton from "../common/CButton";
 import CConfirm from "../common/CConfirm";
+import CSpinner from "../common/CSpinner";
 import LoginModal from "../login/loginModal";
 import SearchModal from "./SearchModal";
 import NavAlarm from "./navAlarm";
@@ -23,7 +24,7 @@ export default function Navigation() {
     const [showAlarms, setShowAlarms] = useState<boolean>(false);
     const [isOpenSearch, setIsOpenSearch] = useState<boolean>(false);
 
-    const { user } = useGetUserQuery();
+    const { user, isPending } = useGetUserQuery();
     const queryClient = useQueryClient();
 
     const router = useRouter();
@@ -79,6 +80,7 @@ export default function Navigation() {
 
     return (
         <div className={styles.container}>
+            {isPending && <CSpinner />}
             <div className={styles.logo}>
                 <Link href="/">REVIEWERS</Link>
             </div>
@@ -88,18 +90,19 @@ export default function Navigation() {
                 <Search openSearch={openSearch} />
                 <NavAlarm showAlarms={showAlarms} setShowAlarms={setShowAlarms} />
 
-                {user ? (
-                    <Profile
-                        user={user}
-                        navigateToPayment={navigateToPayment}
-                        navigateToMypage={navigateToMypage}
-                        onClickLogout={onClickLogout}
-                        handleShowMyPage={handleShowMyPage}
-                        showDropdown={showDropdown}
-                    />
-                ) : (
-                    <CButton title="SIGN IN" onClick={handleSignIn} />
-                )}
+                {!isPending &&
+                    (user ? (
+                        <Profile
+                            user={user}
+                            navigateToPayment={navigateToPayment}
+                            navigateToMypage={navigateToMypage}
+                            onClickLogout={onClickLogout}
+                            handleShowMyPage={handleShowMyPage}
+                            showDropdown={showDropdown}
+                        />
+                    ) : (
+                        <CButton title="SIGN IN" onClick={handleSignIn} />
+                    ))}
             </div>
 
             {modalOpen ? <LoginModal setModalOpen={setModalOpen} /> : ""}
