@@ -1,6 +1,6 @@
 // Library
 import type { Metadata } from "next";
-import { Noto_Sans_KR } from "next/font/google";
+import localFont from "next/font/local";
 import Script from "next/script";
 import "./globals.css";
 
@@ -8,9 +8,47 @@ import "./globals.css";
 import AntdProvider from "@/components/wrapper/AntdProvider";
 import QueryProviderWrapper from "@/components/wrapper/QueryProviderWrapper";
 import RecoilRootWrapper from "@/components/wrapper/RecoilRootWrapper";
-import { cls } from "@/utils/utils";
 
-const noto = Noto_Sans_KR({ subsets: ["latin"], weight: ["100", "400", "700", "900"] });
+const pretendard = localFont({
+    src: [
+        {
+            path: "../public/fonts/Pretendard-ExtraLight.woff2",
+            weight: "200",
+            style: "normal",
+        },
+        {
+            path: "../public/fonts/Pretendard-Light.woff2",
+            weight: "300",
+            style: "normal",
+        },
+        {
+            path: "../public/fonts/Pretendard-Regular.woff2",
+            weight: "400",
+            style: "normal",
+        },
+        {
+            path: "../public/fonts/Pretendard-Medium.woff2",
+            weight: "500",
+            style: "normal",
+        },
+        {
+            path: "../public/fonts/Pretendard-SemiBold.woff2",
+            weight: "600",
+            style: "normal",
+        },
+        {
+            path: "../public/fonts/Pretendard-Bold.woff2",
+            weight: "700",
+            style: "normal",
+        },
+        {
+            path: "../public/fonts/Pretendard-ExtraBold.woff2",
+            weight: "800",
+            style: "normal",
+        },
+    ],
+    variable: "--font-pretendard",
+});
 
 export const metadata: Metadata = {
     title: "Create Next App",
@@ -20,7 +58,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
     return (
         <html lang="en">
-            <body className={cls(noto.className)}>
+            <body className={`${pretendard.variable} font-pretendard`}>
                 <Script src="https://cdn.iamport.kr/v1/iamport.js" />
 
                 <Script src="https://cdn.iamport.kr/v1/iamport.js" strategy="beforeInteractive" />

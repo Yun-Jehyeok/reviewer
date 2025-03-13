@@ -15,7 +15,7 @@ export default function Reviews({ reviews }: IProps) {
             <div className={styles.reviewList}>
                 {reviews.length > 0 ? (
                     reviews.map((review) => {
-                        return <ReviewItem review={review} stars={stars} />;
+                        return <ReviewItem key={review._id} review={review} stars={stars} />;
                     })
                 ) : (
                     <NoReviews />
@@ -38,7 +38,7 @@ const TotalCount = ({ reviews }: { reviews: reviewIFC[] }) => {
 
 const ReviewItem = ({ review, stars }: { review: reviewIFC; stars: number[] }) => {
     return (
-        <div key={review._id} className={styles.reviewItem}>
+        <div className={styles.reviewItem}>
             <div className={styles.reviewItemHeader}>
                 <div className={styles.reviewItemNicknameAndDate}>
                     <div>
