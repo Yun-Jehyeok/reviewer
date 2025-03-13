@@ -1,45 +1,29 @@
-"use client";
+import { getPostApi } from "@/apis/postApi";
+import { getUserApi } from "@/apis/userApi";
+import { dehydrate, HydrationBoundary, QueryClient } from "@tanstack/react-query";
+import { Params } from "next/dist/shared/lib/router/utils/route-matcher";
+import ReviewerDetailCmp from "./_component/ReviewerDetailCmp";
 
-// Library
-import { useParams } from "next/navigation";
-
-// Components
-import CSpinner from "@/components/common/CSpinner";
-import Apply from "./_component/Apply";
-import Description from "./_component/Description";
-import PostImgs from "./_component/PostImgs";
-import ReviewerInfo from "./_component/ReviewerInfo";
-import Reviews from "./_component/Reviews";
-
-// Interface & States
-import { useGetPost } from "@/hooks/queries/post";
-import { useGetUserQuery } from "@/hooks/queries/user";
-
-export default function ReviewerDetail() {
-    const { id } = useParams() as { id: string };
-    const { user, isPending: isUserPending } = useGetUserQuery();
-
-    const { post, isPending } = useGetPost(id);
-
-    if (isPending || isUserPending) return <CSpinner />;
-    if (!post) return null;
+export default async function ReviewerDetail({ params }: { params: Params }) {
+    const queryClient = new QueryClient();
+    await queryClient.prefetchQuery({
+        queryKey: ["user"],
+        queryFn: getUserApi,
+        staleTime: 60 * 1000,
+        gcTime: 300 * 1000,
+    });
+    await queryClient.prefetchQuery({
+        queryKey: ["posts", params.id],
+        queryFn: getPostApi,
+        staleTime: 60 * 1000,
+        gcTime: 300 * 1000,
+    });
 
     return (
         <div className={styles.container}>
-            {isPending && <CSpinner />}
-
-            {/* 왼쪽 */}
-            <div className={styles.left}>
-                <PostImgs imgs={post.imgs} />
-                <Description content={post.content} />
-                <Reviews reviews={post.reviews} />
-            </div>
-
-            {/* 오른쪽 */}
-            <div className={styles.right}>
-                <Apply user={user} post={post} />
-                <ReviewerInfo creator={post.creator} />
-            </div>
+            <HydrationBoundary state={dehydrate(queryClient)}>
+                <ReviewerDetailCmp />
+            </HydrationBoundary>
         </div>
     );
 }

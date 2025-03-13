@@ -8,24 +8,15 @@ interface IGetAllPostsReq {
     langFilter: string;
 }
 
-export const useGetAllPost = ({
-    page,
-    filter,
-    langFilter,
-}: IGetAllPostsReq) => {
-    const { data, error, isLoading } = useQuery<
-        allPostIFC,
-        Error,
-        allPostIFC,
-        [_1: string, _2: getAllPostReqIFC]
-    >({
+export const useGetAllPost = ({ page, filter, langFilter }: IGetAllPostsReq) => {
+    const { data, error, isPending } = useQuery<allPostIFC, Error, allPostIFC, [_1: string, _2: getAllPostReqIFC]>({
         queryKey: ["posts", { page, filter, langFilter }],
         queryFn: getAllPostApi,
         staleTime: 60 * 1000,
         gcTime: 300 * 1000,
     });
 
-    return { data, error, isLoading };
+    return { data, error, isPending };
 };
 
 export const useGetPost = (id: string) => {

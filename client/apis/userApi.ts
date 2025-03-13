@@ -43,6 +43,8 @@ export const paymentApi = async (data: paymentIFC) => {
 export const getUserApi: QueryFunction<userIFC, [string]> = async () => {
     try {
         const { token } = nookies.get();
+        if (!token) return null;
+
         const res = await Apis.get(`/user/${token}`);
 
         if (!res.success) throw new Error("Failed to fetch data");

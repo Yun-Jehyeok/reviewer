@@ -20,7 +20,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 }
 
 const styles = {
-    container: "w-full h-full font-noto",
+    container: "w-full h-full",
     wrapper: "w-full flex justify-center content",
     section: "w-full min-w-[1160px] max-w-[1520px] px-20",
 };

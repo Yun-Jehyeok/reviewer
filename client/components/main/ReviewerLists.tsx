@@ -2,37 +2,42 @@
 
 import { getBestReviewsApi, getNewReviewsApi } from "@/apis/postApi";
 import { useQueries } from "@tanstack/react-query";
+import Link from "next/link";
 import ReviewerList from "./ReviewerList";
 
 export default function ReviewerLists() {
     const results = useQueries({
         queries: [
             {
-                queryKey: ["new"],
-                queryFn: getNewReviewsApi,
-            },
-            {
                 queryKey: ["best"],
                 queryFn: getBestReviewsApi,
+            },
+            {
+                queryKey: ["new"],
+                queryFn: getNewReviewsApi,
             },
         ],
     });
 
     return (
-        <section className={styles.section}>
-            <div>
-                <div className={styles.label}>BEST REVIEWERS</div>
-                <ReviewerList posts={results[1].data} noPostContent="최고의 리뷰어가 없습니다." />
-            </div>
-            <div>
-                <div className={styles.label}>NEW REVIEWERS</div>
-                <ReviewerList posts={results[0].data} noPostContent="새로운 리뷰어가 없습니다." />
-            </div>
+        <section className="flex flex-col gap-8">
+            {results.map((result, index) => {
+                return (
+                    <div key={index}>
+                        <div className="w-full flex justify-between items-center pt-16 pb-8">
+                            <div className="text-3xl font-extrabold">{index === 0 ? "BEST REVIEWERS" : "NEW REVIEWERS"}</div>
+                            <Link href="/reviewers">
+                                <div className="flex items-center gap-2 w-6 h-6 cursor-pointer">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="size-6">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                                    </svg>
+                                </div>
+                            </Link>
+                        </div>
+                        <ReviewerList posts={result.data} noPostContent={index === 0 ? "최고의 리뷰어가 없습니다." : "새로운 리뷰어가 없습니다."} />
+                    </div>
+                );
+            })}
         </section>
     );
 }
-
-const styles = {
-    section: "flex flex-col gap-8",
-    label: "w-full text-3xl font-extrabold pt-16 pb-8",
-};

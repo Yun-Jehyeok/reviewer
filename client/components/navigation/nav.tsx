@@ -12,7 +12,6 @@ import { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
 import CButton from "../common/CButton";
 import CConfirm from "../common/CConfirm";
-import CSpinner from "../common/CSpinner";
 import LoginModal from "../login/loginModal";
 import SearchModal from "./SearchModal";
 import NavAlarm from "./navAlarm";
@@ -80,7 +79,7 @@ export default function Navigation() {
 
     return (
         <div className={styles.container}>
-            {isPending && <CSpinner />}
+            {/* {isPending && <CSpinner />} */}
             <div className={styles.logo}>
                 <Link href="/">REVIEWERS</Link>
             </div>
