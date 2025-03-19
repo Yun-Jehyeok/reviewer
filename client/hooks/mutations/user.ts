@@ -1,5 +1,6 @@
+import { redirect } from "next/navigation";
 import { readAlaramApi } from "@/apis/alarmApi";
-import { authEmailApi, authPhoneApi, changePwApi, editUserApi, signinApi, signupApi, withdrawalApi } from "@/apis/userApi";
+import { authEmailApi, authPhoneApi, changePwApi, editUserApi, signinApi, signinServerApi, signupApi, withdrawalApi } from "@/apis/userApi";
 import { IError } from "@/interfaces/commonIFC";
 import { emailIFC, signinIFC, signupIFC } from "@/interfaces/userIFC";
 import { cancelBgFixed } from "@/utils/utils";
@@ -35,7 +36,7 @@ export const useEditUserMutation = () => {
                 console.log("Edit Success Data >>>> ", data);
                 queryClient.invalidateQueries({ queryKey: ["user"] });
 
-                router.push(`/mypage`);
+                redirect(`/mypage`);
             }
         },
         onSettled: () => {
@@ -165,7 +166,7 @@ interface ISignin {
 
 export const useSigninMutation = ({ onError, onSuccess }: ISignin) => {
     return useMutation({
-        mutationFn: signinApi,
+        mutationFn: signinServerApi,
         onMutate: (variable) => {
             console.log("onMutate", variable);
         },

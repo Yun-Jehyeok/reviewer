@@ -1,14 +1,15 @@
-// "use client";
-
 import { ReactNode } from "react";
+import { HydrationBoundary, QueryClient, dehydrate } from "@tanstack/react-query";
+import { getUserApi } from "@/apis/userApi";
 import UserProfile from "@/components/mypage/common/userProfile";
 import Tabs from "@/components/mypage/common/tab";
+import { redirect } from "next/navigation";
 
 interface Props {
     children: ReactNode;
 }
 
-export default function Layout({ children }: Props) {
+export default async function Layout({ children }: Props) {
     return (
         <div className="w-full">
             <UserProfile />

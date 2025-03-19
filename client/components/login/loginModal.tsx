@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { setCookie } from "nookies";
 import { useCallback, useState } from "react";
+import { signIn } from "next-auth/react";
 
 // Hook
 import { useInput } from "@/hooks/useInput";
@@ -36,7 +37,7 @@ const COMMON_STYLES = {
 } as const;
 
 interface ILoginModal {
-    setModalOpen: (flag: boolean) => void;
+    onClose: (flag: boolean) => void;
 }
 
 interface InputProps {
@@ -46,7 +47,7 @@ interface InputProps {
     valueAndOnChange: ReturnType<typeof useInput>;
 }
 
-export default function LoginModal({ setModalOpen }: ILoginModal) {
+export default function LoginModal({ onClose }: ILoginModal) {
     const email = useInput("");
     const password = useInput("");
     const [error, setError] = useState<{ show: boolean; message: string }>({ show: false, message: "" });
@@ -55,9 +56,13 @@ export default function LoginModal({ setModalOpen }: ILoginModal) {
     const queryClient = useQueryClient();
 
     const handleClose = useCallback(() => {
-        setModalOpen(false);
-        cancelBgFixed();
-    }, [setModalOpen]);
+        try {
+            onClose(false);
+            cancelBgFixed();
+        } catch (error) {
+            console.error("Error closing modal:", error);
+        }
+    }, [onClose]);
 
     const signInMutation = useMutation({
         mutationFn: signinApi,
@@ -69,8 +74,8 @@ export default function LoginModal({ setModalOpen }: ILoginModal) {
             });
         },
         onSuccess: (data) => {
+            console.log("data >>>> ", data);
             if (data.success) {
-                handleClose();
                 setCookie(null, "token", data.token, {
                     maxAge: 30 * 24 * 60 * 60,
                     path: "/",
@@ -79,6 +84,7 @@ export default function LoginModal({ setModalOpen }: ILoginModal) {
                 });
                 queryClient.invalidateQueries({ queryKey: ["user"] });
                 router.push("/");
+                handleClose();
             }
         },
         onSettled: cancelBgFixed,
@@ -103,15 +109,19 @@ export default function LoginModal({ setModalOpen }: ILoginModal) {
     };
 
     const handleSubmit = useCallback(
-        (e: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement>) => {
+        async (e: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement>) => {
             e.preventDefault();
-            setError({ show: false, message: "" });
-
             if (!validateForm(email.value, password.value)) return;
 
-            signInMutation.mutate({ email: email.value, password: password.value });
+            const res = await signIn("credentials", {
+                email: email.value,
+                password: password.value,
+                redirect: false,
+                callbackUrl: "/",
+            });
+            handleClose();
         },
-        [email.value, password.value, signInMutation, validateForm]
+        [email.value, password.value, handleClose]
     );
 
     return (
@@ -196,5 +206,6 @@ const styles = {
     signupLink: "text-blue-500 hover:underline",
     findPwCon: "text-center mt-2",
     findPwLink: `${COMMON_STYLES.text.sm} ${COMMON_STYLES.text.gray} hover:underline cursor-pointer`,
-    closeBtn: "absolute -right-12 -top-12 w-10 h-10 rounded-full bg-white shadow-xl flex justify-center items-center cursor-pointer hover:-top-[52px] transition-all",
+    closeBtn:
+        "absolute -right-12 -top-12 w-10 h-10 rounded-full bg-white shadow-xl flex justify-center items-center cursor-pointer hover:-top-[52px] transition-all",
 } as const;

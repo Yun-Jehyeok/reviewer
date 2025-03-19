@@ -3,7 +3,7 @@
 // Library
 import { useQueryClient } from "@tanstack/react-query";
 import DOMPurify from "dompurify";
-import { useRouter } from "next/navigation";
+import { redirect } from "next/navigation";
 
 // Components
 import CButton from "@/components/common/CButton";
@@ -17,18 +17,15 @@ import { foramttedNumber } from "@/utils/utils";
 import CSpinner from "@/components/common/CSpinner";
 import { useGetUserQuery } from "@/hooks/queries/user";
 
+// Server Actions
+async function handleEdit() {
+    redirect("/edituser");
+}
+
 export default function Mypage() {
-    const queryClient = useQueryClient();
     const { user, error, isPending } = useGetUserQuery();
 
-    const router = useRouter();
-
-    const handleEdit = () => {
-        router.push("/edituser");
-    };
-
     if (isPending) return <CSpinner />;
-    if (!user) return;
 
     return (
         <div className="w-full">
@@ -74,7 +71,9 @@ export default function Mypage() {
             </div>
 
             <div className="w-full flex justify-end mt-12">
-                <CButton title="수정하기" onClick={handleEdit} />
+                <form action={handleEdit}>
+                    <button className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">수정하기</button>
+                </form>
             </div>
         </div>
     );

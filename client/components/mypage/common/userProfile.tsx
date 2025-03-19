@@ -1,5 +1,7 @@
+"use client";
+
 // Library
-import { useRouter } from "next/navigation";
+import { redirect } from "next/navigation";
 
 // Component
 import CButton from "@/components/common/CButton";
@@ -8,14 +10,15 @@ import CButton from "@/components/common/CButton";
 import { useGetUserQuery } from "@/hooks/queries/user";
 
 export default function UserProfile() {
-    const router = useRouter();
+    // const router = useRouter();
     const { user } = useGetUserQuery();
 
     const navigateToUpdateUser = () => {
-        router.push("/edituser");
+        // router.push("/edituser");
+        redirect("/edituser");
     };
 
-    if (!user) return null;
+    if (!user) redirect("/");
     return (
         <div className="w-full bg-gray-50 rounded-sm p-16">
             <div className="w-full flex justify-between items-center">

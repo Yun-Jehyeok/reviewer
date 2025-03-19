@@ -1,6 +1,7 @@
 // Library
-import { QueryFunction } from "@tanstack/react-query";
 import nookies from "nookies";
+import { ServerApi } from "@/utils/api";
+// import { cookies } from "next/headers";
 
 // Utils
 import { Apis } from "@/utils/api";
@@ -10,6 +11,13 @@ import { changePwIFC, editUserIFC, emailIFC, paymentIFC, phoneIFC, signinIFC, si
 
 export const signinApi = async (user: signinIFC) => {
     return await Apis.post("/user/login", user);
+};
+
+export const signinServerApi = async (token: string) => {
+    const res = await ServerApi.get(`/user/${token}`);
+    console.log(res, " : res");
+    // cookies().set("x-user", JSON.stringify(res.user));
+    return signinApi(res) as Promise<signinIFC>;
 };
 
 export const signupApi = async (user: signupIFC) => {
@@ -40,17 +48,16 @@ export const paymentApi = async (data: paymentIFC) => {
     return await Apis.put(`/user/payment/${data.id}`, data);
 };
 
-export const getUserApi: QueryFunction<userIFC, [string]> = async () => {
+export const getUserApi = async () => {
     try {
-        const { token } = nookies.get();
+        const token = nookies.get()?.token;
         const res = await Apis.get(`/user/${token}`);
 
-        if (!res.success) throw new Error("Failed to fetch data");
-
+        if (!res.success) throw new Error(res.data.msg);
+        console.log(res, " : res");
         return res.user;
-    } catch (err) {
-        console.error("get User APi Error >>>> ", err);
-
-        return null;
+    } catch (err: Error | unknown) {
+        console.error("get User API Error >>>> ", err?.response?.data?.msg);
+        throw err;
     }
 };
