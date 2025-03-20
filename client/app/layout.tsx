@@ -7,6 +7,7 @@ import "./globals.css";
 import { QueryClient, dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { getUserApi } from "@/apis/userApi";
 import { cookies } from "next/headers";
+import { SessionProvider } from "next-auth/react";
 
 // Components
 import AntdProvider from "@/components/wrapper/AntdProvider";
@@ -49,7 +50,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                 <AntdProvider>
                     <RecoilRootWrapper>
                         <QueryProviderWrapper dehydratedState={queryClient.getQueryData(["user"])}>
-                            <HydrationBoundary state={dehydrate(queryClient)}>{children}</HydrationBoundary>
+                            <HydrationBoundary state={dehydrate(queryClient)}>
+                                <SessionProvider>{children}</SessionProvider>
+                                {/* {children} */}
+                            </HydrationBoundary>
                         </QueryProviderWrapper>
                     </RecoilRootWrapper>
                 </AntdProvider>

@@ -8,9 +8,6 @@ import { Session } from "next-auth";
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
     const authSession = (await auth()) as Session | null;
 
-    console.log(authSession, " : session ..");
-    console.log(!!authSession, " : session !!session");
-
     return (
         <div className={styles.container}>
             <div className={styles.wrapper}>

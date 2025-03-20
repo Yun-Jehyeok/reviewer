@@ -1,4 +1,5 @@
 import axios from "axios";
+import { auth } from "@/auth";
 
 const api = axios.create({
     baseURL: `${process.env.NEXT_PUBLIC_SERVER_URL}/api`,
@@ -21,6 +22,14 @@ export const ServerApi = {
         return response.data;
     },
 };
+
+api.interceptors.request.use(async (config) => {
+    const session = await auth();
+    if (session?.token) {
+        config.headers.Authorization = `Bearer ${session.token}`;
+    }
+    return config;
+});
 
 // 클라이언트 -> 서버 API
 export const Apis = {

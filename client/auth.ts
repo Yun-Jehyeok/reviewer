@@ -7,7 +7,7 @@ import { userIFC } from "@/interfaces/userIFC";
 // Session 타입 확장
 declare module "next-auth" {
     interface Session extends DefaultSession {
-        user?: userIFC;
+        user?: userIFC | null;
         token?: string;
         accessToken?: string;
     }
@@ -42,9 +42,9 @@ export const {
                 const { email, password } = credentials ?? {};
 
                 // const response = await axios.post(`${process.env.NEXT_PUBLIC_BASE_URL}/api/auth/signin`, {
-                console.log("Request >>>> ", credentials);
-                console.log(email, password, " : user info");
-                console.log(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/user/login`);
+                // console.log("Request >>>> ", credentials);
+                // console.log(email, password, " : user info");
+                // console.log(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/user/login`);
                 const response = await axios.post(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/user/login`, {
                     email: email,
                     password: password,
@@ -68,11 +68,11 @@ export const {
         },
     },
     callbacks: {
-        async jwt({ token, user }: { token: JWT; user: userIFC | null }): Promise<JWT> {
-            console.log("jwt");
-            console.log(token);
-            console.log(user);
-            console.log("jwt end");
+        async jwt({ token, user }: JWT): Promise<JWT> {
+            // console.log("jwt");
+            // console.log(token);
+            // console.log(user);
+            // console.log("jwt end");
 
             if (user) {
                 token.token = user.token;
@@ -81,8 +81,8 @@ export const {
             return token;
         },
         async session({ session, token }: { session: Session; token: JWT }): Promise<Session> {
-            console.log("session");
-            console.log(token);
+            // console.log("session");
+            // console.log(token);
 
             session.user = token.user;
             session.token = token.token;

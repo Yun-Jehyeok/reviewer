@@ -15,6 +15,7 @@ const router = express.Router();
 
 router.get("/:token", auth, async (req, res) => {
     try {
+        console.log("req.headers >>>> ", req.headers);
         const user = await User.findById(req.user.id).select("-password");
 
         if (!user) {
@@ -244,7 +245,7 @@ router.put("/pw", (req, res) => {
 
 router.put("/:id", (req, res) => {
     const { nickname, price, oneLineIntroduce, introduce, techs } = req.body;
-
+    console.log("headers >>>> ", req.headers);
     User.findById(req.params.id).then((user) => {
         if (!user) return res.status(400).json({ success: false, msg: "유저를 찾을 수 없습니다." });
 

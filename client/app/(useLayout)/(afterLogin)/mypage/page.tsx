@@ -4,6 +4,8 @@
 import { useQueryClient } from "@tanstack/react-query";
 import DOMPurify from "dompurify";
 import { redirect } from "next/navigation";
+import { useSession } from "next-auth/react";
+import { useEffect, useState } from "react";
 
 // Components
 import CButton from "@/components/common/CButton";
@@ -16,6 +18,7 @@ import { foramttedNumber } from "@/utils/utils";
 // Interface & States
 import CSpinner from "@/components/common/CSpinner";
 import { useGetUserQuery } from "@/hooks/queries/user";
+import { userIFC } from "@/interfaces/userIFC";
 
 // Server Actions
 async function handleEdit() {
@@ -23,9 +26,15 @@ async function handleEdit() {
 }
 
 export default function Mypage() {
-    const { user, error, isPending } = useGetUserQuery();
+    const { data: session, status } = useSession();
+    const [user, setUser] = useState<userIFC>(session?.user as userIFC);
 
-    if (isPending) return <CSpinner />;
+    useEffect(() => {
+        setUser(session?.user as userIFC);
+    }, [session]);
+
+    if (status === "loading") return <CSpinner />;
+    if (!user) return <div>로딩중</div>;
 
     return (
         <div className="w-full">
