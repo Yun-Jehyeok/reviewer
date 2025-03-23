@@ -2,7 +2,8 @@
 
 // Library
 import { useRouter } from "next/navigation";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
 
 // Components
 import CButton from "@/components/common/CButton";
@@ -20,7 +21,7 @@ import { checkBlank } from "@/utils/utils";
 // Interface & States
 import { useEditUserMutation } from "@/hooks/mutations/user";
 import { useGetUserQuery } from "@/hooks/queries/user";
-import { editUserIFC } from "@/interfaces/userIFC";
+import { editUserIFC, userIFC } from "@/interfaces/userIFC";
 
 // 상수 정의
 const STYLES = {
@@ -55,7 +56,10 @@ const FORM_FIELDS = {
 
 export default function EditPage() {
     const router = useRouter();
-
+    // const { data: session } = useSession();
+    // console.log("session >>>> ", session?.token);
+    // // const [user, setUser] = useState<userIFC | null>(null);
+    // const { user, error, isPending: getUserIsPending } = useGetUserQuery(session?.token || "");
     const { user, error, isPending: getUserIsPending } = useGetUserQuery();
 
     const [introduce, setIntroduce] = useState<string>(user?.introduce || "");

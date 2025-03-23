@@ -8,6 +8,8 @@ import { Apis } from "@/utils/api";
 
 // Interface
 import { changePwIFC, editUserIFC, emailIFC, paymentIFC, phoneIFC, signinIFC, signupIFC, userIFC } from "@/interfaces/userIFC";
+import { useSession } from "next-auth/react";
+import { auth } from "@/auth";
 
 export const signinApi = async (user: signinIFC) => {
     return await Apis.post("/user/login", user);
@@ -49,15 +51,20 @@ export const paymentApi = async (data: paymentIFC) => {
 };
 
 export const getUserApi = async () => {
+    console.log("getUserApi 호출 >>>> ");
     try {
-        const token = nookies.get()?.token;
-        const res = await Apis.get(`/user/${token}`);
+        // const session = await useSession();
+        // const session = await auth();
+        // console.log("session token api check >>>> ", session?.token);
+        // const res = await Apis.get(`/user/${session?.token}`);
+        const res = await Apis.get(`/user/`);
 
-        if (!res.success) throw new Error(res.data.msg);
         console.log(res, " : res");
+        if (!res.success) throw new Error(res.data.msg);
         return res.user;
     } catch (err: Error | unknown) {
-        console.error("get User API Error >>>> ", err?.response?.data?.msg);
+        // console.error("get User API Error >>>> ", err?.response?.data?.msg);
+        console.error("get User API Error >>>> ", err);
         throw err;
     }
 };
