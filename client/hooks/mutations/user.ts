@@ -2,12 +2,13 @@ import { redirect } from "next/navigation";
 import { readAlaramApi } from "@/apis/alarmApi";
 import { authEmailApi, authPhoneApi, changePwApi, editUserApi, signinApi, signinServerApi, signupApi, withdrawalApi } from "@/apis/userApi";
 import { IError } from "@/interfaces/commonIFC";
-import { emailIFC, signinIFC, signupIFC } from "@/interfaces/userIFC";
+import { editUserIFC, emailIFC, signinIFC, signupIFC } from "@/interfaces/userIFC";
 import { cancelBgFixed } from "@/utils/utils";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import nookies, { setCookie } from "nookies";
 import { SetStateAction } from "react";
+import { useSession } from "next-auth/react";
 
 const setTokenInCookie = (token: string) => {
     setCookie(null, "token", token, {
@@ -20,10 +21,10 @@ const setTokenInCookie = (token: string) => {
 
 export const useEditUserMutation = () => {
     const queryClient = useQueryClient();
-    const router = useRouter();
-
+    // const router = useRouter();
+    // const { data: session, update } = useSession();
     return useMutation({
-        mutationFn: editUserApi,
+        mutationFn: (variable: editUserIFC) => editUserApi(variable),
         onMutate: (variable) => {
             console.log("onMutate", variable);
         },
@@ -34,9 +35,17 @@ export const useEditUserMutation = () => {
             console.log("editUserSuccess", data, variables, context);
             if (data.success) {
                 console.log("Edit Success Data >>>> ", data);
-                queryClient.invalidateQueries({ queryKey: ["user"] });
+                // queryClient.invalidateQueries({ queryKey: ["user"] });
+                // update({
+                //     ...session,
+                //     user: {
+                //         ...session?.user,
+                //         ...data.user,
+                //     },
+                // });
 
-                redirect(`/mypage`);
+                // router.push(`/mypage`);
+                return data.user;
             }
         },
         onSettled: () => {

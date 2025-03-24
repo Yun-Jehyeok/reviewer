@@ -55,19 +55,19 @@ const FORM_FIELDS = {
 } as const;
 
 export default function EditPage() {
+    const { data: session, update } = useSession();
     const router = useRouter();
-    // const { data: session } = useSession();
-    // console.log("session >>>> ", session?.token);
+
     // // const [user, setUser] = useState<userIFC | null>(null);
     // const { user, error, isPending: getUserIsPending } = useGetUserQuery(session?.token || "");
-    const { user, error, isPending: getUserIsPending } = useGetUserQuery();
+    // const { user, error, isPending: getUserIsPending } = useGetUserQuery();
 
-    const [introduce, setIntroduce] = useState<string>(user?.introduce || "");
-    const [techs, setTechs] = useState<string[]>(user?.lang || []);
+    const [introduce, setIntroduce] = useState<string>(session?.user?.introduce || "");
+    const [techs, setTechs] = useState<string[]>(session?.user?.lang || []);
 
-    const nickname = useInput(user ? user.nickname : "");
-    const price = useInput(user ? user?.price : "");
-    const oneLineIntroduce = useInput(user ? user?.oneLineIntroduce : "");
+    const nickname = useInput(session ? session?.user?.nickname : "");
+    const price = useInput(session ? session?.user?.price : "");
+    const oneLineIntroduce = useInput(session ? session?.user?.oneLineIntroduce : "");
 
     const [errors, setErrors] = useState({
         nickname: { isError: false, message: "닉네임을 입력해주세요." },
@@ -78,7 +78,7 @@ export default function EditPage() {
     const editUserMutation = useEditUserMutation();
 
     const handleSubmit = useCallback(
-        (e: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement>) => {
+        async (e: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement>) => {
             e.preventDefault();
 
             let hasError = false;
@@ -98,7 +98,7 @@ export default function EditPage() {
             if (hasError) return;
 
             const payload: editUserIFC = {
-                id: user!._id,
+                id: session?.user?._id!,
                 nickname: nickname.value,
                 introduce,
                 techs,
@@ -106,25 +106,40 @@ export default function EditPage() {
                 oneLineIntroduce: oneLineIntroduce.value,
             };
 
-            editUserMutation.mutate(payload);
+            const res = await editUserMutation.mutateAsync(payload);
+            console.log("res >>>> ", res);
+            if (res?.success) {
+                const updateResponse = await update({
+                    ...session,
+                    user: {
+                        ...session?.user,
+                        ...(res?.user as userIFC),
+                    },
+                });
+                console.log("updateResponse >>>> ", updateResponse);
+                setTimeout(() => {
+                    router.push("/mypage");
+                }, 100);
+                console.log("update complete session >>>> ", session);
+            }
         },
-        [user, nickname, introduce, price, editUserMutation, techs, oneLineIntroduce, errors]
+        [nickname, introduce, price, editUserMutation, techs, oneLineIntroduce, errors, session, update]
     );
 
     const goToProfile = () => {
         router.push("/mypage");
     };
 
-    if (!user) return null;
+    if (!session) return null;
     return (
         <div className={STYLES.container}>
-            {(editUserMutation.isPending || getUserIsPending) && <CSpinner />}
+            {/* {(editUserMutation.isPending || getUserIsPending) && <CSpinner />} */}
             <h1 className={STYLES.title}>사용자 정보 수정</h1>
             <div className={STYLES.formContainer}>
                 <CInput {...nickname} {...FORM_FIELDS.nickname} isErr={errors.nickname.isError} errMsg={errors.nickname.message} />
                 <CInput {...oneLineIntroduce} {...FORM_FIELDS.oneLineIntroduce} />
                 <CInput {...price} {...FORM_FIELDS.price} />
-                <SetTech defaultTechs={user.lang} techErr={errors.tech.isError} techErrmsg={errors.tech.message} setTechs={setTechs} />
+                <SetTech defaultTechs={session?.user?.lang} techErr={errors.tech.isError} techErrmsg={errors.tech.message} setTechs={setTechs} />
                 <SetTextareaContents
                     {...FORM_FIELDS.introduce}
                     contents={introduce}

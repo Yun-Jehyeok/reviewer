@@ -41,10 +41,6 @@ export const {
             async authorize(credentials: Record<string, any>) {
                 const { email, password } = credentials ?? {};
 
-                // const response = await axios.post(`${process.env.NEXT_PUBLIC_BASE_URL}/api/auth/signin`, {
-                // console.log("Request >>>> ", credentials);
-                // console.log(email, password, " : user info");
-                // console.log(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/user/login`);
                 const response = await axios.post(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/user/login`, {
                     email: email,
                     password: password,
@@ -68,11 +64,16 @@ export const {
         },
     },
     callbacks: {
-        async jwt({ token, user }: JWT): Promise<JWT> {
-            // console.log("jwt");
-            // console.log(token);
-            // console.log(user);
-            // console.log("jwt end");
+        async jwt({ token, user, trigger, session }: JWT): Promise<JWT> {
+            if (!token) return token;
+
+            if (trigger === "update" && session) {
+                return {
+                    ...session,
+                    user: session?.user ?? "",
+                    token: session?.user?.token ?? "",
+                };
+            }
 
             if (user) {
                 token.token = user.token;
@@ -81,9 +82,6 @@ export const {
             return token;
         },
         async session({ session, token }: { session: Session; token: JWT }): Promise<Session> {
-            // console.log("session");
-            // console.log(token);
-
             session.user = token.user;
             session.token = token.token;
 

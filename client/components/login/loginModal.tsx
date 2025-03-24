@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { setCookie } from "nookies";
 import { useCallback, useState } from "react";
 import { signIn } from "next-auth/react";
+import { useSession } from "next-auth/react";
 
 // Hook
 import { useInput } from "@/hooks/useInput";
@@ -48,6 +49,7 @@ interface InputProps {
 }
 
 export default function LoginModal({ onClose }: ILoginModal) {
+    const { data: session, update } = useSession();
     const email = useInput("");
     const password = useInput("");
     const [error, setError] = useState<{ show: boolean; message: string }>({ show: false, message: "" });
@@ -76,14 +78,15 @@ export default function LoginModal({ onClose }: ILoginModal) {
         onSuccess: (data) => {
             console.log("data >>>> ", data);
             if (data.success) {
-                setCookie(null, "token", data.token, {
-                    maxAge: 30 * 24 * 60 * 60,
-                    path: "/",
-                    secure: process.env.NODE_ENV === "production",
-                    sameSite: "strict",
-                });
+                // setCookie(null, "token", data.token, {
+                //     maxAge: 30 * 24 * 60 * 60,
+                //     path: "/",
+                //     secure: process.env.NODE_ENV === "production",
+                //     sameSite: "strict",
+                // });
                 queryClient.invalidateQueries({ queryKey: ["user"] });
                 router.push("/");
+                // update(data.user);
                 handleClose();
             }
         },
@@ -119,6 +122,7 @@ export default function LoginModal({ onClose }: ILoginModal) {
                 redirect: false,
                 callbackUrl: "/",
             });
+            console.log("res >>>> ", res);
             handleClose();
         },
         [email.value, password.value, handleClose]

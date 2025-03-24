@@ -51,7 +51,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                     <RecoilRootWrapper>
                         <QueryProviderWrapper dehydratedState={queryClient.getQueryData(["user"])}>
                             <HydrationBoundary state={dehydrate(queryClient)}>
-                                <SessionProvider>{children}</SessionProvider>
+                                <SessionProvider refetchInterval={0} refetchOnWindowFocus={true}>
+                                    {children}
+                                </SessionProvider>
                                 {/* {children} */}
                             </HydrationBoundary>
                         </QueryProviderWrapper>

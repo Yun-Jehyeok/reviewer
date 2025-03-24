@@ -43,7 +43,9 @@ export const changePwApi = async (data: changePwIFC) => {
 };
 
 export const editUserApi = async (data: editUserIFC) => {
-    return await Apis.put(`/user/${data.id}`, data);
+    const res = await Apis.put(`/user/${data.id}`, data);
+    console.log("editUserApi res >>>> ", res);
+    return res;
 };
 
 export const paymentApi = async (data: paymentIFC) => {

@@ -28,7 +28,7 @@ async function handleEdit() {
 export default function Mypage() {
     const { data: session, status } = useSession();
     const [user, setUser] = useState<userIFC>(session?.user as userIFC);
-
+    console.log("mypage session >>>> ", session);
     useEffect(() => {
         setUser(session?.user as userIFC);
     }, [session]);

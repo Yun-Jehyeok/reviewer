@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { signOut } from "next-auth/react";
 import { useQueryClient } from "@tanstack/react-query";
+import { useSession } from "next-auth/react";
 
 // Component
 import CButton from "../common/CButton";
@@ -17,9 +18,8 @@ import Profile from "./_components/navProfile";
 // Interface
 import { userIFC } from "@/interfaces/userIFC";
 
-export default function Navigation(session: any) {
-    const token = session?.session;
-    const sessionUser = session?.session?.user;
+export default function Navigation() {
+    const { data: session, update } = useSession();
 
     // const { data: user, isPending } = useQuery({
     //     queryKey: ["user"],
@@ -28,7 +28,6 @@ export default function Navigation(session: any) {
     //     refetchOnMount: false,
     //     refetchOnWindowFocus: false,
     // });
-
     const queryClient = useQueryClient();
     const router = useRouter();
 
@@ -64,13 +63,13 @@ export default function Navigation(session: any) {
             </div>
 
             <div className={styles.nav}>
-                <NavItems user={sessionUser} />
+                {!!session?.token && session?.user && <NavItems user={session?.user} />}
                 <Search openSearch={() => toggleModal("searchModal")} />
-                {!!token ? (
+                {!!session?.token && session?.user ? (
                     <>
                         <NavAlarm showAlarms={modalStates.alarms} setShowAlarms={() => toggleModal("alarms")} />
                         <Profile
-                            user={sessionUser}
+                            user={session?.user}
                             showDropdown={modalStates.dropdown}
                             onToggleDropdown={() => toggleModal("dropdown")}
                             onLogout={handleLogout}
