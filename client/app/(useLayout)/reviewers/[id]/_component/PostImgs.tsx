@@ -10,11 +10,15 @@ import { Swiper as SwiperType } from "swiper/types";
 export default function PostImgs({ imgs }: { imgs?: string[] }) {
     const swiperRef = useRef<SwiperRef | null>(null);
 
+    const [showNavigate, setShowNavigate] = useState<boolean>(false);
     const [isPrevArrActive, setIsPrevArrActive] = useState<boolean>(false);
     const [isNextArrActive, setIsNextArrActive] = useState<boolean>(false);
 
     const initSwiper = () => {
-        if (imgs) setIsNextArrActive(imgs.length > 0);
+        if (imgs) {
+            setShowNavigate(imgs.length > 1);
+            setIsNextArrActive(imgs.length > 1);
+        }
     };
 
     const handlePrev = useCallback(() => {
@@ -45,8 +49,12 @@ export default function PostImgs({ imgs }: { imgs?: string[] }) {
                 );
             })}
 
-            <SwiperPrevBtn isPrevArrActive={isPrevArrActive} handlePrev={handlePrev} />
-            <SwiperNextBtn isNextArrActive={isNextArrActive} handleNext={handleNext} />
+            {showNavigate && (
+                <>
+                    <SwiperPrevBtn isPrevArrActive={isPrevArrActive} handlePrev={handlePrev} />
+                    <SwiperNextBtn isNextArrActive={isNextArrActive} handleNext={handleNext} />
+                </>
+            )}
         </Swiper>
     ) : (
         <div className={styles.noImg}>REVIEWER</div>

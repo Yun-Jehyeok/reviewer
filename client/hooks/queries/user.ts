@@ -10,8 +10,7 @@ export const useGetUserQuery = () => {
     } = useQuery<userIFC, Error, userIFC, [_1: string]>({
         queryKey: ["user"],
         queryFn: getUserApi,
-        staleTime: 60 * 1000,
-        gcTime: 300 * 1000,
+        staleTime: 60 * 1000 * 5,
     });
 
     return { user, error, isPending };

@@ -48,8 +48,6 @@ export default function SignupForm() {
         auth: "인증번호를 입력해주세요.",
     });
 
-    const [authCheckErr, setAuthCheckErr] = useState(true);
-
     const [showAuth, setShowAuth] = useState(false);
     const authNum = useInput("");
 
@@ -96,73 +94,73 @@ export default function SignupForm() {
         const validations = [
             // 이메일 검증
             {
-                condition: !email,
+                condition: email === "",
                 field: "email",
                 message: "이메일을 입력해주세요.",
             },
             {
-                condition: email && !REGEX.email.test(email),
+                condition: email !== "" && !REGEX.email.test(email),
                 field: "email",
                 message: "이메일 형식을 확인해주세요.",
             },
 
             // 비밀번호 검증
             {
-                condition: !password,
+                condition: password === "",
                 field: "password",
                 message: "비밀번호를 입력해주세요.",
             },
             {
-                condition: password && !REGEX.password.test(password),
+                condition: password !== "" && !REGEX.password.test(password),
                 field: "password",
                 message: "비밀번호는 영문, 숫자, 특수문자 중 2가지 이상 조합하여 8자리 이상으로 입력해주세요.",
             },
 
             // 비밀번호 확인 검증
             {
-                condition: !pwCheck,
+                condition: pwCheck === "",
                 field: "pwCheck",
                 message: "비밀번호 확인을 입력해주세요.",
             },
             {
-                condition: pwCheck && pwCheck !== password,
+                condition: pwCheck !== "" && pwCheck !== password,
                 field: "pwCheck",
                 message: "비밀번호와 비밀번호 확인은 동일해야합니다.",
             },
 
             // 이름 검증
             {
-                condition: !name,
+                condition: name === "",
                 field: "name",
                 message: "이름을 입력해주세요.",
             },
 
             // 닉네임 검증
             {
-                condition: !nickname,
+                condition: nickname === "",
                 field: "nickname",
                 message: "닉네임을 입력해주세요.",
             },
 
             // 휴대폰 및 인증 검증
             {
-                condition: !phone,
+                condition: phone === "",
                 field: "phone",
                 message: "휴대폰 번호를 입력해주세요.",
             },
             {
-                condition: phone && authCheckErr,
+                condition: phone !== "" && !showAuth,
                 field: "phone",
                 message: "휴대폰 인증이 필요합니다.",
                 customHandler: () => alert("휴대폰 인증이 필요합니다."),
             },
             {
-                condition: phone && !authCheckErr && !authNum.value,
+                condition: phone !== "" && showAuth && authNum.value === "",
                 field: "auth",
                 message: "인증번호를 입력해주세요.",
             },
             {
-                condition: phone && !authCheckErr && authNum.value && authNum.value !== authNumResponse,
+                condition: phone !== "" && showAuth && authNum.value !== "" && authNum.value !== authNumResponse,
                 field: "auth",
                 message: "인증번호를 확인해주세요.",
             },

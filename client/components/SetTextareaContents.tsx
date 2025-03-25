@@ -1,6 +1,8 @@
 import dynamic from "next/dynamic";
 import { Dispatch, SetStateAction } from "react";
 import "react-quill-new/dist/quill.snow.css";
+import "react-quill/dist/quill.snow.css";
+
 import "./quillset.css";
 
 const QuillWrapper = dynamic(() => import("react-quill-new"), {
@@ -13,12 +15,7 @@ const modules = {
         [{ header: "1" }, { header: "2" }, { font: [] }],
         [{ size: [] }],
         ["bold", "italic", "underline", "strike", "blockquote"],
-        [
-            { list: "ordered" },
-            { list: "bullet" },
-            { indent: "-1" },
-            { indent: "+1" },
-        ],
+        [{ list: "ordered" }, { list: "bullet" }, { indent: "-1" }, { indent: "+1" }],
         ["link", "image"],
         ["clean"],
     ],
@@ -27,21 +24,7 @@ const modules = {
     },
 };
 
-const formats = [
-    "header",
-    "font",
-    "size",
-    "bold",
-    "italic",
-    "underline",
-    "strike",
-    "blockquote",
-    "list",
-    "bullet",
-    "indent",
-    "link",
-    "image",
-];
+const formats = ["header", "font", "size", "bold", "italic", "underline", "strike", "blockquote", "list", "bullet", "indent", "link", "image"];
 
 interface IProps {
     label: string;
@@ -52,28 +35,12 @@ interface IProps {
     errmsg: string;
 }
 
-export default function SetTextareaContents({
-    label,
-    placeholder,
-    contents,
-    setContents,
-    err,
-    errmsg,
-}: IProps) {
+export default function SetTextareaContents({ label, placeholder, contents, setContents, err, errmsg }: IProps) {
     return (
         <div>
             <div className="mb-2 font-medium text-sm">{label}</div>
-            <QuillWrapper
-                theme="snow"
-                modules={modules}
-                formats={formats}
-                value={contents}
-                onChange={setContents}
-                placeholder={placeholder}
-            />
-            {err && (
-                <div className="text-[#ea002c] text-xs mt-1 pl-4">{errmsg}</div>
-            )}
+            <QuillWrapper theme="snow" modules={modules} formats={formats} value={contents} onChange={setContents} placeholder={placeholder} />
+            {err && <div className="text-[#ea002c] text-xs mt-1 pl-4">{errmsg}</div>}
         </div>
     );
 }

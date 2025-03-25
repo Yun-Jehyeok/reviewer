@@ -2,7 +2,6 @@
 
 // Library
 import { useQueryClient } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
 
 // Components
@@ -23,8 +22,6 @@ import { registerPostIFC } from "@/interfaces/postIFC";
 import { userIFC } from "@/interfaces/userIFC";
 
 export default function RegisterReviewer() {
-    const router = useRouter();
-
     const queryClient = useQueryClient();
     const user = queryClient.getQueryData<userIFC>(["user"]);
 

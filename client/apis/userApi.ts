@@ -17,6 +17,7 @@ export const signupApi = async (user: signupIFC) => {
 };
 
 export const authPhoneApi = async (data: phoneIFC) => {
+    console.log("here4");
     return await Apis.post("/user/phone", data);
 };
 
