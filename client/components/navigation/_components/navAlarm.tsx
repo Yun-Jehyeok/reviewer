@@ -23,7 +23,10 @@ export default function NavAlarm({ showAlarms, setShowAlarms }: { showAlarms: Bo
     };
 
     return (
-        <button className="w-10 h-10 rounded-full border border-gray-200 shadow-md flex justify-center items-center relative nav-alarm" onClick={handleShowAlarm}>
+        <button
+            className="w-10 h-10 rounded-full border border-gray-200 shadow-md flex justify-center items-center relative nav-alarm"
+            onClick={handleShowAlarm}
+        >
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
                 <path
                     strokeLinecap="round"
@@ -32,14 +35,19 @@ export default function NavAlarm({ showAlarms, setShowAlarms }: { showAlarms: Bo
                 />
             </svg>
 
-            <div className="absolute -bottom-2 -right-2 w-5 h-5 rounded-full bg-red-500 text-xs text-white flex justify-center items-center">{/* {data?.unreadCount} */}</div>
+            <div className="absolute -bottom-2 -right-2 w-5 h-5 rounded-full bg-red-500 text-xs text-white flex justify-center items-center">
+                {/* {data?.unreadCount} */}
+            </div>
 
             {showAlarms && (
                 <div className="absolute top-[60px] -left-[136px] w-[320px] h-[200px] bg-white z-10 border border-gray-300 shadow-xl rounded-md flex flex-col ">
                     <div className="overflow-auto scrollbar h-full">
                         <ul className="flex flex-1 flex-col px-5 pt-5"></ul>
                     </div>
-                    <div className="w-full border-t border-gray-300 h-8 py-1 text-blue-500 cursor-pointer text-sm flex flex-col justify-center hover:underline" onClick={navigateToReview}>
+                    <div
+                        className="w-full border-t border-gray-300 h-8 py-1 text-blue-500 cursor-pointer text-sm flex flex-col justify-center hover:underline"
+                        onClick={navigateToReview}
+                    >
                         전체 메세지
                     </div>
                 </div>

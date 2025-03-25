@@ -1,16 +1,13 @@
 import { NextResponse } from "next/server";
-import { NextRequest } from "next/server";
+import { auth } from "./auth";
 
-const publicPath = ["/register", "/findpw", "/findemail"];
-
-export function middleware(request: NextRequest, response: NextResponse) {
-    const cookies = request.cookies;
-    const token = cookies.get("token")?.value;
-    const { pathname } = request.nextUrl;
-
-    if (publicPath.includes(pathname)) {
-        if (token) return NextResponse.redirect(new URL("/", request.url));
+export async function middleware() {
+    const session = await auth();
+    if (!session) {
+        return NextResponse.redirect(process.env.NEXT_PUBLIC_BASE_URL as string);
     }
-
-    return NextResponse.next();
 }
+
+export const config = {
+    matcher: ["/mypage"],
+};

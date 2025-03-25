@@ -21,15 +21,9 @@ router.get("/skip/:page/:filter/:langFilter", async (req, res) => {
 
         if (langFilter === "all") {
             if (filter === "registerDate") {
-                postFindResult = await Post.find()
-                    .skip(page)
-                    .limit(16)
-                    .sort({ register_date: -1 });
+                postFindResult = await Post.find().skip(page).limit(16).sort({ register_date: -1 });
             } else if (filter === "reputation") {
-                postFindResult = await Post.find()
-                    .skip(page)
-                    .limit(16)
-                    .sort({ reputation: -1 });
+                postFindResult = await Post.find().skip(page).limit(16).sort({ reputation: -1 });
             }
         } else {
             if (filter === "registerDate") {
@@ -148,9 +142,7 @@ router.get("/:id", (req, res) => {
 
 router.get("/post/best", async (req, res) => {
     try {
-        const postFindResult = await Post.find()
-            .limit(5)
-            .sort({ reputation: 1 });
+        const postFindResult = await Post.find().limit(5).sort({ reputation: 1 });
 
         res.status(200).json({
             success: true,
@@ -163,9 +155,7 @@ router.get("/post/best", async (req, res) => {
 
 router.get("/post/new", async (req, res) => {
     try {
-        const postFindResult = await Post.find()
-            .limit(5)
-            .sort({ register_date: -1 });
+        const postFindResult = await Post.find().limit(5).sort({ register_date: -1 });
 
         res.status(200).json({
             success: true,

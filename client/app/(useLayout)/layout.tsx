@@ -1,8 +1,11 @@
 // Components
 import Footer from "@/components/Footer/footer";
 import Navigation from "@/components/navigation/nav";
+import { cookies } from "next/headers";
+import { auth } from "@/auth";
+import { Session } from "next-auth";
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
     return (
         <div className={styles.container}>
             <div className={styles.wrapper}>

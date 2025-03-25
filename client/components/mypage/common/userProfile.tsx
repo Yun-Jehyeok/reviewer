@@ -1,21 +1,23 @@
+"use client";
+
 // Library
-import { useRouter } from "next/navigation";
+import { redirect } from "next/navigation";
+import { Session } from "next-auth";
+import { useEffect, useState } from "react";
 
 // Component
 import CButton from "@/components/common/CButton";
 
 // Interface
-import { useGetUserQuery } from "@/hooks/queries/user";
+import { userIFC } from "@/interfaces/userIFC";
 
-export default function UserProfile() {
-    const router = useRouter();
-    const { user } = useGetUserQuery();
+export default function UserProfile({ session }: { session: Session }) {
+    const [user, setUser] = useState<userIFC>(session?.user as userIFC);
 
     const navigateToUpdateUser = () => {
-        router.push("/edituser");
+        redirect("/edituser");
     };
 
-    if (!user) return null;
     return (
         <div className="w-full bg-gray-50 rounded-sm p-16">
             <div className="w-full flex justify-between items-center">

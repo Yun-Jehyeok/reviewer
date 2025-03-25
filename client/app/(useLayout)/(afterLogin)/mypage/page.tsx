@@ -3,7 +3,9 @@
 // Library
 import { useQueryClient } from "@tanstack/react-query";
 import DOMPurify from "dompurify";
-import { useRouter } from "next/navigation";
+import { redirect } from "next/navigation";
+import { useSession } from "next-auth/react";
+import { useEffect, useState } from "react";
 
 // Components
 import CButton from "@/components/common/CButton";
@@ -16,19 +18,23 @@ import { foramttedNumber } from "@/utils/utils";
 // Interface & States
 import CSpinner from "@/components/common/CSpinner";
 import { useGetUserQuery } from "@/hooks/queries/user";
+import { userIFC } from "@/interfaces/userIFC";
+
+// Server Actions
+async function handleEdit() {
+    redirect("/edituser");
+}
 
 export default function Mypage() {
-    const queryClient = useQueryClient();
-    const { user, error, isPending } = useGetUserQuery();
+    const { data: session, status } = useSession();
+    const [user, setUser] = useState<userIFC>(session?.user as userIFC);
+    console.log("mypage session >>>> ", session);
+    useEffect(() => {
+        setUser(session?.user as userIFC);
+    }, [session]);
 
-    const router = useRouter();
-
-    const handleEdit = () => {
-        router.push("/edituser");
-    };
-
-    if (isPending) return <CSpinner />;
-    if (!user) return;
+    if (status === "loading") return <CSpinner />;
+    if (!user) return <div>로딩중</div>;
 
     return (
         <div className="w-full">
@@ -74,7 +80,9 @@ export default function Mypage() {
             </div>
 
             <div className="w-full flex justify-end mt-12">
-                <CButton title="수정하기" onClick={handleEdit} />
+                <form action={handleEdit}>
+                    <button className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">수정하기</button>
+                </form>
             </div>
         </div>
     );

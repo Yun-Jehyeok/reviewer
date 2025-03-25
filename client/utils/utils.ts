@@ -14,12 +14,19 @@ export const cancelBgFixed = () => {
     document.querySelector("body")!.style.overflow = "auto";
 };
 
-export const checkBlank = (val: string, errFunc: Dispatch<SetStateAction<boolean>>, errMsg: string, setErrMsg: Dispatch<SetStateAction<string>>) => {
-    errFunc(val === "");
-    if (val === "") setErrMsg(errMsg);
+export function checkBlank(val: string): boolean;
+export function checkBlank(val: string, errFunc: Dispatch<SetStateAction<boolean>>, errMsg: string, setErrMsg: Dispatch<SetStateAction<string>>): boolean;
 
-    return val === "";
-};
+export function checkBlank(val: string, errFunc?: Dispatch<SetStateAction<boolean>>, errMsg?: string, setErrMsg?: Dispatch<SetStateAction<string>>): boolean {
+    const isEmpty = val.trim() === "";
+
+    if (errFunc && errMsg && setErrMsg) {
+        errFunc(isEmpty);
+        if (isEmpty) setErrMsg(errMsg);
+    }
+
+    return isEmpty;
+}
 
 export const foramttedNumber = (num: string | number) => {
     let formatValue = num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");

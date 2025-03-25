@@ -1,15 +1,22 @@
 // Library
-import { QueryFunction } from "@tanstack/react-query";
-import nookies from "nookies";
+import { ServerApi } from "@/utils/api";
+// import { cookies } from "next/headers";
 
 // Utils
 import { Apis } from "@/utils/api";
 
 // Interface
-import { changePwIFC, editUserIFC, emailIFC, paymentIFC, phoneIFC, signinIFC, signupIFC, userIFC } from "@/interfaces/userIFC";
+import { changePwIFC, editUserIFC, emailIFC, paymentIFC, phoneIFC, signinIFC, signupIFC } from "@/interfaces/userIFC";
 
 export const signinApi = async (user: signinIFC) => {
     return await Apis.post("/user/login", user);
+};
+
+export const signinServerApi = async (token: string) => {
+    const res = await ServerApi.get(`/user/${token}`);
+    console.log(res, " : res");
+    // cookies().set("x-user", JSON.stringify(res.user));
+    return signinApi(res) as Promise<signinIFC>;
 };
 
 export const signupApi = async (user: signupIFC) => {
@@ -34,26 +41,30 @@ export const changePwApi = async (data: changePwIFC) => {
 };
 
 export const editUserApi = async (data: editUserIFC) => {
-    return await Apis.put(`/user/${data.id}`, data);
+    const res = await Apis.put(`/user/${data.id}`, data);
+    console.log("editUserApi res >>>> ", res);
+    return res;
 };
 
 export const paymentApi = async (data: paymentIFC) => {
     return await Apis.put(`/user/payment/${data.id}`, data);
 };
 
-export const getUserApi: QueryFunction<userIFC, [string]> = async () => {
+export const getUserApi = async () => {
+    console.log("getUserApi 호출 >>>> ");
     try {
-        const { token } = nookies.get();
-        if (!token) return null;
+        // const session = await useSession();
+        // const session = await auth();
+        // console.log("session token api check >>>> ", session?.token);
+        // const res = await Apis.get(`/user/${session?.token}`);
+        const res = await Apis.get(`/user/`);
 
-        const res = await Apis.get(`/user/${token}`);
-
-        if (!res.success) throw new Error("Failed to fetch data");
-
+        console.log(res, " : res");
+        if (!res.success) throw new Error(res.data.msg);
         return res.user;
-    } catch (err) {
-        console.error("get User APi Error >>>> ", err);
-
-        return null;
+    } catch (err: Error | unknown) {
+        // console.error("get User API Error >>>> ", err?.response?.data?.msg);
+        console.error("get User API Error >>>> ", err);
+        throw err;
     }
 };
