@@ -1,12 +1,13 @@
 "use client";
 
 // Library
-import { memo, useState, useCallback } from "react";
+import { memo, useState, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { signOut } from "next-auth/react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
+import { Session } from "next-auth";
 
 // Component
 import CButton from "../common/CButton";
@@ -18,8 +19,10 @@ import Profile from "./_components/navProfile";
 // Interface
 import { userIFC } from "@/interfaces/userIFC";
 
-export default function Navigation() {
-    const { data: session, update } = useSession();
+export default function Navigation({ userSession }: { userSession: Session }) {
+    const router = useRouter();
+    const [user, setUser] = useState(userSession?.user);
+    const { data: session, status } = useSession();
 
     // const { data: user, isPending } = useQuery({
     //     queryKey: ["user"],
@@ -28,8 +31,13 @@ export default function Navigation() {
     //     refetchOnMount: false,
     //     refetchOnWindowFocus: false,
     // });
-    const queryClient = useQueryClient();
-    const router = useRouter();
+    // const queryClient = useQueryClient();
+
+    useEffect(() => {
+        if (status === "authenticated") {
+            setUser(session?.user);
+        }
+    }, [session, status]);
 
     const [modalStates, setModalStates] = useState({
         loginModal: false,
@@ -46,10 +54,9 @@ export default function Navigation() {
     }, []);
 
     const handleLogout = useCallback(() => {
-        queryClient.invalidateQueries({ queryKey: ["user"] });
         router.push("/");
         signOut();
-    }, [queryClient, router]);
+    }, [router]);
 
     const goToMypage = () => {
         router.push("/mypage");
@@ -63,13 +70,13 @@ export default function Navigation() {
             </div>
 
             <div className={styles.nav}>
-                {!!session?.token && session?.user && <NavItems user={session?.user} />}
+                {user && <NavItems user={user} />}
                 <Search openSearch={() => toggleModal("searchModal")} />
-                {!!session?.token && session?.user ? (
+                {user ? (
                     <>
                         <NavAlarm showAlarms={modalStates.alarms} setShowAlarms={() => toggleModal("alarms")} />
                         <Profile
-                            user={session?.user}
+                            user={user}
                             showDropdown={modalStates.dropdown}
                             onToggleDropdown={() => toggleModal("dropdown")}
                             onLogout={handleLogout}

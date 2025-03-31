@@ -6,13 +6,13 @@ import { auth } from "@/auth";
 import { Session } from "next-auth";
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
+    const session = await auth();
     return (
         <div className={styles.container}>
             <div className={styles.wrapper}>
                 {/* 1080 ~ 1440 */}
                 <div className={styles.section}>
-                    <Navigation />
-
+                    {session && <Navigation userSession={session} />}
                     {children}
                 </div>
             </div>

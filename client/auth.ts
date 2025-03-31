@@ -87,6 +87,12 @@ export const {
 
             return session;
         },
+        update: async ({ session, token }: { session: Session; token: JWT }): Promise<Session> => {
+            session.user = token.user;
+            session.token = token.token;
+
+            return session;
+        },
     },
     jwt: {
         maxAge: 60 * 60 * 24 * 1,
